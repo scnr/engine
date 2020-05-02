@@ -1,0 +1,32 @@
+=begin
+    Copyright 2020 Tasos Laskos <tasos.laskos@gmail.com>
+
+    This file is part of the SCNR::Engine project and is subject to
+    redistribution and commercial restrictions. Please see the SCNR::Engine
+    web site for more information on licensing and terms of use.
+=end
+
+class SCNR::Engine::Reporters::XML
+
+# @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
+class PluginFormatters::UncommonHeaders < SCNR::Engine::Plugin::Formatter
+
+    def run( xml )
+        results.each do |url, headers|
+            xml.entry {
+                xml.url url
+
+                xml.headers {
+                    headers.each do |name, value|
+                        xml.header(
+                            name:  SCNR::Engine::Reporters::XML.replace_nulls( name ),
+                            value: SCNR::Engine::Reporters::XML.replace_nulls( value )
+                        )
+                    end
+                }
+            }
+        end
+    end
+
+end
+end
