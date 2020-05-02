@@ -1,0 +1,229 @@
+- Executables moved to optional `SCNR::UI::CLI` gem.
+- Added Bootsnap for faster boot-up.
+- `OptionGroups`
+    - `Audit`
+        - New
+            - `#paranoia` -- Determines the thoroughness of the audit -- mostly affects check payloads.
+    - `Scope`
+        - `#auto_redundant_paths` -- Set to `15`.
+        - `#directory_depth_limit` -- Set to `10`.
+        - `#dom_depth_limit` -- Set to `4`.
+        - `#dom_event_limit` -- Set to `500`.
+        - `#dom_event_inheritance_limit` -- Set to `500`.
+        - `#exclude_file_extensions` -- Set to exclude asset and binary files.
+            - `gif,bmp,tif,tiff,jpg,jpeg,jpe,pjpeg,png,ico,psd,xcf,3dm,max,svg,eps,drw,ai,asf,rm,mpg,mpeg,mpe,3gp,3g2,avi,flv,mov,mp4,swf,vob,wmv,aif,mp3,mpa,ra,wav,wma,mid,m4a,ogg,flac,zip,zipx,tar,gz,7z,rar,bz2,bin,cue,dmg,iso,mdf,vcd,raw,exe,apk,app,jar,pkg,deb,rpm,msi,ttf,otf,woff,woff2,fon,fnt,css,js,pdf,docx,xlsx,pptx,odt,odp`
+    - `HTTP`
+        - `#request_timeout` -- Set to `20000`.
+        - `#request_concurrency` -- Set to `14`.
+        - `#request_queue_size` -- Set to `50`.
+    - `BrowserCluster`
+        - `#pool_size` -- Set to `5`.
+        - `#ignore_images` -- Set to `true`.
+        - `#worker_time_to_live` -- Increased to `1000`.
+        - New
+            - `#engine` -- Browser engine to use, supports: `:none`, `:chrome`, `:firefox`.
+            - `#session_storage` -- Sets the browsers' session storage.
+    - New
+        - `Device` -- Device emulation (PC, tablet, phone, wearables, etc.).
+            - `#visible` -- Disable headless mode, useful for debugging.
+            - `#width` -- Moved from `BrowserCluster#screen_width`.
+            - `#height` -- Moved from `BrowserCluster#screen_height`.
+            - `#user_agent` -- Moved from `HTTP#user_agent`.
+            - `#pixel_ratio`
+            - `#touch`
+        - `System`
+            - `#max_slots` -- Determines how many scans the system can support.
+        - `Timeout` -- Sets scan timeout with optional suspend.
+- `UI`
+    - `CLI` -- Moved to optional `SCNR::UI::CLI` gem.
+    - `Output`
+        - Moved output interface specification to `OutputInterface`.
+        - Left only interface implementations.
+- `URI`
+    - `#encode` -- Fixed encoding order of `+`.
+    - `#decode` -- Fixed decoding order of `+`.
+- `System` -- Provides system information (RAM, CPU, disk space),
+    - `Slots` -- Determines the amount of scans the system can support at any given time.
+- `Report` -- Changed file extension from `afr` to `ser`.
+- `Snapshot` -- Changed file extension from `afs` to `ses`.
+- `HTTP` -- Enabled multiplexing over HTTP/2.0.
+    - `Request` -- Use HTTP/2.0 when possible.
+    - `Client`
+        - `Dynamic404Handler` replaced by `Soft404`.
+    - `ProxyServer`
+        - Added thread-pool rather than initializing new threads.
+        - `SSLInterceptor`
+            - Added per-host SSL certificate-generation cache to minimize disk reads 
+                and prevent leaks on the browser side.
+- `Element`
+    - Added `NestedCookie` -- Handles key-value pairs inside individual cookies.
+    - `Form`, `Link`, `LinkTemplate`, `UIForm`, `UIInput` -- Updated to include
+        the new `WithSinks` capability; same with their DOM extensions.
+    - `Capabilities` 
+        - `WithSinks` -- Attaches `Capabilities::WithSinks::Sinks`
+            allowing for web application sinks to be identified for each element.
+        - `Analyzable`
+            - `Timeout`
+                - Refactored to allow dynamic generation of verification phases.
+                - Added more phases.
+            - `Differential`
+                - Improved detection of corrupted data and chaotic server behavior.
+    - `DOM::Capabilities::WithSinks` -- Attaches `DOM::Capabilities::WithSinks::Sinks`
+        allowing for DOM sinks to be identified for each element.
+- `Parser`
+    - `#cookies_to_be_audited` -- Only pick cookies for the `#url` domain.
+- `Process`
+    - `Manager`
+        - `#spawn` -- Pass Engine options via `ENV` rather than `ARGV`.
+- `Page`
+    - `DOM`
+        - `Transition`
+            - `#play` -- Switches to new window if one was opened.
+- `Browser`
+    - Removed support for PhantomJS.
+    - Replaced references to Selenium elements with `ElementLocator`.
+    - Run `setTimeout()` callbacks immediately rather than waiting.
+    - Added `ParseProfile` as a way for components to adjust browser behavior to
+        better suit their needs, as an optimization.
+    - `Engines` -- Provides modular support for browser engines.
+        - Headless Chrome.
+        - Headless Firefox.
+    - `Parts`
+        - `Snapshot`
+            - `#to_page` -- Removes JS env modifications from response and page bodies.
+        - `Events`
+            - `#fire_event` -- Moved most of the code to the JS env.
+- `BrowserCluster`
+    - Allow preferential scheduling of jobs based on category (scan/crawl).
+    - Only accept class-method callbacks to allow data and state to be dumped
+        to disk for suspend/restore.
+    - `Jobs`
+        - `TaintTrace` -- Removed generation of unnecessary page snapshots.
+        - `SinkTrace` -- Traces sinks of DOM inputs and feeds pages with updated
+            elements with identified sinks back to the `Framework` to be audited.
+        - `DOMExploration`, `DOMExploration::EventTrigger` -- Updated to also
+            pass found page snapshots to `SinkTrace`.
+- `Rest::Server`
+    - `POST /scans` -- Updated to return `503` when the system is at max utilization.
+    - Made `RPC::Server::Dispatcher`/Grid-aware.
+    - Made `RPC::Server::Queue`-aware.
+    - Added
+        - Error handling for when trying to connect to unreachable instances.
+        - `GET /scans/:scan/report.afr`.
+        - `PUT /scans/:scan/queue` -- Delegate scan monitoring to the Queue.
+        - `GET /dispatcher/url` -- Returns the configured Dispatcher URL.
+        - `PUT /dispatcher/url` -- Sets the Dispatcher to use.
+        - `DELETE /dispatcher/url` -- Removes the Dispatcher.
+        - `GET /grid` -- Returns all Grid nodes.
+        - `GET /grid/:dispatcher` -- Returns info on the given Dispatcher.
+        - `DELETE /grid/:dispatcher` -- Unplugs the given Dispatcher from the Grid.
+        - `GET /queue` -- List all queued scans.
+        - `POST /queue` -- Pushes a new scan to the Queue.
+        - `GET /queue/url` -- Returns the configured Queue URL.
+        - `PUT /queue/url` -- Sets the Queue to use.
+        - `DELETE /queue/url` -- Removes the Queue.
+        - `GET /queue/running` -- Returns all running scans monitored by the Queue.
+        - `GET /queue/completed` -- Returns all completed scans monitored by the Queue.
+        - `GET /queue/failed` -- Returns all failed scans monitored by the Queue.
+        - `GET /queue/size` -- Returns the Queue size.
+        - `DELETE /queue` -- Empties the Queue.
+        - `GET /queue/:scan` -- Returns info on the given queued scan.
+        - `PUT /queue/:scan/detach` -- Removes the given running scan from the Queue's purview.
+        - `DELETE /queue/:scan` -- Removes the given scan from the Queue.
+- `Trainer` -- Updated to pass each page that's about to be audited to
+    `Trainer::SinkTracer` for web application sinks to be identified for non-DOM elements.
+- `Framework::Parts`
+    - `State`
+        - Added time-out support with optional suspend.
+    - `Browser`
+        - Prefer crawl-type jobs when the page buffer is running low.
+        - `#shutdown_browser_cluster` -- Don't wait for pending jobs to finish.
+- `Support`
+    - `LookUp::Hash` -- Replaced internal collection with SparseHash.
+    - `Database` -- Updated to compress disk data.
+    - Added
+        - `Database::CategorizedQueue` -- Groups items by `#category` and allows 
+            preferential `#pop`ing.
+        - `Hash` -- Provides an identical API for different hash implementations.
+        - `Mixins::Profiler` -- Profiles callbacks.
+- `RPC`
+    - `Client` 
+        - Changed initialization argument order.
+        - Switched to `Hash` options.
+        - `Instance`
+            - Changed the `instance` (previously `#service`) handler to be the default 
+                for the client.
+            - Removed all but the `#options` handler.
+    - `Server` 
+        - `Instance` 
+            - Removed support for multi-Instance scans.
+            - Renamed `service` RPC handler to `instance`.
+        - `Dispatcher`
+            - Changed `job` nomenclature to `instance`.
+            - `#preferred` -- Return `nil` when all nodes are at maximum utilization.
+            - `#dispatch`
+                - Removed pool, Instances are now spawned on-demand.
+                - Return `nil` when all nodes are at maximum utilization
+            - `#workload_score` 
+                - Renamed to `#utilization`. 
+                - Updated to be calculated based on available system resources.
+                - Removed user-specified `--weight` bias.
+            - `Node`
+                - `#unplug` -- Removes the Node from the Grid.
+        - `Queue` -- Maintains a scan queue, starts and monitors scans and retrieves reports.
+- Added Rust extension to provide a performance boost for known bottlenecks:
+    - `Parser` -- Moved parsing to a Rust SAX parser that only picks elements
+        of interest by default.
+    - `Element`
+        - `Cookie`
+            - `.encode` - ~34 times faster.
+        - `Header`
+            - `.encode` - ~35 times faster.
+    - `URI`
+        - `.decode` - ~2.10 times faster.
+        - `.parse` - ~3 times faster.
+        - `.to_absolute` - ~4.17 times faster.
+        - `.query_parameters` - ~3.47 times faster.
+    - `Utilities`
+        - `#html_decode` - ~23 times faster.
+    - `Support::Signature`
+        - `#new` - ~7 times faster.
+        - `#differences` - ~55 times faster.
+        - `#<<` - ~7 times faster.
+        - `#refine!` - ~7 times faster.
+        - `#refine` - ~7 times faster.
+    - `Headers`
+        - `.format_field_name` - ~2.7 times faster.
+    - `String`
+        - `#optimized_include?` - ~2 to ~10 times faster than `#include?`.
+- Components
+    - Plugins
+        - `autologin` renamed to `login_form`.
+        - `proxy` -- Fixed error on login sequence recording.
+    - Checks -- Added `:cost` to all check info.
+        - Active
+            - `code_injection_php_input_wrapper`, `ldap_injection`, `no_sql_injection`, 
+            `no_sql_injection_differential`, `sql_injection`, `sql_injection_differential`, 
+            `unvalidated_redirect_dom`, `xpath_injection`, `xss_dom_script_context`
+                 -- Set sinks to `active`.
+            - `response_splitting` -- Set sinks to `header_name`.
+            - `xss`, `xss_dom`, `xss_event`, `xss_path`, `xss_script_context`,
+                `xss_tag` -- Set sinks to `body`.
+            - `xss`, `xss_dom`, `xss_path` -- Updated to use SAX for taint searching.
+            - `xss_script_context` -- Optimized payloads.
+            - `os_cmd_injection` 
+                - Optimized payloads.
+                - Consolidated platform payloads into one OS command each.
+            - `os_cmd_injection_timing`
+                - Optimized payloads.
+                - Added paranoia-adjusted payloads.
+            - `file_inclusion`
+                - Removed redundant MS Windows payloads.
+                - Optimized mutation generation.
+            - `path_traversal` 
+                - Removed redundant MS Windows payloads.
+                - Optimized mutation generation.
+                - Added paranoia-adjusted payloads.
+            - `rfi` -- Only use straight injection, other formats won't work anyway.
+    - Passive
+        - `x_frame_options` -- Ignore non-200 pages.

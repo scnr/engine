@@ -1,0 +1,10 @@
+require 'thermite/tasks'
+
+project_dir = File.dirname( __FILE__ )
+
+Thermite::Tasks.new(
+    cargo_project_path: "#{project_dir}/engine",
+    ruby_project_path:  File.dirname( project_dir )
+)
+
+task default: %w(thermite:build)

@@ -1,0 +1,74 @@
+=begin
+    Copyright 2020 Alex Douckas <alexdouckas@gmail.com>, Tasos Laskos <tasos.laskos@gmail.com>
+
+    This file is part of the SCNR::Engine project and is subject to
+    redistribution and commercial restrictions. Please see the SCNR::Engine
+    web site for more information on licensing and terms of use.
+=end
+
+# Order is important.
+INSTANCES = [
+    SCNR::Engine::Framework,
+    SCNR::Engine::BrowserCluster,
+    SCNR::Engine::Session,
+    SCNR::Engine::Browser,
+    SCNR::Engine::Browser::Engines::Base,
+    SCNR::Engine::HTTP::Client::Soft404
+]
+INSTANCES.each(&:_spec_instances_collect!)
+
+def reset_options
+    options = SCNR::Engine::Options
+    options.reset
+
+    options.paths.plugins        = fixtures_path + 'plugins/'
+    options.paths.checks         = fixtures_path + 'checks/'
+    options.paths.fingerprinters = fixtures_path + 'fingerprinters/'
+    options.paths.logs           = spec_path     + 'support/logs/'
+    options.paths.reports        = spec_path     + 'support/reports/'
+    options.paths.snapshots      = spec_path     + 'support/snapshots/'
+
+    options.rpc.server_address = '127.0.0.1'
+
+    options.browser_cluster.disable!
+
+    options
+end
+
+def enable_browser_cluster
+    SCNR::Engine::Options.browser_cluster.pool_size = 1
+end
+
+def cleanup_instances
+    INSTANCES.each do |i|
+        i._spec_instances_cleanup
+    end
+end
+
+def reset_framework
+    SCNR::Engine::UI::OutputInterface.initialize
+    # SCNR::Engine::UI::Output.debug_on( 999999 )
+    # SCNR::Engine::UI::Output.verbose_on
+    # SCNR::Engine::UI::Output.mute
+
+    SCNR::Engine::Framework.reset
+    SCNR::Engine::HTTP::Client.reset
+end
+
+def reset_all
+    reset_options
+    reset_framework
+end
+
+def processes_killall
+    instance_killall
+    dispatcher_killall
+    queue_killall
+    process_killall
+    process_kill_reactor
+end
+
+def killall
+    processes_killall
+    web_server_killall
+end

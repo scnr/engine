@@ -1,0 +1,73 @@
+=begin
+    Copyright 2020 Alex Douckas <alexdouckas@gmail.com>, Tasos Laskos <tasos.laskos@gmail.com>
+
+    This file is part of the SCNR::Engine project and is subject to
+    redistribution and commercial restrictions. Please see the SCNR::Engine
+    web site for more information on licensing and terms of use.
+=end
+
+module SCNR::Engine
+module Support
+module Mixins
+
+# @note Only for when running specs!
+#
+# Keeps track of every initialized instance so that they can be properly
+# cleaned-up later.
+module SpecInstances
+
+    def self.prepended( base )
+        base.extend ClassMethods
+    end
+
+    module ClassMethods
+
+        # @abstract
+        def _spec_instance_cleanup( i )
+            fail 'Not implemented.'
+        end
+
+        def _spec_instances_cleanup
+            _spec_instances.each do |i|
+                _spec_instance_cleanup i
+            end
+
+            _spec_instances_clear
+        end
+
+        def _spec_instances_clear
+            _spec_instances.clear
+        end
+
+        def _spec_instance( instance )
+            return if !_spec_instances_collect?
+            _spec_instances << instance
+        end
+
+        def _spec_instances_collect!
+            @_spec_instances_collect = true
+        end
+
+        def _spec_instances_collect?
+            @_spec_instances_collect
+        end
+
+        private
+
+        def _spec_instances
+            @_spec_instances ||= Concurrent::Array.new
+        end
+
+    end
+
+    def initialize(*)
+        super
+
+        self.class._spec_instance self
+    end
+
+end
+
+end
+end
+end
