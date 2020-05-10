@@ -266,7 +266,7 @@ class Issue
             if object
                 # Once the object is logged we need a deep copy of it to ensure
                 # integrity.
-                # object = object.rpc_clone
+                object = object.rpc_clone
                 object.prepare_for_report
             end
 
