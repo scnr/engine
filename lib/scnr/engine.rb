@@ -12,14 +12,14 @@ require 'tmpdir'
 
 require_relative 'engine/version'
 
-require 'bootsnap'
-Bootsnap.setup(
-    cache_dir:            "#{Dir.tmpdir}/scnr_engine_#{SCNR::Engine::VERSION}_code_cache",
-    load_path_cache:      true,  # Optimize the LOAD_PATH with a cache.
-    autoload_paths_cache: false, # Disable ActiveSupport cache.
-    compile_cache_iseq:   true,  # Compile Ruby code into ISeq cache, breaks coverage reporting.
-    compile_cache_yaml:   true   # Compile YAML into a cache.
-)
+# require 'bootsnap'
+# Bootsnap.setup(
+#     cache_dir:            "#{Dir.tmpdir}/scnr_engine_#{SCNR::Engine::VERSION}_code_cache",
+#     load_path_cache:      true,  # Optimize the LOAD_PATH with a cache.
+#     autoload_paths_cache: false, # Disable ActiveSupport cache.
+#     compile_cache_iseq:   true,  # Compile Ruby code into ISeq cache, breaks coverage reporting.
+#     compile_cache_yaml:   true   # Compile YAML into a cache.
+# )
 
 require 'concurrent'
 require 'pp'
@@ -99,8 +99,6 @@ module Engine
                 end
             end
 
-            require_relative 'engine/ext/setup'
-
             @loaded_extension
         end
 
@@ -147,7 +145,10 @@ if !SCNR::Engine::UI.constants.include?(:Output)
     require_relative 'engine/ui/output'
 end
 
+SCNR::Engine.load_extension
+
 require_relative 'engine/framework'
+require_relative 'engine/ext/setup'
 
 SCNR::Engine::UI::OutputInterface.initialize
-SCNR::Engine.load_extension
+

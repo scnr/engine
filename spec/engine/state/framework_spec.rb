@@ -86,7 +86,7 @@ describe SCNR::Engine::State::Framework do
         end
 
         it 'includes amount of #browser_skip_states' do
-            set = SCNR::Engine::Support::LookUp::Hash.new
+            set = SCNR::Engine::Support::Filter::Set.new
             set << 1 << 2 << 3
             subject.update_browser_skip_states( set )
 
@@ -95,14 +95,14 @@ describe SCNR::Engine::State::Framework do
     end
 
     describe '#page_queue_filter' do
-        it "returns an instance of #{SCNR::Engine::Support::LookUp::Hash}" do
-            expect(subject.page_queue_filter).to be_kind_of SCNR::Engine::Support::LookUp::Hash
+        it "returns an instance of #{SCNR::Engine::Support::Filter::Set}" do
+            expect(subject.page_queue_filter).to be_kind_of SCNR::Engine::Support::Filter::Set
         end
     end
 
     describe '#url_queue_filter' do
-        it "returns an instance of #{SCNR::Engine::Support::LookUp::Hash}" do
-            expect(subject.url_queue_filter).to be_kind_of SCNR::Engine::Support::LookUp::Hash
+        it "returns an instance of #{SCNR::Engine::Support::Filter::Set}" do
+            expect(subject.url_queue_filter).to be_kind_of SCNR::Engine::Support::Filter::Set
         end
     end
 
@@ -861,8 +861,8 @@ describe SCNR::Engine::State::Framework do
     end
 
     describe '#browser_skip_states' do
-        it "returns a #{SCNR::Engine::Support::LookUp::Hash}" do
-            expect(subject.browser_skip_states).to be_kind_of SCNR::Engine::Support::LookUp::Hash
+        it "returns a #{SCNR::Engine::Support::Filter::Set}" do
+            expect(subject.browser_skip_states).to be_kind_of SCNR::Engine::Support::Filter::Set
         end
     end
 
@@ -870,7 +870,7 @@ describe SCNR::Engine::State::Framework do
         it 'updates #browser_skip_states' do
             expect(subject.browser_skip_states).to be_empty
 
-            set = SCNR::Engine::Support::LookUp::Hash.new
+            set = SCNR::Engine::Support::Filter::Set.new
             set << 1 << 2 << 3
             subject.update_browser_skip_states( set )
             expect(subject.browser_skip_states).to eq(set)
@@ -888,7 +888,8 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::LookUp::Hash.new( hasher: :playable_transitions_hash ).merge( [page.dom] )
+            d = SCNR::Engine::Support::Filter::Set.new( hasher: :playable_transitions_hash )
+            d << page.dom
             expect(Marshal.load( IO.read( "#{dump_directory}/dom_analysis_filter" ) )).to eq(d)
         end
 
@@ -897,7 +898,8 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash ).merge( [page] )
+            d = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash )
+            d << page
             expect(Marshal.load( IO.read( "#{dump_directory}/page_queue_filter" ) )).to eq(d)
         end
 
@@ -906,7 +908,8 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::LookUp::Hash.new( hasher: :paths_hash ).merge( [page] )
+            d = SCNR::Engine::Support::Filter::Set.new(hasher: :paths_hash )
+            d << page
             expect(Marshal.load( IO.read( "#{dump_directory}/page_paths_filter" ) )).to eq(d)
         end
 
@@ -915,7 +918,8 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash ).merge( [url] )
+            d = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash )
+            d << url
             expect(Marshal.load( IO.read( "#{dump_directory}/url_queue_filter" ) )).to eq(d)
         end
 
@@ -925,7 +929,7 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            set = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash )
+            set = SCNR::Engine::Support::Filter::Set.new( hasher: :persistent_hash )
             set << stuff
 
             expect(Marshal.load( IO.read( "#{dump_directory}/browser_skip_states" ) )).to eq(set)
@@ -943,8 +947,8 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::LookUp::Hash.new( hasher: :coverage_and_trace_hash )
-            d.merge( [element] )
+            d = SCNR::Engine::Support::Filter::Set.new(hasher: :coverage_and_trace_hash )
+            d << element
 
             expect(described_class.load( dump_directory ).element_pre_check_filter).to eq(d)
         end
@@ -954,7 +958,7 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            set = SCNR::Engine::Support::LookUp::Hash.new( hasher: :playable_transitions_hash )
+            set = SCNR::Engine::Support::Filter::Set.new(hasher: :playable_transitions_hash )
             set << page.dom
             expect(described_class.load( dump_directory ).dom_analysis_filter).to eq(set)
         end
@@ -964,7 +968,7 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            set = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash )
+            set = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash )
             set << page
             expect(described_class.load( dump_directory ).page_queue_filter).to eq(set)
         end
@@ -974,7 +978,7 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            set = SCNR::Engine::Support::LookUp::Hash.new( hasher: :paths_hash )
+            set = SCNR::Engine::Support::Filter::Set.new(hasher: :paths_hash )
             set << page
             expect(described_class.load( dump_directory ).page_paths_filter).to eq(set)
         end
@@ -985,7 +989,7 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            set = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash )
+            set = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash )
             set << url
             expect(described_class.load( dump_directory ).url_queue_filter).to eq(set)
         end
@@ -996,7 +1000,7 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            set = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash)
+            set = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash)
             set << stuff
             expect(described_class.load( dump_directory ).browser_skip_states).to eq(set)
         end

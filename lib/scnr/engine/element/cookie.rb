@@ -475,9 +475,9 @@ class Cookie < Base
         def encode( str )
             return '' if !str
 
-            ENCODE_CACHE.fetch( str )  do
+            ENCODE_CACHE.fetch( str ) do
                 if SCNR::Engine.has_extension?
-                    encode_ext( str )
+                    SCNR::Engine::Rust::Element::Cookie.encode_ext( str )
                 else
                     encode_ruby( str )
                 end

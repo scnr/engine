@@ -176,7 +176,7 @@ module Mutable
         print_debug_formatting( options )
 
         options          = prepare_mutation_options( options )
-        generated        = Support::LookUp::Hash.new
+        generated        = Support::Filter::Set.new
         filled_in_inputs = Options.input.fill( @inputs )
 
         if options[:parameter_values]

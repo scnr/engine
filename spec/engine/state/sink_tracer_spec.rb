@@ -9,8 +9,8 @@ describe SCNR::Engine::State::SinkTracer do
     let(:element) {  Factory[:form] }
 
     describe '#sinks' do
-        it "returns an instance of #{SCNR::Engine::Support::Hash}" do
-            expect(subject.sinks).to be_kind_of SCNR::Engine::Support::Hash
+        it "returns an instance of #{Hash}" do
+            expect(subject.sinks).to be_kind_of Hash
         end
     end
 
@@ -21,7 +21,7 @@ describe SCNR::Engine::State::SinkTracer do
 
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::Hash.new( :long_to_ruby )
+            d = {}
             d[element.coverage_hash] = { traced: Set.new( [element.inputs.keys.first] ) }
 
             expect(Marshal.load( IO.read( "#{dump_directory}/sinks" ) )).to eq(d)
@@ -35,7 +35,7 @@ describe SCNR::Engine::State::SinkTracer do
 
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::Hash.new( :long_to_ruby )
+            d = {}
             d[element.coverage_hash] = { traced: Set.new( [element.inputs.keys.first] ) }
 
             expect(described_class.load( dump_directory ).sinks).to eq(d)

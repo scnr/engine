@@ -416,7 +416,7 @@ class Page
         @cookie_jar.clear if @cookie_jar
 
         @dom.digest      = nil
-        @dom.skip_states = nil
+        @dom.skip_states.clear
 
         self
     end

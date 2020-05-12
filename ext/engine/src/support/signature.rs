@@ -341,9 +341,10 @@ unsafe_methods!(
 
 pub fn initialize() {
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Support" ).
+        define_nested_class( "Rust", None ).
+        define_nested_class( "Support", None ).
         define_nested_class(
-        "SignatureExt",
+        "Signature",
         Some( &Class::from_existing( "Data" ) )
     ).define( |_itself| {
 

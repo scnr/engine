@@ -38,8 +38,7 @@ class Base
         @freeze       = @options[:freeze].nil? ? true : @options[:freeze]
         self.max_size = @options[:size]
 
-        @cache = Support::Hash.new( :long_to_ruby )
-
+        @cache    = {}
         @hits     = 0
         @misses   = 0
         @prunings = 0

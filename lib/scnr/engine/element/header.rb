@@ -67,7 +67,7 @@ class Header < Base
 
             ENCODE_CACHE.fetch( str ) do
                 if SCNR::Engine.has_extension?
-                    encode_ext( str )
+                    SCNR::Engine::Rust::Element::Header.encode_ext( str )
                 else
                     encode_ruby( str )
                 end

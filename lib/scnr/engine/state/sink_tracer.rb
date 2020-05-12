@@ -11,12 +11,11 @@ class State
 
 class SinkTracer
 
-    # @return   [Support::Hash]
+    # @return   [Hash]
     attr_reader :sinks
 
     def initialize
-        @sinks = Support::Hash.new( :long_to_ruby )
-
+        @sinks = {}
         @mutex = Monitor.new
     end
 
@@ -44,7 +43,7 @@ class SinkTracer
 
     def for( element )
         synchronize do
-            sinks[element.sink_hash] ||= {}
+            @sinks[element.sink_hash] ||= {}
         end
     end
 

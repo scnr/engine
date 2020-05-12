@@ -12,7 +12,7 @@ class SCNR::Engine::Plugins::PageDump < SCNR::Engine::Plugin::Base
 
     def run
         cnt  = 0
-        seen = Support::LookUp::HashSet.new
+        seen = Support::Filter::HashSet.new
 
         framework.on_page_audit do |page|
             data = {

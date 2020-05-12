@@ -23,7 +23,7 @@ class ElementFilter
     def initialize
         TYPES.each do |type|
             instance_variable_set "@#{type}",
-                                  Support::LookUp::Hash.new( hasher: :persistent_hash )
+                                  Support::Filter::Set.new(hasher: :persistent_hash )
         end
     end
 

@@ -51,11 +51,11 @@ module Timeout
 
             @candidates    = []
             @candidate_ids = []
-            @logged        = Support::LookUp::Hash.new( hasher: :timeout_hash )
+            @logged        = Support::Filter::Set.new(hasher: :timeout_hash )
 
             TIMEOUT_PHASES.each.with_index do |t, i|
                 @candidates[i]    = []
-                @candidate_ids[i] = Support::LookUp::Hash.new( hasher: :timeout_hash )
+                @candidate_ids[i] = Support::Filter::Set.new(hasher: :timeout_hash )
             end
 
             deduplicate

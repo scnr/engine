@@ -10,8 +10,8 @@ describe SCNR::Engine::State::Trainer do
     let(:key) { 'some key here '}
 
     describe '#seen_responses_filter' do
-        it "returns an instance of #{SCNR::Engine::Support::LookUp::Hash}" do
-            expect(subject.seen_responses_filter).to be_kind_of SCNR::Engine::Support::LookUp::Hash
+        it "returns an instance of #{SCNR::Engine::Support::Filter::Set}" do
+            expect(subject.seen_responses_filter).to be_kind_of SCNR::Engine::Support::Filter::Set
         end
     end
 
@@ -51,7 +51,8 @@ describe SCNR::Engine::State::Trainer do
 
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash ).merge( [key] )
+            d = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash )
+            d << key
             expect(Marshal.load( IO.read( "#{dump_directory}/seen_responses_filter" ) )).to eq(d)
         end
     end
@@ -62,7 +63,7 @@ describe SCNR::Engine::State::Trainer do
 
             subject.dump( dump_directory )
 
-            set = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash )
+            set = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash )
             set << key
             expect(described_class.load( dump_directory ).seen_responses_filter).to eq(set)
         end

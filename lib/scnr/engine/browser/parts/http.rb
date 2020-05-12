@@ -288,7 +288,7 @@ module HTTP
 
     def whitelist_asset_domains( response )
         synchronize do
-            @whitelist_asset_domains ||= Support::LookUp::Hash.new
+            @whitelist_asset_domains ||= Support::Filter::Set.new
             return if @whitelist_asset_domains.include? response.body
             @whitelist_asset_domains << response.body
 
@@ -351,7 +351,7 @@ module HTTP
 
     def encode_semicolon( str )
         if SCNR::Engine.has_extension?
-            Browser::Parts::HTTP.encode_semicolon_ext( str )
+            Rust::Browser::Parts::HTTP.encode_semicolon_ext( str )
         else
             Browser::Parts::HTTP.encode_semicolon_ruby( str )
         end

@@ -41,8 +41,8 @@ unsafe_methods!(
 pub fn initialize() {
 
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Element" ).
-        get_nested_class( "Cookie" ).define( |itself| {
+        define_nested_class( "Rust", None ).define_nested_class( "Element", None ).
+        define_nested_class( "Cookie", None ).define( |itself| {
 
         itself.def_self( "encode_ext", cookie_encode );
 

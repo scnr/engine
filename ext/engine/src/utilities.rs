@@ -88,8 +88,9 @@ unsafe_methods!(
 pub extern fn initialize() {
 
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Utilities" ).define( |itself| {
+        define_nested_class( "Rust", None ).define_nested_class( "Utilities", None ).define( |itself| {
 
+        itself.def_self( "html_decode_ext", html_decode_ext );
         itself.def( "html_decode_ext", html_decode_ext );
 
     });

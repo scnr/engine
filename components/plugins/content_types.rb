@@ -13,7 +13,7 @@ class SCNR::Engine::Plugins::ContentTypes < SCNR::Engine::Plugin::Base
 
     def prepare
         @results = {}
-        @logged  = SCNR::Engine::Support::LookUp::Hash.new
+        @logged  = SCNR::Engine::Support::Filter::Set.new
     end
 
     def restore( data )

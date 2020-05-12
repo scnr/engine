@@ -10,11 +10,10 @@ module SCNR::Engine::Support
 end
 
 lib = SCNR::Engine::Options.paths.support
-require lib + 'hash'
 require lib + 'mixins'
 require lib + 'buffer'
 require lib + 'cache'
 require lib + 'crypto'
 require lib + 'database'
-require lib + 'lookup'
+require lib + 'filter'
 require lib + 'glob'

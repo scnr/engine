@@ -21,11 +21,11 @@ class Issues
     advertise :on_new_pre_deduplication
     advertise :on_new
 
-    # @return   [Support::Hash{Integer=>Issue}]
+    # @return   [Hash{Integer=>Issue}]
     #   Issues by their {Issue#digest}.
     attr_reader :collection
 
-    # @return   [Support::LookUp::Hash]
+    # @return   [Support::Filter::Set]
     #   {Issue#digest}s.
     attr_reader :digests
 
@@ -33,11 +33,11 @@ class Issues
         super
 
         # Stores all issues with Issue#digest as the key as a way to deduplicate.
-        @collection = Support::Hash.new( :long_to_ruby )
+        @collection = {}
 
         # We also use this Set for deduplication in case #do_not_store has been
         # called.
-        @digests = Support::LookUp::Hash.new( hasher: :digest )
+        @digests = Support::Filter::Set.new(hasher: :digest )
 
         store
     end

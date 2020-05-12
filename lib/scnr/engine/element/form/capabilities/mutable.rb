@@ -66,7 +66,7 @@ module Mutable
     def each_mutation( payload, opts = {} )
         opts = MUTATION_OPTIONS.merge( opts )
 
-        generated = SCNR::Engine::Support::LookUp::Hash.new( hasher: :mutable_hash )
+        generated = SCNR::Engine::Support::Filter::Set.new(hasher: :mutable_hash )
 
         # Completely remove fake inputs prior to mutation generation, they'll
         # be restored at the end of this method.

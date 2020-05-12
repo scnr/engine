@@ -28,8 +28,8 @@ class Soft404
     def initialize
         super
 
-        @corrupted = Support::LookUp::Hash.new
-        @hard      = Support::LookUp::Hash.new
+        @corrupted = Support::Filter::Set.new
+        @hard      = Support::Filter::Set.new
         @handlers  = Concurrent::Hash.new
 
         @handler_runner_queue = Queue.new

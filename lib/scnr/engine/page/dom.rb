@@ -20,7 +20,7 @@ class DOM
 
     require_relative 'dom/transition'
 
-    # @return   [Support::LookUp::Hash]
+    # @return   [Support::Filter::Set]
     attr_accessor :skip_states
 
     # @return   [Array<Transition>]
@@ -63,7 +63,7 @@ class DOM
         @data_flow_sinks      = options[:data_flow_sinks]       || []
         @execution_flow_sinks = options[:execution_flow_sinks]  || []
         @skip_states          = options[:skip_states]           ||
-            Support::LookUp::Hash.new( hasher: :persistent_hash )
+            Support::Filter::Set.new( hasher: :persistent_hash )
     end
 
     def url=( url )
@@ -235,7 +235,7 @@ class DOM
             'transitions'          => transitions.map(&:to_rpc_data),
             'cookies'              => cookies.map(&:to_rpc_data),
             'digest'               => digest,
-            'skip_states'          => skip_states ? skip_states.collection.to_a : [],
+            'skip_states'          => @skip_states.to_rpc_data,
             'data_flow_sinks'      => data_flow_sinks.map(&:to_rpc_data),
             'execution_flow_sinks' => execution_flow_sinks.map(&:to_rpc_data)
         }
@@ -278,11 +278,7 @@ class DOM
                             end.to_a
 
                         when 'skip_states'
-                            skip_states = Support::LookUp::Hash.new(
-                                hasher: :persistent_hash
-                            )
-                            skip_states.collection.merge( value || [] )
-                            skip_states
+                            Support::Filter::Set.from_rpc_data( value )
 
                         else
                             value

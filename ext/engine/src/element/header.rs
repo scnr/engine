@@ -30,8 +30,8 @@ unsafe_methods!(
 pub fn initialize() {
 
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Element" ).
-        get_nested_class( "Header" ).define( |itself| {
+        define_nested_class( "Rust", None ).define_nested_class( "Element", None ).
+        define_nested_class( "Header", None ).define( |itself| {
 
         itself.def_self( "encode_ext", header_encode );
 

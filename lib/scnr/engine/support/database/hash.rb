@@ -199,7 +199,7 @@ class Hash < Base
     #
     # @param    [Hash]  h
     #
-    # @return   [SCNR::Engine::Database::Hash]
+    # @return   [SCNR::Engine::Database::Set]
     def merge( h )
         self.class.new( @options ).merge!( self ).merge!( h )
     end

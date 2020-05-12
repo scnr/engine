@@ -6,7 +6,6 @@
     web site for more information on licensing and terms of use.
 =end
 
-lib = SCNR::Engine::Options.paths.support + 'lookup/'
+lib = SCNR::Engine::Options.paths.support + 'filter/'
 require lib + 'base'
-require lib + 'hash'
-require lib + 'moolb'
+require lib + 'set'

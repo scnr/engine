@@ -30,9 +30,9 @@ unsafe_methods!(
 pub fn initialize() {
 
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Browser" ).
-        get_nested_class( "Parts" ).
-        get_nested_class( "HTTP" ).define( |itself| {
+        define_nested_class( "Rust", None ).define_nested_class( "Browser", None ).
+        define_nested_class( "Parts", None ).
+        define_nested_class( "HTTP", None ).define( |itself| {
 
         itself.def_self( "encode_semicolon_ext", browser_parts_http_encode_semicolon );
 

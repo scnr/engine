@@ -9,8 +9,8 @@ describe SCNR::Engine::State::ElementFilter do
 
     %w(forms links cookies).each do |type|
         describe "##{type}" do
-            it "returns a #{SCNR::Engine::Support::LookUp::Hash}" do
-                expect(subject.send(type)).to be_kind_of SCNR::Engine::Support::LookUp::Hash
+            it "returns a #{SCNR::Engine::Support::Filter::Set}" do
+                expect(subject.send(type)).to be_kind_of SCNR::Engine::Support::Filter::Set
             end
         end
     end

@@ -19,7 +19,7 @@ module Snapshots
     # @!method on_new_page_with_sink( &block )
     advertise :on_new_page_with_sink
 
-    # @return   [Support::LookUp::Hash]
+    # @return   [Support::Filter::Set]
     #   States that have been visited and should be skipped.
     #
     # @see #skip_state
@@ -63,7 +63,7 @@ module Snapshots
 
         # Keeps track of resources which should be skipped -- like already fired
         # events and clicked links etc.
-        @skip_states = Support::LookUp::Hash.new( hasher: :persistent_hash )
+        @skip_states = Support::Filter::Set.new(hasher: :persistent_hash )
 
         @transitions = []
         @request_transitions = []
