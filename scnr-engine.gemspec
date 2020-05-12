@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
     # Rust extension helpers.
     s.add_dependency 'thermite',            '~> 0'
 
-    s.add_dependency 'google_hash',         '0.9.0'
+    # s.add_dependency 'google_hash',         '0.9.0'
 
     s.add_dependency 'awesome_print',       '1.6.1'
 
@@ -93,7 +93,7 @@ Gem::Specification.new do |s|
     s.add_dependency 'arachni-rpc',         '~> 0.2.1.4'
 
     # HTTP client.
-    s.add_dependency 'typhoeus',            '1.3.0'
+    s.add_dependency 'typhoeus',            '1.4.0'
 
     # Fallback URI parsing and encoding utilities.
     s.add_dependency 'addressable',         '2.5.2'

@@ -144,7 +144,7 @@ class Headers < Hash
     def self.format_field_name( field )
         FORMATTED_NAMES_CACHE.fetch field do
             if SCNR::Engine.has_extension?
-                format_field_name_ext( field )
+                Rust::HTTP::Headers.format_field_name_ext( field )
             else
                 format_field_name_ruby( field )
             end

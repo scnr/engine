@@ -8,7 +8,7 @@ describe SCNR::Engine::Page do
                 request: Factory[:request],
                 code:    200,
                 url:     'http://a-url.com/?myvar=my%20value',
-                body:    options[:body],
+                body:    options[:body] || "",
                 headers: options[:headers],
             ),
             dom: {
@@ -659,7 +659,7 @@ describe SCNR::Engine::Page do
         context 'when the page does not have a title' do
             it 'returns nil' do
                 expect(create_page.title).to be_nil
-                expect(create_page( body: '' ).title).to be_nil
+                expect(create_page( body: "" ).title).to be_nil
             end
         end
     end

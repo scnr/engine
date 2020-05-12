@@ -5,6 +5,8 @@ gem 'bootsnap', require: false
 gem 'rake', '11.3.0'
 gem 'pry'
 
+gem 'ethon', github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'
+
 group :docs do
     gem 'yard'
     gem 'redcarpet'

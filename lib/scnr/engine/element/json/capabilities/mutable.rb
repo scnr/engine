@@ -56,7 +56,7 @@ module Mutable
         print_debug_formatting( options )
 
         options   = prepare_mutation_options( options )
-        generated = SCNR::Engine::Support::LookUp::Hash.new
+        generated = SCNR::Engine::Support::Filter::Set.new
 
         if options[:parameter_values]
             options[:format].each do |format|

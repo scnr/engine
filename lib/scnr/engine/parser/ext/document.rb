@@ -21,7 +21,7 @@ class Document < Nodes::Base
     end
 
     def self.parse( html, filter = false )
-        new NodeExt.parse( html, filter )
+        new SCNR::Engine::Rust::Parser::Node.parse( html, filter )
     end
 
 end

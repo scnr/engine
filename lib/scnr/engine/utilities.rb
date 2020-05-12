@@ -111,7 +111,7 @@ module Utilities
 
     def html_decode( *args )
         if SCNR::Engine.has_extension?
-            html_decode_ext( *args )
+            Rust::Utilities.html_decode_ext( *args )
         else
             html_decode_ruby( *args )
         end

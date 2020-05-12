@@ -27,27 +27,27 @@ class <<self
 
     # @!method links
     #
-    #   @return    [Support::LookUp::Hash]
+    #   @return    [Support::Filter::Set]
 
     # @!method forms
     #
-    #   @return    [Support::LookUp::Hash]
+    #   @return    [Support::Filter::Set]
 
     # @!method cookies
     #
-    #   @return    [Support::LookUp::Hash]
+    #   @return    [Support::Filter::Set]
 
     # @!method link_templates
     #
-    #   @return    [Support::LookUp::Hash]
+    #   @return    [Support::Filter::Set]
 
     # @!method jsons
     #
-    #   @return    [Support::LookUp::Hash]
+    #   @return    [Support::Filter::Set]
 
     # @!method xmls
     #
-    #   @return    [Support::LookUp::Hash]
+    #   @return    [Support::Filter::Set]
 
     # @!method forms_include?( form )
     #

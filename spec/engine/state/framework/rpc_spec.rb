@@ -9,8 +9,8 @@ describe SCNR::Engine::State::Framework::RPC do
     let(:url) { page.url }
 
     describe '#distributed_pages' do
-        it "returns an instance of #{SCNR::Engine::Support::LookUp::Hash}" do
-            expect(subject.distributed_pages).to be_kind_of SCNR::Engine::Support::LookUp::Hash
+        it "returns an instance of #{SCNR::Engine::Support::Filter::Set}" do
+            expect(subject.distributed_pages).to be_kind_of SCNR::Engine::Support::Filter::Set
         end
     end
 
@@ -39,7 +39,7 @@ describe SCNR::Engine::State::Framework::RPC do
             subject.distributed_pages << url
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash )
+            d = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash )
             d << url
 
             expect(Marshal.load( IO.read( "#{dump_directory}/distributed_pages" ) )).to eq(d)
@@ -58,7 +58,7 @@ describe SCNR::Engine::State::Framework::RPC do
             subject.distributed_pages << url
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::LookUp::Hash.new( hasher: :persistent_hash )
+            d = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash )
             d << url
 
             expect(described_class.load( dump_directory ).distributed_pages).to eq(d)

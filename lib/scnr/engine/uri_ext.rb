@@ -22,7 +22,7 @@ module SCNR::Engine
 # * Conversion to {URICommon::ClassMethods.to_absolute absolute URLs}.
 #
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
-class URIExt
+class URIExt < Rust::URI
     include URICommon
 
     class <<self

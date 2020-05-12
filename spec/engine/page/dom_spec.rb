@@ -14,7 +14,7 @@ describe SCNR::Engine::Page::DOM do
 
               code:    200,
               url:     'http://a-url.com/?myvar=my%20value',
-              body:    options[:body],
+              body:    options[:body] || "",
               headers: options[:headers]
           )
     end
@@ -51,7 +51,7 @@ describe SCNR::Engine::Page::DOM do
         end
 
         it "includes 'skip_states'" do
-            expect(data['skip_states']).to eq(subject.skip_states.collection.to_a)
+            expect(data['skip_states'].last).to eq(subject.skip_states.collection.to_a)
         end
     end
 
@@ -162,7 +162,7 @@ describe SCNR::Engine::Page::DOM do
 
     describe '#skip_states=' do
         it 'sets #skip_states' do
-            skip_states = SCNR::Engine::Support::LookUp::Hash.new.tap { |h| h << 0 }
+            skip_states = SCNR::Engine::Support::Filter::Set.new.tap { |h| h << 0 }
 
             dom.skip_states = skip_states
             expect(dom.skip_states).to eq(skip_states)
@@ -225,7 +225,7 @@ describe SCNR::Engine::Page::DOM do
                         inputs: { 'name' => 'val' }
                     )
                 ],
-                skip_states: SCNR::Engine::Support::LookUp::Hash.new.tap { |h| h << 0 },
+                skip_states: SCNR::Engine::Support::Filter::Set.new.tap { |h| h << 0 },
                 transitions: [
                     { element:  :stuffed },
                     { element2: :stuffed2 }

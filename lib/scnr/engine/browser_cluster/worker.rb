@@ -217,7 +217,7 @@ class Worker < SCNR::Engine::Browser
         clear_observers
     end
 
-    # @return   [Support::LookUp::Hash]
+    # @return   [Support::Filter::Set]
     #   States that have been visited and should be skipped, for the given
     #   {#job}.
     #

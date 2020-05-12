@@ -163,8 +163,8 @@ impl Node {
 
     fn handle_to_ruby( handle: &node::Handle ) -> AnyObject {
         Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-            get_nested_class( "Parser" ).
-            get_nested_class( "NodeExt" ).
+            get_nested_class( "Rust" ).get_nested_class( "Parser" ).
+            get_nested_class( "Node" ).
             wrap_data( Node::new( Some( handle.clone() ) ), &*NODE_WRAPPER )
     }
 }
@@ -180,8 +180,8 @@ fn _parse( html: &RString, filter: &Boolean ) -> AnyObject {
     let node    = Thread::call_without_gvl( comp, Some( unblock ) );
 
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Parser" ).
-        get_nested_class( "NodeExt" ).
+        get_nested_class( "Rust" ).get_nested_class( "Parser" ).
+        get_nested_class( "Node" ).
         wrap_data( node, &*NODE_WRAPPER )
 }
 #[cfg(not(target_os = "linux"))]
@@ -191,8 +191,8 @@ fn _parse( html: &RString, filter: &Boolean ) -> AnyObject {
     );
 
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Parser" ).
-        get_nested_class( "NodeExt" ).
+        get_nested_class( "Rust" ).get_nested_class( "Parser" ).
+        get_nested_class( "Node" ).
         wrap_data( node, &*NODE_WRAPPER )
 }
 
@@ -273,8 +273,8 @@ unsafe_methods!(
 pub fn initialize() {
 
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Parser" ).
-        define_nested_class( "NodeExt", Some( &Class::from_existing( "Data" ) ) ).define( |_itself| {
+        define_nested_class( "Rust", None ).define_nested_class( "Parser", None ).
+        define_nested_class( "Node", Some( &Class::from_existing( "Data" ) ) ).define( |_itself| {
 
         _itself.def_self( "parse", parse );
 

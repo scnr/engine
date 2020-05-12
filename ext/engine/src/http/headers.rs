@@ -50,8 +50,8 @@ unsafe_methods!(
 /// * `Engine::Support::Signature.format_field_name_ext`
 pub fn initialize() {
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "HTTP" ).
-        get_nested_class( "Headers" ).define( |itself| {
+        define_nested_class( "Rust", None ).define_nested_class( "HTTP", None ).
+        define_nested_class( "Headers", None ).define( |itself| {
 
         itself.def_self( "format_field_name_ext", format_field_name_ext );
 

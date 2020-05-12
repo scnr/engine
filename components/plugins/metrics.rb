@@ -44,9 +44,9 @@ class SCNR::Engine::Plugins::Metrics < SCNR::Engine::Plugin::Base
                 'job_count'       => 0
             },
             'resource'  => {
-                'binary'             => SCNR::Engine::Support::LookUp::Hash.new,
-                'without_parameters' => SCNR::Engine::Support::LookUp::Hash.new,
-                'with_parameters'    => SCNR::Engine::Support::LookUp::Hash.new
+                'binary'             => SCNR::Engine::Support::Filter::Set.new,
+                'without_parameters' => SCNR::Engine::Support::Filter::Set.new,
+                'with_parameters'    => SCNR::Engine::Support::Filter::Set.new
             },
             'element'   => {
                 'links'                    => 0,
@@ -58,11 +58,11 @@ class SCNR::Engine::Plugins::Metrics < SCNR::Engine::Plugin::Base
                 'has_forms_with_nonces'    => false,
                 'has_forms_with_passwords' => false,
                 'input_names_total'        => 0,
-                'input_names_unique'       => SCNR::Engine::Support::LookUp::Hash.new
+                'input_names_unique'       => SCNR::Engine::Support::Filter::Set.new
             },
             'dom'       => {
-                'event_listeners' => SCNR::Engine::Support::LookUp::Hash.new,
-                'swf_objects'     => SCNR::Engine::Support::LookUp::Hash.new
+                'event_listeners' => SCNR::Engine::Support::Filter::Set.new,
+                'swf_objects'     => SCNR::Engine::Support::Filter::Set.new
             },
             'platforms' => SCNR::Engine::Platform::Manager::TYPES.keys.
                 inject({}) { |h, t| h[t.to_s] = Set.new; h }
@@ -237,7 +237,7 @@ class SCNR::Engine::Plugins::Metrics < SCNR::Engine::Plugin::Base
                 when Set
                     v = v.to_a
 
-                when SCNR::Engine::Support::LookUp::Hash
+                when SCNR::Engine::Support::Filter::Set
                     v = v.size
 
             end

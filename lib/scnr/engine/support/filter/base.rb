@@ -7,7 +7,7 @@
 =end
 
 module SCNR::Engine
-module Support::LookUp
+module Support::Filter
 
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 # @abstract
@@ -19,38 +19,21 @@ class Base
         hasher: :hash
     }
 
-    # @param    [Hash]  options
+    # @param    [Set]  options
     # @option   options [Symbol]    (:hasher)
     #   Method to call on the item to obtain its hash.
     def initialize( options = {} )
         @options = DEFAULT_OPTIONS.merge( options )
         @hasher  = @options[:hasher].to_sym
-
-        @mutex   = Mutex.new
     end
 
     # @param    [#persistent_hash] item
     #   Item to insert.
     #
-    # @return   [Hash]
+    # @return   [Base]
     #   `self`
     def <<( item )
-        synchronize do
-            @collection << calculate_hash( item )
-            self
-        end
-    end
-    alias :add :<<
-
-    # @param    [#persistent_hash] item
-    #   Item to delete.
-    #
-    # @return   [Hash]
-    #   `self`
-    def delete( item )
-        synchronize do
-            @collection.delete( calculate_hash( item ) )
-        end
+        @collection << calculate_hash( item )
         self
     end
 
@@ -59,9 +42,7 @@ class Base
     #
     # @return   [Bool]
     def include?( item )
-        synchronize do
-            @collection.include? calculate_hash( item )
-        end
+        @collection.include? calculate_hash( item )
     end
 
     def empty?
@@ -77,9 +58,28 @@ class Base
     end
 
     def clear
-        synchronize do
-            @collection.clear
+        @collection.clear
+    end
+
+    def merge( other )
+        case other
+            when self.class
+
+                @collection.merge other.collection
+
+            when Array
+
+                other.each do |k|
+                    fail 'Cannot merge with unhashed entries' if !k.is_a?( Numeric )
+                    @collection << k
+                end
+
+            else
+                fail ArgumentError,
+                     "Don't know how to merge with: #{other.class}"
         end
+
+        self
     end
 
     def ==( other )
@@ -91,16 +91,15 @@ class Base
     end
 
     def dup
-        self.class.new( @options.dup ).tap { |c| c.collection = @collection.dup }
+        self.class.new( @options.dup ).merge self
     end
 
     def _dump( _ )
-        Marshal.dump( [@options, @collection] )
+        Marshal.dump( to_rpc_data )
     end
 
     def self._load( data )
-        options, collection = Marshal.load( data )
-        new( options ).tap { |n| n.collection = collection }
+        from_rpc_data Marshal.load( data )
     end
 
     def collection=( c )
@@ -111,10 +110,6 @@ class Base
 
     def calculate_hash( item )
         item.send @hasher
-    end
-
-    def synchronize( &block )
-        @mutex.synchronize( &block )
     end
 
 end

@@ -34,8 +34,8 @@ describe SCNR::Engine::ElementFilter do
             expect(subject.forms).to include form.id
         end
 
-        it "returns a #{SCNR::Engine::Support::LookUp::Hash}" do
-            expect(subject.forms).to be_kind_of SCNR::Engine::Support::LookUp::Hash
+        it "returns a #{SCNR::Engine::Support::Filter::Set}" do
+            expect(subject.forms).to be_kind_of SCNR::Engine::Support::Filter::Set
         end
     end
 
@@ -47,8 +47,8 @@ describe SCNR::Engine::ElementFilter do
             expect(subject.links).to include link.id
         end
 
-        it "returns a #{SCNR::Engine::Support::LookUp::Hash}" do
-            expect(subject.links).to be_kind_of SCNR::Engine::Support::LookUp::Hash
+        it "returns a #{SCNR::Engine::Support::Filter::Set}" do
+            expect(subject.links).to be_kind_of SCNR::Engine::Support::Filter::Set
         end
     end
 
@@ -60,8 +60,8 @@ describe SCNR::Engine::ElementFilter do
             expect(subject.cookies).to include cookie.id
         end
 
-        it "returns a #{SCNR::Engine::Support::LookUp::Hash}" do
-            expect(subject.cookies).to be_kind_of SCNR::Engine::Support::LookUp::Hash
+        it "returns a #{SCNR::Engine::Support::Filter::Set}" do
+            expect(subject.cookies).to be_kind_of SCNR::Engine::Support::Filter::Set
         end
     end
 

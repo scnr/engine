@@ -24,7 +24,7 @@ class Audit
     extend ::Forwardable
 
     def initialize
-        @collection = Support::LookUp::Hash.new( hasher: :persistent_hash )
+        @collection = Support::Filter::Set.new(hasher: :persistent_hash )
     end
 
     def statistics

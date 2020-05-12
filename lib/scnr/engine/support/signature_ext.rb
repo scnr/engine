@@ -8,11 +8,12 @@
 
 require_relative 'signature_common'
 
-module SCNR::Engine::Support
+module SCNR::Engine
+module Support
 
 # Defined in Rust extension, we add some type conversion overrides here
 # because some things are easier to do in Ruby than Rust.
-class SignatureExt
+class SignatureExt < Rust::Support::Signature
     include SignatureCommon
 
     alias :old_refine! :refine!
@@ -28,8 +29,9 @@ class SignatureExt
     private
 
     def normalize( data )
-        data.is_a?( SignatureExt ) ? data : self.class.for( data )
+        data.is_a?( Rust::Support::Signature ) ? data : self.class.for( data )
     end
 
+end
 end
 end

@@ -67,7 +67,7 @@ class Job
 
         @args        = @options[:args] || []
         @skip_states = @options[:skip_states] ||
-            Support::LookUp::Hash.new( hasher: :persistent_hash )
+            Support::Filter::Set.new(hasher: :persistent_hash )
 
         options.each { |k, v| options[k] = send( "#{k}=", v ) }
     end

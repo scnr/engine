@@ -15,14 +15,14 @@ class Framework
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class RPC
 
-    # @return   [Support::LookUp::Hash]
+    # @return   [Support::Filter::Set]
     attr_reader :distributed_pages
 
     # @return   [Set]
     attr_reader :distributed_elements
 
     def initialize
-        @distributed_pages    = Support::LookUp::Hash.new( hasher: :persistent_hash )
+        @distributed_pages    = Support::Filter::Set.new(hasher: :persistent_hash )
         @distributed_elements = Set.new
     end
 

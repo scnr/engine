@@ -38,19 +38,19 @@ class Framework
     # @return     [RPC]
     attr_accessor :rpc
 
-    # @return     [Support::LookUp::Hash]
+    # @return     [Support::Filter::Set]
     attr_reader   :page_queue_filter
 
-    # @return     [Support::LookUp::Hash]
+    # @return     [Support::Filter::Set]
     attr_reader   :url_queue_filter
 
-    # @return     [Support::LookUp::Hash]
+    # @return     [Support::Filter::Set]
     attr_reader   :element_pre_check_filter
 
-    # @return     [Support::LookUp::Hash]
+    # @return     [Support::Filter::Set]
     attr_reader   :page_paths_filter
 
-    # @return     [Support::LookUp::Hash]
+    # @return     [Support::Filter::Set]
     attr_reader   :dom_analysis_filter
 
     # @return     [Set]
@@ -75,14 +75,14 @@ class Framework
         @rpc = RPC.new
         @audited_page_count = 0
 
-        @browser_skip_states = Support::LookUp::Hash.new( hasher: :persistent_hash )
+        @browser_skip_states = Support::Filter::Set.new(hasher: :persistent_hash )
 
-        @page_queue_filter = Support::LookUp::Hash.new( hasher: :persistent_hash )
-        @page_paths_filter = Support::LookUp::Hash.new( hasher: :paths_hash )
-        @dom_analysis_filter = Support::LookUp::Hash.new( hasher: :playable_transitions_hash )
-        @url_queue_filter  = Support::LookUp::Hash.new( hasher: :persistent_hash )
+        @page_queue_filter = Support::Filter::Set.new(hasher: :persistent_hash )
+        @page_paths_filter = Support::Filter::Set.new(hasher: :paths_hash )
+        @dom_analysis_filter = Support::Filter::Set.new(hasher: :playable_transitions_hash )
+        @url_queue_filter  = Support::Filter::Set.new(hasher: :persistent_hash )
 
-        @element_pre_check_filter = Support::LookUp::Hash.new( hasher: :coverage_and_trace_hash )
+        @element_pre_check_filter = Support::Filter::Set.new(hasher: :coverage_and_trace_hash )
 
         @running = false
         @pre_pause_status = nil
@@ -224,7 +224,7 @@ class Framework
         @url_queue_filter << url
     end
 
-    # @param    [Support::LookUp::Hash]  states
+    # @param    [Support::Filter::Set]  states
     def update_browser_skip_states( states )
         @browser_skip_states.merge states
     end

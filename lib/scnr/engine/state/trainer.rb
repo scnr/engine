@@ -11,11 +11,11 @@ class State
 
 class Trainer
 
-    # @return   [Support::LookUp::Hash]
+    # @return   [Support::Filter::Set]
     attr_reader :seen_responses_filter
 
     def initialize
-        @seen_responses_filter = Support::LookUp::Hash.new( hasher: :persistent_hash )
+        @seen_responses_filter = Support::Filter::Set.new(hasher: :persistent_hash )
     end
 
     # @param    [String]  key

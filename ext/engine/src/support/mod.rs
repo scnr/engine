@@ -1,7 +1,9 @@
 //! Corresponds to `Engine::Support`.
 
-pub mod signature_ext;
+pub mod set;
+pub mod signature;
 
 pub fn initialize() {
-    signature_ext::initialize();
+    set::initialize();
+    signature::initialize();
 }

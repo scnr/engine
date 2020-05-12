@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-shared_examples_for 'lookup' do
+shared_examples_for 'filter' do
     subject { described_class.new }
 
     it { is_expected.to respond_to :collection }
@@ -8,9 +8,6 @@ shared_examples_for 'lookup' do
     describe '#<<' do
         it 'adds an object and return self' do
             expect(subject << 'test').to eq(subject)
-        end
-        it 'aliased to #add' do
-            expect(subject.add( 'test2' )).to eq(subject)
         end
     end
 
@@ -28,16 +25,6 @@ shared_examples_for 'lookup' do
             it 'returns false' do
                 expect(subject.include?( 'test3' )).to be_falsey
             end
-        end
-    end
-
-    describe '#delete?' do
-        it 'deletes an object and return self' do
-            subject << 'test'
-
-            expect(subject.include?( 'test' )).to be_truthy
-            expect(subject.delete( 'test' )).to be_truthy
-            expect(subject.include?( 'test' )).to be_falsey
         end
     end
 
