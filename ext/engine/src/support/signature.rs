@@ -7,9 +7,11 @@ use std::hash::{Hash, Hasher};
 // We'll be hashing lots of words and integers and FnvHasher is best for short data.
 use fnv::FnvHasher;
 
+use std::rc::Rc;
+use std::cell::RefCell;
 use std::collections::BTreeSet;
 use std::panic;
-use ruru::{Array, Class, Fixnum, Object, RString, AnyObject, Boolean, Float, Thread};
+use rutie::{Array, Class, Fixnum, Object, RString, AnyObject, Boolean, Float, Thread};
 
 lazy_static! {
     static ref TOKENIZE_REGEXP:Regex = Regex::new( r"\W" ).unwrap();
@@ -53,59 +55,62 @@ fn tokenize( data: &str ) -> BTreeSet<i16> {
     result.unwrap()
 }
 
-#[derive(Hash)]
 #[derive(PartialEq)]
 pub struct Signature {
-    tokens: BTreeSet<i16>
+    tokens: Rc<RefCell<BTreeSet<i16>>>
 }
 
 impl Signature {
 
     fn new( data: &str ) -> Self {
         Signature {
-            tokens: tokenize( data )
+            tokens: Rc::new( RefCell::new( tokenize( data ) ) )
         }
     }
 
     fn refine( &self, other: &Signature ) -> Signature {
         let mut intersection = BTreeSet::new();
 
-        for token in self.tokens.intersection( &other.tokens ).cloned() {
+        for token in self.tokens.borrow().intersection( &other.tokens.borrow() ).cloned() {
             intersection.insert( token );
         }
 
-        Signature { tokens: intersection }
+        Signature { tokens: Rc::new( RefCell::new( intersection ) ) }
     }
 
-    fn refine_bang( &mut self, other: &Signature ) -> &mut Signature {
-        let tokens           = self.tokens.clone();
-        let mut intersection = BTreeSet::new();
+    fn refine_bang( &self, other: &Signature ) -> &Signature {
+        let mut tokens_cp  = self.tokens.borrow_mut();
+        let tokens         = tokens_cp.clone();
 
-        for token in tokens.intersection( &other.tokens ).cloned() {
-            intersection.insert( token );
+        tokens_cp.clear();
+        for token in tokens.intersection( &other.tokens.borrow() ).cloned() {
+            tokens_cp.insert( token );
         }
-
-        self.tokens = intersection;
 
         self
     }
 
-    fn push( &mut self, data: &str ) -> &mut Signature {
+    fn push( &self, data: &str ) -> &Signature {
+        let mut t = self.tokens.borrow_mut();
+
         for entry in TOKENIZE_REGEXP.split( data ) {
             if entry.is_empty() { continue }
 
             // We want small hashes for the tokenization to keep RAM usage low
             // so cast down, collisions don't matter since they'll be identical
             // across similar data.
-            self.tokens.insert( hash_obj( &entry.as_bytes() ) as i16 );
+            t.insert( hash_obj( &entry.as_bytes() ) as i16 );
         }
 
         self
     }
 
     fn differences( &self, other: &Signature ) -> f64 {
-        let diff_size  = self.tokens.symmetric_difference( &other.tokens ).count();
-        let union_size = self.tokens.union( &other.tokens ).count();
+        let t = self.tokens.borrow();
+        let o = other.tokens.borrow();
+
+        let diff_size  = t.symmetric_difference( &o ).count();
+        let union_size = t.union( &o ).count();
 
         (diff_size as f64) / (union_size as f64)
     }
@@ -116,24 +121,24 @@ impl Signature {
 
     fn dup( &self ) -> Signature {
         Signature {
-            tokens: self.tokens.clone()
+            tokens: Rc::new( RefCell::new( self.tokens.borrow().clone() ) )
         }
     }
 
     fn is_empty( &self ) -> bool {
-        self.tokens.is_empty()
+        self.tokens.borrow().is_empty()
     }
 
-    fn clear( &mut self ) {
-        self.tokens.clear();
+    fn clear( &self ) {
+        self.tokens.borrow_mut().clear();
     }
 
-    fn size( &mut self ) -> i64 {
-        self.tokens.len() as i64
+    fn size( &self ) -> i64 {
+        self.tokens.borrow().len() as i64
     }
 
     fn ahash( &self ) -> u64 {
-        hash_obj( &self.tokens )
+        hash_obj( &*self.tokens.borrow() )
     }
 
     fn inspect( &self ) -> String {
@@ -142,17 +147,6 @@ impl Signature {
 
 }
 
-#[cfg(target_os = "linux")]
-fn _signature_new_ext( data: &RString ) -> AnyObject {
-    let str       = data.to_str_unchecked();
-    let comp      = move || { Signature::new( str ) };
-    let unblock   = || {};
-    let signature = Thread::call_without_gvl( comp, Some( unblock ) );
-
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).get_nested_class( "Support" ).
-        get_nested_class( "SignatureExt" ).wrap_data( signature, &*SIGNATURE_WRAPPER )
-}
-#[cfg(not(target_os = "linux"))]
 fn _signature_new_ext( data: &RString ) -> AnyObject {
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).get_nested_class( "Support" ).
         get_nested_class( "SignatureExt" ).wrap_data(
@@ -160,20 +154,6 @@ fn _signature_new_ext( data: &RString ) -> AnyObject {
     )
 }
 
-#[cfg(target_os = "linux")]
-fn _signature_is_similar_ext( _itself: &SignatureExt, other: &AnyObject, threshold: &Float ) -> Boolean {
-    let self_sig  = _itself.get_data( &*SIGNATURE_WRAPPER );
-    let other_sig = other.get_data( &*SIGNATURE_WRAPPER );
-
-    let comp       = move || {
-        self_sig.is_similar( other_sig, threshold.to_f64() )
-    };
-    let unblock    = || {};
-    let is_similar = Thread::call_without_gvl( comp, Some( unblock ) );
-
-    Boolean::new( is_similar )
-}
-#[cfg(not(target_os = "linux"))]
 fn _signature_is_similar_ext( _itself: &SignatureExt, other: &AnyObject, threshold: &Float ) -> Boolean {
     let self_sig  = _itself.get_data( &*SIGNATURE_WRAPPER );
     let other_sig = other.get_data( &*SIGNATURE_WRAPPER );
@@ -181,18 +161,6 @@ fn _signature_is_similar_ext( _itself: &SignatureExt, other: &AnyObject, thresho
     Boolean::new( self_sig.is_similar( other_sig, threshold.to_f64() ) )
 }
 
-#[cfg(target_os = "linux")]
-fn _signature_differences_ext( _itself: &SignatureExt, other: &AnyObject ) -> Float {
-    let self_sig  = _itself.get_data( &*SIGNATURE_WRAPPER );
-    let other_sig = other.get_data( &*SIGNATURE_WRAPPER );
-
-    let comp       = move || { self_sig.differences( other_sig ) };
-    let unblock    = || {};
-    let difference = Thread::call_without_gvl( comp, Some( unblock ) );
-
-    Float::new( difference )
-}
-#[cfg(not(target_os = "linux"))]
 fn _signature_differences_ext( _itself: &SignatureExt, other: &AnyObject ) -> Float {
     let self_sig  = _itself.get_data( &*SIGNATURE_WRAPPER );
     let other_sig = other.get_data( &*SIGNATURE_WRAPPER );
@@ -200,35 +168,11 @@ fn _signature_differences_ext( _itself: &SignatureExt, other: &AnyObject ) -> Fl
     Float::new( self_sig.differences( other_sig ) )
 }
 
-#[cfg(target_os = "linux")]
-fn _signature_push_ext( _itself: &SignatureExt, data: &RString ) -> AnyObject {
-    let comp    = || {
-        _itself.get_data( &*SIGNATURE_WRAPPER ).push( data.to_str_unchecked() )
-    };
-    let unblock = || {};
-    let _       = Thread::call_without_gvl( comp, Some( unblock ) );
-
-    _itself.to_any_object()
-}
-#[cfg(not(target_os = "linux"))]
 fn _signature_push_ext( _itself: &SignatureExt, data: &RString ) -> AnyObject {
     _itself.get_data( &*SIGNATURE_WRAPPER ).push( data.to_str_unchecked() );
     _itself.to_any_object()
 }
 
-#[cfg(target_os = "linux")]
-fn _signature_refine_bang_ext( _itself: &SignatureExt, other: &AnyObject ) -> AnyObject {
-    let comp    = || {
-        _itself.get_data( &*SIGNATURE_WRAPPER ).refine_bang(
-            other.get_data( &*SIGNATURE_WRAPPER )
-        )
-    };
-    let unblock = || {};
-    let _       = Thread::call_without_gvl( comp, Some( unblock ) );
-
-    _itself.to_any_object()
-}
-#[cfg(not(target_os = "linux"))]
 fn _signature_refine_bang_ext( _itself: &SignatureExt, other: &AnyObject ) -> AnyObject {
     _itself.get_data( &*SIGNATURE_WRAPPER ).refine_bang(
             other.get_data( &*SIGNATURE_WRAPPER )
@@ -236,19 +180,6 @@ fn _signature_refine_bang_ext( _itself: &SignatureExt, other: &AnyObject ) -> An
     _itself.to_any_object()
 }
 
-#[cfg(target_os = "linux")]
-fn _signature_refine_ext( _itself: &SignatureExt, other: &AnyObject ) -> AnyObject {
-    let self_sig  = _itself.get_data( &*SIGNATURE_WRAPPER );
-    let other_sig = other.get_data( &*SIGNATURE_WRAPPER );
-
-    let comp      = move || { self_sig.refine( other_sig ) };
-    let unblock   = || {};
-    let signature = Thread::call_without_gvl( comp, Some( unblock ) );
-
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).get_nested_class( "Support" ).
-        get_nested_class( "SignatureExt" ).wrap_data( signature, &*SIGNATURE_WRAPPER )
-}
-#[cfg(not(target_os = "linux"))]
 fn _signature_refine_ext( _itself: &SignatureExt, other: &AnyObject ) -> AnyObject {
     let self_sig  = _itself.get_data( &*SIGNATURE_WRAPPER );
     let other_sig = other.get_data( &*SIGNATURE_WRAPPER );
@@ -282,7 +213,7 @@ unsafe_methods!(
     fn signature_tokens_ext() -> Array {
         let mut array = Array::new();
 
-        for token in _itself.get_data( &*SIGNATURE_WRAPPER ).tokens.clone() {
+        for token in _itself.get_data( &*SIGNATURE_WRAPPER ).tokens.borrow_mut().clone() {
             array.push( Fixnum::new( i64::from( token ) ) );
         }
 

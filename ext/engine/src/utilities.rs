@@ -1,6 +1,6 @@
 //! Corresponds to `Engine::Utilities`.
 
-use ruru::{Class, Object, RString};
+use rutie::{Class, Object, RString};
 use std::char;
 
 const B10:        char = '#';
