@@ -1,4 +1,4 @@
-use rutie::{Class, Object, RString, NilClass, AnyObject, Boolean, Proc, Symbol, Hash, Thread};
+use rutie::{Class, Object, RString, NilClass, AnyObject, Boolean, Proc, Symbol, Hash};
 use parser::sax::*;
 
 lazy_static! {
@@ -37,8 +37,8 @@ impl Node {
             if let node::Enum::Element { ref attributes, .. } = handle.borrow().node {
                 for attribute in attributes {
                     hash.store(
-                        RString::new( &attribute.name.local.to_string() ),
-                        RString::new( &attribute.value.to_string() )
+                        RString::new_utf8( &attribute.name.local.to_string() ),
+                        RString::new_utf8( &attribute.value.to_string() )
                     );
                 }
             }
@@ -157,10 +157,6 @@ impl Node {
         panic!( "Use after free." );
     }
 
-    fn clear( &mut self ) {
-        self.native = None;
-    }
-
     fn handle_to_ruby( handle: &node::Handle ) -> AnyObject {
         Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
             get_nested_class( "Rust" ).get_nested_class( "Parser" ).
@@ -221,7 +217,7 @@ unsafe_methods!(
     }
 
     fn text() -> RString {
-        RString::new( &_itself.get_data( &*NODE_WRAPPER ).text() )
+        RString::new_utf8( &_itself.get_data( &*NODE_WRAPPER ).text() )
     }
 
     fn name() -> Symbol {
@@ -244,7 +240,7 @@ unsafe_methods!(
         let parser   = &_itself.get_data( &*NODE_WRAPPER );
         let document = &parser.native.clone().unwrap();
 
-        RString::new( &document.to_html( 4, 0 ) )
+        RString::new_utf8( &document.to_html( 4, 0 ) )
     }
 );
 

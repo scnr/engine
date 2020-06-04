@@ -35,7 +35,6 @@ impl Handle {
 
         let borrowed = &self.borrow();
 
-        #[allow(match_ref_pats)]
         match &borrowed.node {
             &Enum::Document =>{
                 html.push_str( TO_HTML_DOCTYPE );
@@ -133,7 +132,6 @@ impl Handle {
     pub fn text( &self ) -> String {
         let borrowed = &self.borrow();
 
-        #[allow(match_ref_pats)]
         match &borrowed.node {
             &Enum::Text( ref text ) | &Enum::Comment( ref text ) => text.clone(),
             &Enum::Element {..} => {

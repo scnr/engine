@@ -11,7 +11,6 @@ use rutie::{Class, Hash as RHash, Fixnum, Object, RString, AnyObject, Symbol, Bo
 use std::rc::Rc;
 use std::cell::RefCell;
 
-#[allow(useless_attribute)]
 use std::hash::{Hash, Hasher};
 // We'll be hashing lots of words and integers and FnvHasher is best for short data.
 use fnv::FnvHasher;
@@ -640,7 +639,7 @@ impl URI {
 
 fn string_option_to_any( option: &Option<String> ) -> AnyObject {
     if let Some(ref string) = *option {
-        RString::new( string ).to_any_object()
+        RString::new_utf8( string ).to_any_object()
     } else {
         NilClass::new().to_any_object()
     }
@@ -710,15 +709,15 @@ unsafe_methods!(
         let mut result = RHash::new();
 
         if let Some(scheme) = &data.scheme {
-            result.store( Symbol::new( "scheme" ), RString::new( &scheme ) );
+            result.store( Symbol::new( "scheme" ), RString::new_utf8( &scheme ) );
         }
 
         if let Some(userinfo) = &data.userinfo {
-            result.store( Symbol::new( "userinfo" ), RString::new( userinfo ) );
+            result.store( Symbol::new( "userinfo" ), RString::new_utf8( userinfo ) );
         }
 
         if let Some(host) = &data.host {
-            result.store( Symbol::new( "host" ), RString::new( host ) );
+            result.store( Symbol::new( "host" ), RString::new_utf8( host ) );
         }
 
         if let Some(port) = data.port {
@@ -726,11 +725,11 @@ unsafe_methods!(
         }
 
         if let Some(path) = &data.path {
-            result.store( Symbol::new( "path" ), RString::new( path ) );
+            result.store( Symbol::new( "path" ), RString::new_utf8( path ) );
         }
 
         if let Some(query) = &data.query {
-            result.store( Symbol::new( "query" ), RString::new( query ) );
+            result.store( Symbol::new( "query" ), RString::new_utf8( query ) );
         }
 
         result
@@ -743,7 +742,7 @@ unsafe_methods!(
     fn uri_query_parameters_ext() -> RHash {
         let mut params = RHash::new();
         for param in &_itself.get_data( &*URI_WRAPPER ).query_parameters() {
-            params.store( RString::new( &param[0] ), RString::new( &param[1] ) );
+            params.store( RString::new_utf8( &param[0] ), RString::new_utf8( &param[1] ) );
         }
         params
     }
@@ -820,15 +819,15 @@ unsafe_methods!(
     }
 
     fn uri_up_to_path_ext() -> RString {
-        RString::new( &_itself.get_data( &*URI_WRAPPER ).up_to_path() )
+        RString::new_utf8( &_itself.get_data( &*URI_WRAPPER ).up_to_path() )
     }
 
     fn uri_up_to_port_ext() -> RString {
-        RString::new( &_itself.get_data( &*URI_WRAPPER ).up_to_port() )
+        RString::new_utf8( &_itself.get_data( &*URI_WRAPPER ).up_to_port() )
     }
 
     fn uri_without_query_ext() -> RString {
-        RString::new( &_itself.get_data( &*URI_WRAPPER ).without_query() )
+        RString::new_utf8( &_itself.get_data( &*URI_WRAPPER ).without_query() )
     }
 
     fn uri_resource_name_ext() -> AnyObject {
@@ -840,7 +839,7 @@ unsafe_methods!(
     }
 
     fn uri_to_s_ext() -> RString {
-        RString::new( &_itself.get_data( &*URI_WRAPPER ).to_s() )
+        RString::new_utf8( &_itself.get_data( &*URI_WRAPPER ).to_s() )
     }
 
     fn uri_is_absolute_ext() -> Boolean {
@@ -867,7 +866,7 @@ unsafe_methods!(
     }
 
     fn uri_decode_ext( input: RString ) -> RString {
-        RString::new( &URI::decode( input.to_str_unchecked() ) )
+        RString::new_utf8( &URI::decode( input.to_str_unchecked() ) )
     }
 
     fn uri_hash_ext() -> Fixnum {
@@ -875,7 +874,7 @@ unsafe_methods!(
     }
 
     fn uri_inspect_ext() -> RString {
-        RString::new( &_itself.get_data( &*URI_WRAPPER ).inspect() )
+        RString::new_utf8( &_itself.get_data( &*URI_WRAPPER ).inspect() )
     }
 );
 

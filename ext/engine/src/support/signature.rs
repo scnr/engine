@@ -2,7 +2,6 @@
 
 use regex::Regex;
 
-#[allow(useless_attribute)]
 use std::hash::{Hash, Hasher};
 // We'll be hashing lots of words and integers and FnvHasher is best for short data.
 use fnv::FnvHasher;
@@ -11,7 +10,7 @@ use std::rc::Rc;
 use std::cell::RefCell;
 use std::collections::BTreeSet;
 use std::panic;
-use rutie::{Array, Class, Fixnum, Object, RString, AnyObject, Boolean, Float, Thread};
+use rutie::{Array, Class, Fixnum, Object, RString, AnyObject, Boolean, Float};
 
 lazy_static! {
     static ref TOKENIZE_REGEXP:Regex = Regex::new( r"\W" ).unwrap();
@@ -266,7 +265,7 @@ unsafe_methods!(
     }
 
     fn signature_inspect_ext() -> RString {
-        RString::new( &_itself.get_data( &*SIGNATURE_WRAPPER ).inspect() )
+        RString::new_utf8( &_itself.get_data( &*SIGNATURE_WRAPPER ).inspect() )
     }
 );
 
