@@ -77,7 +77,7 @@ unsafe_methods!(
     _itself,
 
     fn html_decode_ext( input: RString ) -> RString {
-        RString::new( &html_decode( input.to_str_unchecked() ) )
+        RString::new_utf8( &html_decode( input.to_str_unchecked() ) )
     }
 
 );

@@ -41,7 +41,7 @@ unsafe_methods!(
     _itself,
 
     fn format_field_name_ext( data: RString ) -> RString {
-        RString::new( &format_field_name( data.to_str_unchecked() ) )
+        RString::new_utf8( &format_field_name( data.to_str_unchecked() ) )
     }
 );
 
