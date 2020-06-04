@@ -6,7 +6,7 @@
 #![feature(pattern)]
 
 #[macro_use]
-extern crate ruru;
+extern crate rutie;
 
 #[macro_use]
 extern crate url;

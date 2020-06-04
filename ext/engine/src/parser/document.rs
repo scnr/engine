@@ -1,4 +1,4 @@
-use ruru::{Class, Object, RString, NilClass, AnyObject, Boolean, Proc, Symbol, Hash, Thread};
+use rutie::{Class, Object, RString, NilClass, AnyObject, Boolean, Proc, Symbol, Hash, Thread};
 use parser::sax::*;
 
 lazy_static! {
@@ -100,7 +100,7 @@ impl Node {
     pub fn nodes_by_name( &self, tag_name: &str, cb: &Proc ) {
         if let Some( ref handle ) = self.native {
             handle.nodes_by_name( tag_name, |h| {
-                cb.call( vec![Node::handle_to_ruby( h ) ] );
+                cb.call( &vec![Node::handle_to_ruby( h ) ] );
             });
             return
         }
@@ -111,7 +111,7 @@ impl Node {
     pub fn nodes_by_attribute_name_and_value( &self, n: &str, v: &str, cb: &Proc ) {
         if let Some( ref handle ) = self.native {
             handle.nodes_by_attribute_name_and_value( n, v, |h| {
-                cb.call( vec![Node::handle_to_ruby( h ) ] );
+                cb.call( &vec![Node::handle_to_ruby( h ) ] );
             });
             return
         }
@@ -122,7 +122,7 @@ impl Node {
     pub fn traverse_comments( &self, cb: &Proc ) {
         if let Some( ref handle ) = self.native {
             handle.traverse_comments( |h| {
-                cb.call( vec![Node::handle_to_ruby( h ) ] );
+                cb.call( &vec![Node::handle_to_ruby( h ) ] );
             });
             return
         }
@@ -133,7 +133,7 @@ impl Node {
     pub fn traverse( &self, cb: &Proc ) {
         if let Some( ref handle ) = self.native {
             handle.traverse( |h| {
-                cb.call( vec![Node::handle_to_ruby( h ) ] );
+                cb.call( &vec![Node::handle_to_ruby( h ) ] );
             });
             return
         }
@@ -169,22 +169,6 @@ impl Node {
     }
 }
 
-#[cfg(target_os = "linux")]
-fn _parse( html: &RString, filter: &Boolean ) -> AnyObject {
-    let comp    = || {
-        Node::new(
-            Some( parser::parse( html.to_str_unchecked(), filter.to_bool() ) )
-        )
-    };
-    let unblock = || {};
-    let node    = Thread::call_without_gvl( comp, Some( unblock ) );
-
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Rust" ).get_nested_class( "Parser" ).
-        get_nested_class( "Node" ).
-        wrap_data( node, &*NODE_WRAPPER )
-}
-#[cfg(not(target_os = "linux"))]
 fn _parse( html: &RString, filter: &Boolean ) -> AnyObject {
     let node    = Node::new(
         Some( parser::parse( html.to_str_unchecked(), filter.to_bool() ) )
@@ -195,7 +179,6 @@ fn _parse( html: &RString, filter: &Boolean ) -> AnyObject {
         get_nested_class( "Node" ).
         wrap_data( node, &*NODE_WRAPPER )
 }
-
 
 wrappable_struct!( Node, NodeWrapper, NODE_WRAPPER );
 class!( NodeExt );
@@ -257,11 +240,6 @@ unsafe_methods!(
         _itself.get_data( &*NODE_WRAPPER ).parent()
     }
 
-    fn free_ext() -> NilClass {
-        _itself.get_data( &*NODE_WRAPPER ).clear();
-        NilClass::new()
-    }
-
     fn to_html() -> RString {
         let parser   = &_itself.get_data( &*NODE_WRAPPER );
         let document = &parser.native.clone().unwrap();
@@ -289,7 +267,6 @@ pub fn initialize() {
         _itself.def( "name", name );
         _itself.def( "root?", is_root );
         _itself.def( "to_html", to_html );
-        _itself.def( "free", free_ext );
 
     });
 

@@ -5,6 +5,7 @@
     redistribution and commercial restrictions. Please see the SCNR::Engine
     web site for more information on licensing and terms of use.
 =end
+require 'set'
 
 module SCNR::Engine
 module Support::Filter
@@ -17,13 +18,7 @@ class Set < Base
     # @param    (see Base#initialize)
     def initialize(*)
         super
-
-        # if SCNR::Engine.has_extension?
-        #     @collection = Rust::Support::Filter::Set.new
-        # else
-            require 'set'
-            @collection = ::Set.new
-        # end
+        @collection = ::Set.new
     end
 
     def to_rpc_data

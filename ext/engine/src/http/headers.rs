@@ -1,6 +1,6 @@
 //! Corresponds to `Engine::HTTP::Headers`.
 
-use ruru::{Class, Object, RString};
+use rutie::{Class, Object, RString};
 
 const SKIP_SUBSTRING: &str = "--";
 

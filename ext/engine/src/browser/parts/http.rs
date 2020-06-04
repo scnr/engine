@@ -1,7 +1,7 @@
 //! Corresponds to `Engine::Browser::Parts::HTTP`.
 
 use url::percent_encoding;
-use ruru::{Class, Object, RString};
+use rutie::{Class, Object, RString};
 
 define_encode_set! {
     pub SEMICOLON_ENCODE_SET = [percent_encoding::SIMPLE_ENCODE_SET] | { ';' }

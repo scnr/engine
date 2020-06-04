@@ -1,7 +1,7 @@
 //! Corresponds to `String`.
 
 use std::collections::HashMap;
-use ruru::{Class, Object, Boolean, RString};
+use rutie::{Class, Object, Boolean, RString};
 use regex;
 use regex::Regex;
 use std::sync::Mutex;
