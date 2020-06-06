@@ -97,6 +97,10 @@ module HTTP
     end
 
     def request_handler( request, response )
+        # Engine boot-up request, do not allow.
+        # Won't concern the scan anyways.
+        return if !engine
+
         request.performer = self
 
         print_debug_level_2 "Request: #{request.url}"
