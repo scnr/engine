@@ -63,9 +63,6 @@ Injects URLs and checks the browser URL to determine whether the attack was succ
                 Element::LinkTemplate::DOM,
                 Element::UIInput::DOM
             ],
-            sink:        {
-                areas: [:active]
-            },
             cost:        calculate_audit_cost( payloads.size, options ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
             version:     '0.1.4',
