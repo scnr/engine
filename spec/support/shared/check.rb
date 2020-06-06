@@ -24,6 +24,7 @@ shared_examples_for 'check' do
         options.audit.with_raw_payloads    = true
         options.audit.with_extra_parameter = true
         options.device.user_agent          = 'scnr_engine_user'
+        options.browser_cluster.update( options.browser_cluster.defaults )
 
         framework.checks.lib = options.paths.checks
         framework.checks.load name
