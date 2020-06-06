@@ -120,8 +120,10 @@ class Base
 
     def ensure_version_compatibility
         self.class.requirements.each do |dependency, version|
-            next if (version[:min] && version[:current] >= version[:min]) ||
+            if (version[:min] && version[:current] >= version[:min]) &&
                 (version[:max] && version[:current] <= version[:max])
+                next
+            end
 
             fail Error::IncompatibleVersion,
                  "#{dependency} version is #{version[:current]} but " <<
