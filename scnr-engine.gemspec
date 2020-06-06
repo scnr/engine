@@ -83,11 +83,12 @@ Gem::Specification.new do |s|
     # Web server
     s.add_dependency 'puma',                '3.10.0'
 
-    s.add_dependency 'rack',                '1.6.4'
+    s.add_dependency 'rack',                '2.0.8'
+    s.add_dependency 'rack-test'
 
     # REST API
-    s.add_dependency 'sinatra',             '1.4.6'
-    s.add_dependency 'sinatra-contrib',     '1.4.6'
+    s.add_dependency 'sinatra',             '2.0.8.1'
+    s.add_dependency 'sinatra-contrib',     '2.0.8.1'
 
     # RPC client/server implementation.
     s.add_dependency 'arachni-rpc',         '~> 0.2.1.4'
@@ -102,12 +103,12 @@ Gem::Specification.new do |s|
     s.add_dependency 'pony',                '1.11'
 
     # Markup parsing, for reports and Element::XML.
-    s.add_dependency 'nokogiri',            '1.8.1'
+    s.add_dependency 'nokogiri',            '1.8.5'
     # Really fast and lightweight markup parsing, for pages.
     s.add_dependency 'ox',                  '2.8.2'
 
     # Browser support for DOM/JS/AJAX analysis stuff.
-    s.add_dependency 'watir',               '6.10.3'
+    s.add_dependency 'watir',               '6.16.5'
 
     s.add_dependency 'vmstat',              '2.3.0'
     s.add_dependency 'sys-proctable',       '1.1.5'
@@ -117,7 +118,7 @@ Gem::Specification.new do |s|
     s.add_dependency 'kramdown',            '1.15.0'
 
     # Used to scrub Markdown for XSS etc.
-    s.add_dependency 'loofah',              '2.1.1'
+    s.add_dependency 'loofah',              '2.2.2'
 
     s.description = <<DESCRIPTION
 SCNR::Engine is a feature-full, modular, high-performance Ruby framework aimed towards
