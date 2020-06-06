@@ -10,20 +10,16 @@ module SCNR::Engine
 class Browser
 class Engines
 
-# Requires:
-#
-#   * Chrome >= 66 -- Got :accept_insecure_certs.
-#   * Chromedriver >= 2.35.
 class Chrome < Base
 
     REQUIREMENTS = {
         'chrome'       => {
-            min: 66,
-            maz: 66
+            min: 84,
+            max: 84
         },
         'chromedriver' => {
-            min: 2.35,
-            max: 2.35
+            min: 84,
+            max: 84
         }
     }
 
@@ -46,9 +42,15 @@ class Chrome < Base
         if SCNR::Engine.mac?
             browser_bin = self.find_executable( 'Google Chrome' )
         else
-            browser_bin = self.find_executable( 'google-chrome-unstable' ) ||
-                self.find_executable( 'chrome' )
+            browser_bin = begin
+                    self.find_executable( 'google-chrome' )
+                rescue
+                    self.find_executable( 'google-chrome-beta' )
+                rescue
+                    self.find_executable( 'chrome' )
+                end
         end
+
         driver_bin = self.find_executable( DRIVER )
 
         if @requirements
@@ -116,7 +118,7 @@ class Chrome < Base
         Selenium::WebDriver::Remote::Capabilities.chrome(
             default_capabilities.merge(
                 binary: self.class.requirements['chrome'][:binary],
-                chrome_options: {
+                "goog:chromeOptions" => {
                     args: args,
                     mobileEmulation: {
                         userAgent:     @options[:user_agent],
