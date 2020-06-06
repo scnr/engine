@@ -10,20 +10,16 @@ module SCNR::Engine
 class Browser
 class Engines
 
-# Requires:
-#
-#   * Firefox >= 63.
-#   * Geckodriver >= 0.23.
 class Firefox < Base
 
     REQUIREMENTS = {
         'firefox'     => {
-            min: 63,
-            max: 63
+            min: 76,
+            max: 76
         },
         'geckodriver' => {
-            min: 0.23,
-            max: 0.23
+            min: 0.26,
+            max: 0.26
         }
     }
 
