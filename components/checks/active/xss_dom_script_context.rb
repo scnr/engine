@@ -12,7 +12,7 @@ class SCNR::Engine::Checks::XssDomScriptContext < SCNR::Engine::Check::Base
     prefer :xss_script_context
 
     def self.seed
-        'window.top._%s_taint_tracer.log_execution_flow_sink()'
+        'window.top.%s_taint_tracer.log_execution_flow_sink()'
     end
 
     def self.payloads
