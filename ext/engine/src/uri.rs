@@ -8,9 +8,6 @@ use utilities;
 use url::{Url, percent_encoding};
 use rutie::{Class, Hash as RHash, Fixnum, Object, RString, AnyObject, Symbol, Boolean, NilClass, VM};
 
-use std::rc::Rc;
-use std::cell::RefCell;
-
 use std::hash::{Hash, Hasher};
 // We'll be hashing lots of words and integers and FnvHasher is best for short data.
 use fnv::FnvHasher;
@@ -80,20 +77,16 @@ fn split_to_vector<'a, P: Pattern<'a>>( string: &'a str, delimeter: P ) -> Vec<S
     vector
 }
 
+/// URL representation.
 #[derive(Hash)]
 #[derive(PartialEq)]
-pub struct URIData {
+pub struct URI {
     scheme:   Option<String>, // Valid schemes are `http` and `https`.
     userinfo: Option<String>,
     host:     Option<String>,
     port:     Option<u16>,
     path:     Option<String>,
     query:    Option<String>
-}
-
-/// URL representation.
-pub struct URI {
-    data: Rc<RefCell<URIData>>
 }
 
 impl URI {
@@ -103,30 +96,26 @@ impl URI {
     }
 
     fn is_invalid( &self ) -> bool {
-        let data = self.data.borrow();
-
-        if data.scheme.is_some() { return false }
-        if data.userinfo.is_some() { return false }
-        if data.port.is_some() && data.port.unwrap() > 0 { return false }
-        if data.host.is_some() { return false }
-        if data.path.is_some() { return false }
-        if data.query.is_some() { return false }
+        if self.scheme.is_some() { return false }
+        if self.userinfo.is_some() { return false }
+        if self.port.is_some() && self.port.unwrap() > 0 { return false }
+        if self.host.is_some() { return false }
+        if self.path.is_some() { return false }
+        if self.query.is_some() { return false }
 
         true
     }
 
     fn is_absolute( &self ) -> bool {
-        self.data.borrow().scheme.is_some()
+        self.scheme.is_some()
     }
 
     fn is_relative( &self ) -> bool {
         !self.is_absolute()
     }
 
-    fn query_parameters( &self ) -> Vec<Vec<String>> {
-        let data = self.data.borrow();
-
-        if let Some(ref query) = data.query {
+    fn query_parameters( &self ) -> Vec<Vec<String>>{
+        if let Some(ref query) = self.query {
             let mut params = vec![];
             for pair in query.split( AMP ) {
                 let mut pair_iter = pair.splitn( 2, EQUAL );
@@ -152,60 +141,56 @@ impl URI {
         }
     }
 
-    fn as_absolute( &self, reference: &URI ) -> &Self {
-        let mut data = self.data.borrow_mut();
-        let ref_data = reference.data.borrow();
-
+    fn as_absolute( &mut self, reference: &URI ) -> &Self {
         // Complicated, delegate the path merge to the url crate.
-        if let Some(ref path) = data.path.clone() {
+        if let Some(ref path) = self.path.clone() {
 
-            data.path = Some(
+            self.path = Some(
                 Url::parse( &reference.to_s() ).unwrap().join( path ).unwrap().path().to_string()
             );
 
         // That's an easy one, just use the reference path.
         } else {
-            data.path = ref_data.path.clone();
+            self.path = reference.path.clone();
         }
 
-        if data.scheme.is_none() {
-            data.scheme = ref_data.scheme.clone();
+        if self.scheme.is_none() {
+            self.scheme = reference.scheme.clone();
         }
 
-        if data.userinfo.is_none() {
-            data.userinfo = ref_data.userinfo.clone();
+        if self.userinfo.is_none() {
+            self.userinfo = reference.userinfo.clone();
         }
 
-        if data.host.is_none() {
-            data.host = ref_data.host.clone();
+        if self.host.is_none() {
+            self.host = reference.host.clone();
         }
 
-        if data.port.is_none() {
-            data.port = ref_data.port;
+        if self.port.is_none() {
+            self.port = reference.port;
         }
 
         self
     }
 
     fn without_query( &self ) -> String {
-        let data = self.data.borrow();
         let mut string = String::new();
 
-        if let Some(ref scheme) = data.scheme {
+        if let Some(ref scheme) = self.scheme {
             string.push_str( scheme );
             string.push_str( PROTO );
         }
 
-        if let Some(ref userinfo) = data.userinfo {
+        if let Some(ref userinfo) = self.userinfo {
             string.push_str( userinfo );
             string.push( AT );
         }
 
-        if let Some(ref host) = data.host {
+        if let Some(ref host) = self.host {
             string.push_str( host );
 
-            if let Some(port) = data.port {
-                if let Some(ref scheme) = data.scheme {
+            if let Some(port) = self.port {
+                if let Some(ref scheme) = self.scheme {
                     if (scheme == HTTP && port != HTTP_PORT ) || (scheme == HTTPS && port != HTTPS_PORT ) {
                         string.push( COLON );
                         string.push_str( &port.to_string() );
@@ -217,7 +202,7 @@ impl URI {
             }
         }
 
-        if let Some(ref path) = data.path {
+        if let Some(ref path) = self.path {
             string.push_str( path );
         }
 
@@ -225,25 +210,23 @@ impl URI {
     }
 
     fn up_to_port( &self ) -> String {
-        let data = self.data.borrow();
-
         let mut string = String::new();
 
-        if let Some(ref scheme) = data.scheme {
+        if let Some(ref scheme) = self.scheme {
             string.push_str( scheme );
             string.push_str( PROTO );
         }
 
-        if let Some(ref userinfo) = data.userinfo {
+        if let Some(ref userinfo) = self.userinfo {
             string.push_str( userinfo );
             string.push( AT );
         }
 
-        if let Some(ref host) = data.host {
+        if let Some(ref host) = self.host {
             string.push_str( host );
 
-            if let Some(port) = data.port {
-                if let Some(ref scheme) = data.scheme {
+            if let Some(port) = self.port {
+                if let Some(ref scheme) = self.scheme {
                     if (scheme == HTTP && port != HTTP_PORT ) || (scheme == HTTPS && port != HTTPS_PORT ) {
                         string.push( COLON );
                         string.push_str( &port.to_string() );
@@ -259,30 +242,28 @@ impl URI {
     }
 
     fn up_to_path( &self ) -> String {
-        let data = self.data.borrow();
+        if self.path.is_none() { return self.without_query() }
 
-        if data.path.is_none() { return self.without_query() }
-
-        if let Some(ref path) = data.path {
+        if let Some(ref path) = self.path {
             if path.ends_with( '/' ) { return self.without_query() }
 
             let mut string = String::new();
 
-            if let Some(ref scheme) = data.scheme {
+            if let Some(ref scheme) = self.scheme {
                 string.push_str( scheme );
                 string.push_str( PROTO );
             }
 
-            if let Some(ref userinfo) = data.userinfo {
+            if let Some(ref userinfo) = self.userinfo {
                 string.push_str( userinfo );
                 string.push( AT );
             }
 
-            if let Some(ref host) = data.host {
+            if let Some(ref host) = self.host {
                 string.push_str( host );
 
-                if let Some(port) = data.port {
-                    if let Some(ref scheme) = data.scheme {
+                if let Some(port) = self.port {
+                    if let Some(ref scheme) = self.scheme {
                         if (scheme == HTTP && port != HTTP_PORT ) || (scheme == HTTPS && port != HTTPS_PORT ) {
                             string.push( COLON );
                             string.push_str( &port.to_string() );
@@ -307,25 +288,23 @@ impl URI {
     }
 
     fn to_s( &self ) -> String {
-        let data = self.data.borrow();
-
         let mut string = String::new();
 
-        if let Some(ref scheme) = data.scheme {
+        if let Some(ref scheme) = self.scheme {
             string.push_str( scheme );
             string.push_str( PROTO );
         }
 
-        if let Some(ref userinfo) = data.userinfo {
+        if let Some(ref userinfo) = self.userinfo {
             string.push_str( userinfo );
             string.push( AT );
         }
 
-        if let Some(ref host) = data.host {
+        if let Some(ref host) = self.host {
             string.push_str( host );
 
-            if let Some(port) = data.port {
-                if let Some(ref scheme) = data.scheme {
+            if let Some(port) = self.port {
+                if let Some(ref scheme) = self.scheme {
                     if (scheme == HTTP && port != HTTP_PORT ) || (scheme == HTTPS && port != HTTPS_PORT) {
                         string.push( COLON );
                         string.push_str( &port.to_string() );
@@ -337,11 +316,11 @@ impl URI {
             }
         }
 
-        if let Some(ref path) = data.path {
+        if let Some(ref path) = self.path {
             string.push_str( path );
         }
 
-        if let Some(ref query) = data.query {
+        if let Some(ref query) = self.query {
             string.push( QUERY );
             string.push_str( query );
         }
@@ -350,15 +329,13 @@ impl URI {
     }
 
     fn domain( &self ) -> Option<String> {
-        let data = self.data.borrow();
-
-        if let Some(ref host) = data.host {
-            if self.is_ip_address() { return data.host.clone() }
+        if let Some(ref host) = self.host {
+            if self.is_ip_address() { return self.host.clone() }
 
             let mut splits = host.split( DOT ).collect::<Vec<&str>>();
 
             if splits.len() == 1 { return Some(splits[0].to_string()) }
-            if splits.len() == 2 { return data.host.clone() }
+            if splits.len() == 2 { return self.host.clone() }
 
             splits.remove( 0 );
             return Some(splits.join( DOT_S ))
@@ -368,7 +345,7 @@ impl URI {
     }
 
     fn is_ip_address( &self ) -> bool {
-        if let Some(ref host) = self.data.borrow().host {
+        if let Some(ref host) = self.host {
             return Ipv4Addr::from_str( host ).is_ok()
         }
 
@@ -376,7 +353,7 @@ impl URI {
     }
 
     fn resource_name( &self ) -> Option<String> {
-        if let Some(ref path) = self.data.borrow().path {
+        if let Some(ref path) = self.path {
             for resource in path.split( SLASH ).rev() {
                 if resource.is_empty() { continue }
                 return Some( resource.to_string() )
@@ -387,7 +364,7 @@ impl URI {
     }
 
     fn resource_extension( &self ) -> Option<String> {
-        if let Some(ref path) = self.data.borrow().path {
+        if let Some(ref path) = self.path {
             if !path.contains( DOT ) { return None }
 
             if let Some(ext) = path.split( DOT ).last() {
@@ -399,7 +376,7 @@ impl URI {
     }
 
     fn user( &self ) -> Option<String> {
-        if let Some(ref userinfo) = self.data.borrow().userinfo {
+        if let Some(ref userinfo) = self.userinfo {
             if let Some(user) = userinfo.split( COLON ).next() {
                 return Some(user.to_string())
             }
@@ -409,7 +386,7 @@ impl URI {
     }
 
     fn password( &self ) -> Option<String> {
-        if let Some(ref userinfo) = self.data.borrow().userinfo {
+        if let Some(ref userinfo) = self.userinfo {
             if let Some(pass) = userinfo.split( COLON ).last() {
                 return Some(pass.to_string())
             }
@@ -419,24 +396,18 @@ impl URI {
     }
 
     fn dup( &self ) -> URI {
-        let data = self.data.borrow();
-        
         URI {
-            data: Rc::new( RefCell::new(
-                URIData {
-                    scheme:     data.scheme.clone(),
-                    userinfo:   data.userinfo.clone(),
-                    host:       data.host.clone(),
-                    port:       data.port,
-                    path:       data.path.clone(),
-                    query:      data.query.clone()
-                }
-            ))
+            scheme:   self.scheme.clone(),
+            userinfo: self.userinfo.clone(),
+            host:     self.host.clone(),
+            port:     self.port,
+            path:     self.path.clone(),
+            query:    self.query.clone()
         }
     }
 
     fn ahash( &self ) -> u64 {
-        hash_obj( &self.to_s() )
+        hash_obj( &self )
     }
 
     fn inspect( &self ) -> String {
@@ -468,11 +439,7 @@ impl URI {
     }
 
     pub fn fast_parse( u: &str ) -> URI {
-        URI { data: Rc::new( RefCell::new( URI::fast_parse_data( u ) ) ) }
-    }
-
-    pub fn fast_parse_data( u: &str ) -> URIData {
-        let mut result = URIData {
+        let mut result = URI {
             scheme:   None,
             userinfo: None,
             host:     None,
@@ -635,6 +602,16 @@ impl URI {
 
         result
     }
+
+    fn free( &mut self ) {
+        self.scheme   = None;
+        self.host     = None;
+        self.port     = None;
+        self.userinfo = None;
+        self.path     = None;
+        self.query    = None;
+    }
+
 }
 
 fn string_option_to_any( option: &Option<String> ) -> AnyObject {
@@ -702,41 +679,45 @@ unsafe_methods!(
             get_nested_class( "URIExt" ).wrap_data( uri, &*URI_WRAPPER )
     }
 
+    fn uri_free_ext() -> NilClass {
+        _itself.get_data_mut( &*URI_WRAPPER ).free();
+        NilClass::new()
+    }
+
     fn fast_parse_ext( input: RString ) -> RHash {
-        let uri  = URI::fast_parse( input.to_str_unchecked() );
-        let data = uri.data.borrow();
+        let url = URI::fast_parse( input.to_str_unchecked() );
 
         let mut result = RHash::new();
 
-        if let Some(scheme) = &data.scheme {
+        if let Some(scheme) = url.scheme {
             result.store( Symbol::new( "scheme" ), RString::new_utf8( &scheme ) );
         }
 
-        if let Some(userinfo) = &data.userinfo {
-            result.store( Symbol::new( "userinfo" ), RString::new_utf8( userinfo ) );
+        if let Some(userinfo) = url.userinfo {
+            result.store( Symbol::new( "userinfo" ), RString::new_utf8( &userinfo ) );
         }
 
-        if let Some(host) = &data.host {
-            result.store( Symbol::new( "host" ), RString::new_utf8( host ) );
+        if let Some(host) = url.host {
+            result.store( Symbol::new( "host" ), RString::new_utf8( &host ) );
         }
 
-        if let Some(port) = data.port {
+        if let Some(port) = url.port {
             result.store( Symbol::new( "port" ), Fixnum::new( i64::from( port ) ) );
         }
 
-        if let Some(path) = &data.path {
-            result.store( Symbol::new( "path" ), RString::new_utf8( path ) );
+        if let Some(path) = url.path {
+            result.store( Symbol::new( "path" ), RString::new_utf8( &path ) );
         }
 
-        if let Some(query) = &data.query {
-            result.store( Symbol::new( "query" ), RString::new_utf8( query ) );
+        if let Some(query) = url.query {
+            result.store( Symbol::new( "query" ), RString::new_utf8( &query ) );
         }
 
         result
     }
 
     fn uri_query_ext() -> AnyObject {
-        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).data.borrow().query )
+        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).query )
     }
 
     fn uri_query_parameters_ext() -> RHash {
@@ -748,57 +729,57 @@ unsafe_methods!(
     }
 
     fn uri_to_absolute_bang_ext( reference: AnyObject ) -> AnyObject {
-        _itself.get_data( &*URI_WRAPPER ).as_absolute( reference.get_data( &*URI_WRAPPER ) );
+        _itself.get_data_mut( &*URI_WRAPPER ).as_absolute( reference.get_data( &*URI_WRAPPER ) );
         _itself.to_any_object()
     }
 
     fn uri_set_query_ext( data: RString ) -> RString {
-        _itself.get_data( &*URI_WRAPPER ).data.borrow_mut().query = rstring_to_option( &data );
+        _itself.get_data_mut( &*URI_WRAPPER ).query = rstring_to_option( &data );
         data
     }
 
     fn uri_userinfo_ext() -> AnyObject {
-        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).data.borrow().userinfo )
+        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).userinfo )
     }
 
     fn uri_set_userinfo_ext( data: RString ) -> RString {
-        _itself.get_data( &*URI_WRAPPER ).data.borrow_mut().userinfo = rstring_to_option( &data );
+        _itself.get_data_mut( &*URI_WRAPPER ).userinfo = rstring_to_option( &data );
         data
     }
 
     fn uri_port_ext() -> AnyObject {
-        u16_option_to_any( _itself.get_data( &*URI_WRAPPER ).data.borrow().port )
+        u16_option_to_any( _itself.get_data( &*URI_WRAPPER ).port )
     }
 
     fn uri_set_port_ext( data: AnyObject ) -> AnyObject {
-        _itself.get_data( &*URI_WRAPPER ).data.borrow_mut().port = fixnum_to_option( &data );
+        _itself.get_data_mut( &*URI_WRAPPER ).port = fixnum_to_option( &data );
         data.to_any_object()
     }
 
     fn uri_host_ext() -> AnyObject {
-        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).data.borrow().host )
+        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).host )
     }
 
     fn uri_set_host_ext( data: RString ) -> RString {
-        _itself.get_data( &*URI_WRAPPER ).data.borrow_mut().host = rstring_to_option( &data );
+        _itself.get_data_mut( &*URI_WRAPPER ).host = rstring_to_option( &data );
         data
     }
 
     fn uri_path_ext() -> AnyObject {
-        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).data.borrow().path )
+        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).path )
     }
 
     fn uri_set_path_ext( data: RString ) -> RString {
-        _itself.get_data( &*URI_WRAPPER ).data.borrow_mut().path = rstring_to_option( &data );
+        _itself.get_data_mut( &*URI_WRAPPER ).path = rstring_to_option( &data );
         data
     }
 
     fn uri_scheme_ext() -> AnyObject {
-        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).data.borrow().scheme )
+        string_option_to_any( &_itself.get_data( &*URI_WRAPPER ).scheme )
     }
 
     fn uri_set_scheme_ext( data: RString ) -> RString {
-        _itself.get_data( &*URI_WRAPPER ).data.borrow_mut().scheme = rstring_to_option( &data );
+        _itself.get_data_mut( &*URI_WRAPPER ).scheme = rstring_to_option( &data );
         data
     }
 
@@ -819,6 +800,7 @@ unsafe_methods!(
     }
 
     fn uri_up_to_path_ext() -> RString {
+//        println!( "{:?}", _itself.get_data( &*URI_WRAPPER ).up_to_path() );
         RString::new_utf8( &_itself.get_data( &*URI_WRAPPER ).up_to_path() )
     }
 
@@ -859,10 +841,7 @@ unsafe_methods!(
     }
 
     fn uri_is_equal_ext( other: AnyObject ) -> Boolean {
-        Boolean::new(
-            _itself.get_data( &*URI_WRAPPER ).to_s() ==
-                other.get_data( &*URI_WRAPPER ).to_s()
-        )
+        Boolean::new( _itself.get_data( &*URI_WRAPPER ) == other.get_data( &*URI_WRAPPER ) )
     }
 
     fn uri_decode_ext( input: RString ) -> RString {
@@ -891,6 +870,7 @@ pub fn initialize() {
         _itself.def_self( "fast_parse", fast_parse_ext );
         _itself.def_self( "_decode_ext", uri_decode_ext );
 
+        _itself.def( "free", uri_free_ext );
         _itself.def( "to_absolute!", uri_to_absolute_bang_ext );
         _itself.def( "query_parameters", uri_query_parameters_ext );
 
