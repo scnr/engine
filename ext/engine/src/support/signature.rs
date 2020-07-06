@@ -6,8 +6,6 @@ use std::hash::{Hash, Hasher};
 // We'll be hashing lots of words and integers and FnvHasher is best for short data.
 use fnv::FnvHasher;
 
-use std::rc::Rc;
-use std::cell::RefCell;
 use std::collections::BTreeSet;
 use std::panic;
 use rutie::{Array, Class, Fixnum, Object, RString, AnyObject, Boolean, Float};
@@ -54,62 +52,59 @@ fn tokenize( data: &str ) -> BTreeSet<i16> {
     result.unwrap()
 }
 
+#[derive(Hash)]
 #[derive(PartialEq)]
 pub struct Signature {
-    tokens: Rc<RefCell<BTreeSet<i16>>>
+    tokens: BTreeSet<i16>
 }
 
 impl Signature {
 
     fn new( data: &str ) -> Self {
         Signature {
-            tokens: Rc::new( RefCell::new( tokenize( data ) ) )
+            tokens: tokenize( data )
         }
     }
 
     fn refine( &self, other: &Signature ) -> Signature {
         let mut intersection = BTreeSet::new();
 
-        for token in self.tokens.borrow().intersection( &other.tokens.borrow() ).cloned() {
+        for token in self.tokens.intersection( &other.tokens ).cloned() {
             intersection.insert( token );
         }
 
-        Signature { tokens: Rc::new( RefCell::new( intersection ) ) }
+        Signature { tokens: intersection }
     }
 
-    fn refine_bang( &self, other: &Signature ) -> &Signature {
-        let mut tokens_cp  = self.tokens.borrow_mut();
-        let tokens         = tokens_cp.clone();
+    fn refine_bang( &mut self, other: &Signature ) -> &mut Signature {
+        let tokens           = self.tokens.clone();
+        let mut intersection = BTreeSet::new();
 
-        tokens_cp.clear();
-        for token in tokens.intersection( &other.tokens.borrow() ).cloned() {
-            tokens_cp.insert( token );
+        for token in tokens.intersection( &other.tokens ).cloned() {
+            intersection.insert( token );
         }
+
+        self.tokens = intersection;
 
         self
     }
 
-    fn push( &self, data: &str ) -> &Signature {
-        let mut t = self.tokens.borrow_mut();
-
+    fn push( &mut self, data: &str ) -> &mut Signature {
         for entry in TOKENIZE_REGEXP.split( data ) {
             if entry.is_empty() { continue }
 
             // We want small hashes for the tokenization to keep RAM usage low
             // so cast down, collisions don't matter since they'll be identical
             // across similar data.
-            t.insert( hash_obj( &entry.as_bytes() ) as i16 );
+            self.tokens.insert( hash_obj( &entry.as_bytes() ) as i16 );
         }
 
         self
     }
 
     fn differences( &self, other: &Signature ) -> f64 {
-        let t = self.tokens.borrow();
-        let o = other.tokens.borrow();
-
-        let diff_size  = t.symmetric_difference( &o ).count();
-        let union_size = t.union( &o ).count();
+        let diff_size  = self.tokens.symmetric_difference( &other.tokens ).count();
+        let union_size = self.tokens.union( &other.tokens ).count();
 
         (diff_size as f64) / (union_size as f64)
     }
@@ -120,24 +115,24 @@ impl Signature {
 
     fn dup( &self ) -> Signature {
         Signature {
-            tokens: Rc::new( RefCell::new( self.tokens.borrow().clone() ) )
+            tokens: self.tokens.clone()
         }
     }
 
     fn is_empty( &self ) -> bool {
-        self.tokens.borrow().is_empty()
+        self.tokens.is_empty()
     }
 
-    fn clear( &self ) {
-        self.tokens.borrow_mut().clear();
+    fn clear( &mut self ) {
+        self.tokens.clear();
     }
 
-    fn size( &self ) -> i64 {
-        self.tokens.borrow().len() as i64
+    fn size( &mut self ) -> i64 {
+        self.tokens.len() as i64
     }
 
     fn ahash( &self ) -> u64 {
-        hash_obj( &*self.tokens.borrow() )
+        hash_obj( &self.tokens )
     }
 
     fn inspect( &self ) -> String {
@@ -167,13 +162,13 @@ fn _signature_differences_ext( _itself: &SignatureExt, other: &AnyObject ) -> Fl
     Float::new( self_sig.differences( other_sig ) )
 }
 
-fn _signature_push_ext( _itself: &SignatureExt, data: &RString ) -> AnyObject {
-    _itself.get_data( &*SIGNATURE_WRAPPER ).push( data.to_str_unchecked() );
+fn _signature_push_ext( _itself: &mut SignatureExt, data: &RString ) -> AnyObject {
+    _itself.get_data_mut( &*SIGNATURE_WRAPPER ).push( data.to_str_unchecked() );
     _itself.to_any_object()
 }
 
-fn _signature_refine_bang_ext( _itself: &SignatureExt, other: &AnyObject ) -> AnyObject {
-    _itself.get_data( &*SIGNATURE_WRAPPER ).refine_bang(
+fn _signature_refine_bang_ext( _itself: &mut SignatureExt, other: &AnyObject ) -> AnyObject {
+    _itself.get_data_mut( &*SIGNATURE_WRAPPER ).refine_bang(
             other.get_data( &*SIGNATURE_WRAPPER )
     );
     _itself.to_any_object()
@@ -201,18 +196,18 @@ unsafe_methods!(
     }
 
     fn signature_clear_ext() -> AnyObject {
-        _itself.get_data( &*SIGNATURE_WRAPPER ).clear();
+        _itself.get_data_mut( &*SIGNATURE_WRAPPER ).clear();
         _itself.to_any_object()
     }
 
     fn signature_size_ext() -> Fixnum {
-        Fixnum::new( _itself.get_data( &*SIGNATURE_WRAPPER ).size() )
+        Fixnum::new( _itself.get_data_mut( &*SIGNATURE_WRAPPER ).size() )
     }
 
     fn signature_tokens_ext() -> Array {
         let mut array = Array::new();
 
-        for token in _itself.get_data( &*SIGNATURE_WRAPPER ).tokens.borrow_mut().clone() {
+        for token in _itself.get_data( &*SIGNATURE_WRAPPER ).tokens.clone() {
             array.push( Fixnum::new( i64::from( token ) ) );
         }
 
@@ -232,11 +227,11 @@ unsafe_methods!(
     }
 
     fn signature_refine_bang_ext( other: AnyObject ) -> AnyObject {
-        _signature_refine_bang_ext( &_itself, &other )
+        _signature_refine_bang_ext( &mut _itself, &other )
     }
 
     fn signature_push_ext( data: RString ) -> AnyObject {
-        _signature_push_ext( &_itself, &data )
+        _signature_push_ext( &mut _itself, &data )
     }
 
     fn signature_differences_ext( other: AnyObject ) -> Float {
