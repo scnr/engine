@@ -16,7 +16,7 @@ class WebServerManager
     def initialize
         @lib     = "#{support_path}/servers/"
         @servers = {}
-        @address = 'localhost'
+        @address = Socket.gethostname
 
         Dir.glob( File.join( @lib + '**', '*.rb' ) ) do |path|
             @servers[normalize_name( File.basename( path, '.rb' ) )] = {
