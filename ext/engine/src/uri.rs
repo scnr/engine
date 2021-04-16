@@ -863,7 +863,7 @@ pub fn initialize() {
         define_nested_class( "Rust", None ).
         define_nested_class(
             "URI",
-            Some( &Class::from_existing( "Data" ) )
+            None
         ).define( |_itself| {
 
         _itself.def_self( "new", uri_new_ext );

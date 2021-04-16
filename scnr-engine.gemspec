@@ -48,6 +48,8 @@ Gem::Specification.new do |s|
 
     s.rdoc_options      = [ '--charset=UTF-8' ]
 
+    s.add_dependency 'webrick',              '1.7.0'
+
     # Rust extension helpers.
     s.add_dependency 'thermite',            '~> 0'
 
@@ -59,11 +61,11 @@ Gem::Specification.new do |s|
     # latest one.
     s.add_dependency 'bundler'
 
-    s.add_dependency 'concurrent-ruby',     '1.0.5'
-    s.add_dependency 'concurrent-ruby-ext', '1.0.5'
+    s.add_dependency 'concurrent-ruby',     '1.1.8'
+    s.add_dependency 'concurrent-ruby-ext', '1.1.8'
 
     # For compressing/decompressing system state archives.
-    s.add_dependency 'rubyzip',             '1.2.1'
+    s.add_dependency 'rubyzip',             '1.2.2'
 
     # HTTP proxy server
     s.add_dependency 'http_parser.rb',      '0.6.0'
@@ -77,13 +79,13 @@ Gem::Specification.new do |s|
     s.add_dependency 'msgpack',             '1.1.0'
 
     # Optimized JSON.
-    s.add_dependency 'oj',                  '3.3.9'
+    s.add_dependency 'oj',                  '3.11.5'
     s.add_dependency 'oj_mimic_json',       '1.0.1'
 
     # Web server
     s.add_dependency 'puma',                '3.10.0'
 
-    s.add_dependency 'rack',                '2.0.8'
+    s.add_dependency 'rack',                '2.0.9'
     s.add_dependency 'rack-test'
 
     # REST API
@@ -103,22 +105,22 @@ Gem::Specification.new do |s|
     s.add_dependency 'pony',                '1.11'
 
     # Markup parsing, for reports and Element::XML.
-    s.add_dependency 'nokogiri',            '1.8.5'
+    s.add_dependency 'nokogiri',            '1.11.3'
     # Really fast and lightweight markup parsing, for pages.
     s.add_dependency 'ox',                  '2.8.2'
 
     # Browser support for DOM/JS/AJAX analysis stuff.
-    s.add_dependency 'watir',               '6.16.5'
+    s.add_dependency 'watir',               '6.19.1'
 
     s.add_dependency 'vmstat',              '2.3.0'
     s.add_dependency 'sys-proctable',       '1.1.5'
 
     # Markdown to HTML conversion, used by the HTML report for component
     # descriptions.
-    s.add_dependency 'kramdown',            '1.15.0'
+    s.add_dependency 'kramdown',            '2.3.1'
 
     # Used to scrub Markdown for XSS etc.
-    s.add_dependency 'loofah',              '2.2.2'
+    s.add_dependency 'loofah',              '2.9.1'
 
     s.description = <<DESCRIPTION
 SCNR::Engine is a feature-full, modular, high-performance Ruby framework aimed towards

@@ -248,7 +248,7 @@ pub fn initialize() {
 
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
         define_nested_class( "Rust", None ).define_nested_class( "Parser", None ).
-        define_nested_class( "Node", Some( &Class::from_existing( "Data" ) ) ).define( |_itself| {
+        define_nested_class( "Node", None ).define( |_itself| {
 
         _itself.def_self( "parse", parse );
 
