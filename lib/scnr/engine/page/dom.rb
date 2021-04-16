@@ -64,6 +64,16 @@ class DOM
         @execution_flow_sinks = options[:execution_flow_sinks]  || []
         @skip_states          = options[:skip_states]           ||
             Support::Filter::Set.new( hasher: :persistent_hash )
+
+        @has_data_flow_sink_signal = options[:has_data_flow_sink_signal]
+    end
+
+    def has_data_flow_sink_signal!
+        @has_data_flow_sink_signal = true
+    end
+
+    def has_data_flow_sink_signal?
+        @has_data_flow_sink_signal
     end
 
     def url=( url )

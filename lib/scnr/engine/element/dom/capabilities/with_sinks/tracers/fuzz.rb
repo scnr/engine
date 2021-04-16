@@ -65,7 +65,8 @@ class Fuzz < Base
             return
         end
 
-        if page.dom.data_flow_sinks.any?
+        ## TODO: Add tests for signals
+        if page.dom.has_data_flow_sink_signal? || page.dom.data_flow_sinks.any?
             mutation.sinks.active!
 
             mutation.sinks.print_message

@@ -181,7 +181,8 @@ module Snapshots
         if !(r = self.response)
             return Page.from_data(
                 dom: {
-                    url: d_url
+                    url: d_url,
+                    has_data_flow_sink_signal: @has_data_flow_sink_signal
                 },
                 response: {
                     code: 0,
@@ -205,6 +206,10 @@ module Snapshots
         page                 = r.to_page
         page.dom.url         = d_url
         page.dom.transitions = @transitions.dup
+
+        if @has_data_flow_sink_signal
+            page.dom.has_data_flow_sink_signal!
+        end
 
         return page if parse_profile.disabled?
 

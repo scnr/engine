@@ -27,8 +27,10 @@ module Auditable
     end
 
     def self.handle_submission_result( page )
-        # In case of redirection or runtime scope changes.
-        return if !page.parsed_url.seed_in_host? && page.scope.out?
+        # In case of redirection (without sinks, may be a taint trace) or runtime
+        # scope changes.
+        return if !page.dom.has_data_flow_sink_signal? &&
+            !page.parsed_url.seed_in_host? && page.scope.out?
 
         element = page.request.performer
         if !element.audit_options[:silent]
