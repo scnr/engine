@@ -70,6 +70,9 @@ class SCNR::Engine::Checks::XssDomScriptContext < SCNR::Engine::Check::Base
 Injects JS taint code and checks to see if it gets executed as proof of vulnerability.
 },
             elements:    DOM_ELEMENTS_WITH_INPUTS,
+            sink:        {
+                areas: [:active]
+            },
             cost:        calculate_audit_cost( payloads.size, options ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
             version:     '0.1.3',

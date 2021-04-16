@@ -101,6 +101,10 @@ module HTTP
         # Won't concern the scan anyways.
         return if !engine
 
+        if request.url.include? '/data_flow_sink_signal/'
+            @has_data_flow_sink_signal = true
+        end
+
         request.performer = self
 
         print_debug_level_2 "Request: #{request.url}"
