@@ -30,6 +30,20 @@ module SCNR::Engine
 class Options
     include Singleton
 
+    def self.attr_accessor(*vars)
+        @attr_accessors ||= []
+        @attr_accessors |= vars
+        super( *vars )
+    end
+
+    def self.attr_accessors
+        @attr_accessors
+    end
+
+    def attr_accessors
+        self.class.attr_accessors
+    end
+
     # {Options} error namespace.
     #
     # All {Options} errors inherit from and live under it.
