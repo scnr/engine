@@ -103,7 +103,6 @@ module HTTP
 
         if request.url.include? '/data_flow_sink_signal/'
             @has_data_flow_sink_signal = true
-            return
         end
 
         request.performer = self
