@@ -270,7 +270,7 @@ pub fn initialize() {
         define_nested_class( "Support", None ).
         define_nested_class(
         "Signature",
-        Some( &Class::from_existing( "Data" ) )
+        None
     ).define( |_itself| {
 
         _itself.def_self( "new", signature_new_ext );
