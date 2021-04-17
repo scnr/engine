@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'sinatra/contrib'
 
+class Framework < Sinatra::Application
+
 def logged_in?
     cookies[:success] == 'true'
 end
@@ -86,4 +88,7 @@ end
 
 get '/redirected' do
     'Redirected!'
+end
+
+run!
 end

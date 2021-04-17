@@ -2,12 +2,14 @@ require 'yaml'
 require 'sinatra'
 require 'sinatra/streaming'
 
+class Link < Sinatra::Application
+
 get '/' do
     params.to_s
 end
 
 get '/submit' do
-    params.to_hash.to_yaml
+    Hash[params.to_hash].to_yaml
 end
 
 get '/submit/buffered' do
@@ -17,7 +19,7 @@ get '/submit/buffered' do
         end
 
         out.print 'START_PARAMS'
-        out.print params.to_hash.to_yaml
+        out.print Hash[params.to_hash].to_yaml
         out.print 'END_PARAMS'
 
         2_000.times do |i|
@@ -33,7 +35,7 @@ get '/submit/line_buffered' do
         end
 
         out.puts 'START_PARAMS'
-        out.puts params.to_hash.to_yaml
+        out.puts Hash[params.to_hash].to_yaml
         out.puts 'END_PARAMS'
 
         2_000.times do |i|
@@ -105,4 +107,8 @@ get '/refreshable_disappear' do
     <a href="/refreshable?param_name=stuff">Irrelevant</a>
     <a href="/link?param_name=stuff&nonce=#{rand(999)}">Refreshable</a>
 HTML
+end
+
+run!
+
 end

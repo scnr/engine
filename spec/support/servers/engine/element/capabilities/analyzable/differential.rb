@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sinatra/contrib'
 require 'sinatra/streaming'
 
+class Timeout < Sinatra::Application
+
 helpers Sinatra::Streaming
 
 get '/true' do
@@ -262,4 +264,7 @@ get '/partial_stream_true' do
         s.puts out
         s.flush
     end
+end
+
+run!
 end

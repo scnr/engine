@@ -57,4 +57,4 @@ end
 server = ::Rack::Handler::WEBrick
 trap( :INT ) { server.shutdown }
 
-server.run( BrowserHTTPSServer, options )
+server.run( BrowserHTTPSServer, **options )

@@ -362,7 +362,7 @@ describe SCNR::Engine::Element::Link do
     describe '.decode' do
         it 'URL-decodes the passed string' do
             v = '%25%20value%5C%20%2B%3D%26%3B'
-            expect(described_class.decode( v )).to eq(URI.decode( v ))
+            expect(described_class.decode( v )).to eq('% value\ +=&;')
         end
     end
     describe '#decode' do

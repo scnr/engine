@@ -89,7 +89,7 @@ describe SCNR::Engine::Element::Header do
     describe '.encode' do
         it 'encodes the passed string' do
             v = "stuff \r\n"
-            expect(described_class.encode( v )).to eq(URI.encode( v, "\r\n" ))
+            expect(described_class.encode( v )).to eq("stuff %0D%0A")
         end
     end
     describe '#encode' do
