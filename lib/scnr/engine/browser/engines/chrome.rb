@@ -108,29 +108,32 @@ class Chrome < Base
     end
 
     def capabilities
-        proxy_uri = URI( proxy.url )
-
-        args = BROWSER_ARGS + [
-            "--proxy-server=#{proxy_uri.host}:#{proxy_uri.port}"
-        ]
-        args << '--headless' if !@options[:visible]
-
         Selenium::WebDriver::Remote::Capabilities.chrome(
             default_capabilities.merge(
                 binary: self.class.requirements['chrome'][:binary],
-                "goog:chromeOptions" => {
-                    args: args,
-                    mobileEmulation: {
-                        userAgent:     @options[:user_agent],
-                        deviceMetrics: {
-                            width:      @options[:width],
-                            height:     @options[:height],
-                            pixelRatio: @options[:pixel_ratio],
-                            touch:      @options[:touch]
-                        }
-                    }
-                }
             )
+        )
+    end
+
+    def options
+        proxy_uri = URI( proxy.url )
+
+        args = BROWSER_ARGS + [
+          "--proxy-server=#{proxy_uri.host}:#{proxy_uri.port}"
+        ]
+        args << '--headless' if !@options[:visible]
+
+        Selenium::WebDriver::Chrome::Options.new(
+          args: args,
+          emulation: {
+            userAgent:     @options[:user_agent],
+            deviceMetrics: {
+              width:      @options[:width],
+              height:     @options[:height],
+              pixelRatio: @options[:pixel_ratio],
+              touch:      @options[:touch]
+            }
+          }
         )
     end
 
