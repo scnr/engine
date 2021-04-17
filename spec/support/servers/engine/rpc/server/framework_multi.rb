@@ -15,7 +15,7 @@ get '/' do
     html
 end
 
-get %r{^/(\d+)$} do |id|
+get %r{/(\d+)} do |id|
     html = ''
 
     10.times do |i|
@@ -26,7 +26,7 @@ get %r{^/(\d+)$} do |id|
     html
 end
 
-get %r{^/(\d+)/(\d+)$} do |id, id2|
+get %r{/(\d+)/(\d+)} do |id, id2|
     html = ''
 
     50.times do |i|
@@ -37,6 +37,6 @@ get %r{^/(\d+)/(\d+)$} do |id, id2|
     html
 end
 
-get %r{^/(\d+)/(\d+)/(\d+)$} do |id, id2, id3|
+get %r{/(\d+)/(\d+)/(\d+)} do |id, id2, id3|
     "<a href='/vulnerable?#{id2}_vulnerable_#{id3}=stuff#{id}'>Vulnerable</a>"
 end

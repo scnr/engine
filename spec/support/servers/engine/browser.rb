@@ -2,8 +2,10 @@ require 'sinatra'
 require 'sinatra/contrib'
 require_relative '../../../../lib/scnr/engine'
 
-@@hit_count       ||= 0
-@@image_hit_count ||= 0
+class BrowserServer < Sinatra::Application
+
+    @@hit_count       ||= 0
+    @@image_hit_count ||= 0
 
 get '/' do
     @@hit_count += 1
@@ -1708,4 +1710,7 @@ get '/to_page/button/without_events' do
         </body>
     </html>
     EOHTML
+end
+
+    run!
 end

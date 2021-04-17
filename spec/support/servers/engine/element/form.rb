@@ -2,6 +2,8 @@ require 'yaml'
 require 'sinatra'
 require 'sinatra/streaming'
 
+class Form < Sinatra::Application
+
 set :logging, false
 
 get '/' do
@@ -13,7 +15,7 @@ post '/' do
 end
 
 get '/submit' do
-    params.to_hash.to_yaml
+    Hash[params.to_hash].to_yaml
 end
 
 get '/submit/buffered' do
@@ -23,7 +25,7 @@ get '/submit/buffered' do
         end
 
         out.print 'START_PARAMS'
-        out.print params.to_hash.to_yaml
+        out.print Hash[params.to_hash].to_yaml
         out.print 'END_PARAMS'
 
         2_000.times do |i|
@@ -39,7 +41,7 @@ get '/submit/line_buffered' do
         end
 
         out.puts 'START_PARAMS'
-        out.puts params.to_hash.to_yaml
+        out.puts Hash[params.to_hash].to_yaml
         out.puts 'END_PARAMS'
 
         2_000.times do |i|
@@ -75,7 +77,7 @@ get '/sinks/active' do
 end
 
 post '/submit' do
-    params.to_hash.to_yaml
+    Hash[params.to_hash].to_yaml
 end
 
 get '/forms' do
@@ -161,4 +163,7 @@ end
 
 post '/get_nonce' do
     params['nonce']
+end
+
+run!
 end

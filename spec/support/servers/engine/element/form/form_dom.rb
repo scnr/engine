@@ -20,7 +20,7 @@ get '/submit' do
         <title></title>
     </head>
 
-    <body>#{params.to_hash.to_yaml}</body>
+    <body>#{Hash[params.to_hash].to_yaml}</body>
 </html>
     EOHTML
 end

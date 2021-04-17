@@ -1,5 +1,7 @@
 require 'sinatra'
 
+class Timeout < Sinatra::Application
+
 get '/' do
     'Stuff'
 end
@@ -43,4 +45,7 @@ get '/waf' do
     next if !params[:sleep]
 
     sleep 10 if params[:sleep].include?( 'payload' )
+end
+
+run!
 end

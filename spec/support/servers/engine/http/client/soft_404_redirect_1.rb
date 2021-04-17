@@ -1,18 +1,23 @@
 require 'sinatra'
 require 'ap'
 
-@@redirect_url ||= nil
+class Soft404Redirect_1 < Sinatra::Application
 
-get '/set-redirect' do
-    @@redirect_url ||= params[:url]
-end
+    @@redirect_url ||= nil
 
-get '/test/index.html' do
-    response.headers['Content-Type'] = 'text/html'
-    "some content here for index page"
-end
+    get '/set-redirect' do
+        @@redirect_url ||= params[:url]
+    end
 
-get '*' do
-    response.headers['Content-Type'] = 'text/html'
-    redirect "#{@@redirect_url}/error/index.html", 302
+    get '/test/index.html' do
+        response.headers['Content-Type'] = 'text/html'
+        "some content here for index page"
+    end
+
+    get '*' do
+        response.headers['Content-Type'] = 'text/html'
+        redirect "#{@@redirect_url}/error/index.html", 302
+    end
+
+    run!
 end

@@ -85,12 +85,12 @@ Gem::Specification.new do |s|
     # Web server
     s.add_dependency 'puma',                '3.10.0'
 
-    s.add_dependency 'rack',                '2.0.9'
+    s.add_dependency 'rack',                '2.2.3'
     s.add_dependency 'rack-test'
 
     # REST API
-    s.add_dependency 'sinatra',             '2.0.8.1'
-    s.add_dependency 'sinatra-contrib',     '2.0.8.1'
+    s.add_dependency 'sinatra',             '2.1.0'
+    s.add_dependency 'sinatra-contrib',     '2.1.0'
 
     # RPC client/server implementation.
     s.add_dependency 'arachni-rpc',         '~> 0.2.1.4'

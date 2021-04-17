@@ -1,5 +1,7 @@
 require 'sinatra'
 
+class Soft404 < Sinatra::Application
+
 @@erratic = 0
 
 def handler_response_1
@@ -99,4 +101,8 @@ get '/advanced/sensitive-dash/post/*-*' do |_, d2|
     else
         handler_response_1
     end
+end
+
+run!
+
 end

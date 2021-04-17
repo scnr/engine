@@ -22,6 +22,7 @@ describe SCNR::Engine::Element::Form do
     # it_should_behave_like 'line_buffered_auditable'
 
     def auditable_extract_parameters( resource )
+        ap resource.body
         YAML.load( resource.body )
     end
 
