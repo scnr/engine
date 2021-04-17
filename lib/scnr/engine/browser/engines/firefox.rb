@@ -14,12 +14,12 @@ class Firefox < Base
 
     REQUIREMENTS = {
         'firefox'     => {
-            min: 77,
-            max: 77
+            min: 87,
+            max: 87
         },
         'geckodriver' => {
-            min: 0.26,
-            max: 0.26
+            min: 0.29,
+            max: 0.29
         }
     }
 
@@ -120,29 +120,32 @@ class Firefox < Base
     end
 
     def capabilities
+        Selenium::WebDriver::Remote::Capabilities.firefox(
+            default_capabilities.merge(
+                binary: self.class.requirements['firefox'][:binary],
+            )
+        )
+    end
+
+    def options
         proxy_uri = URI( proxy.url )
 
         args = []
         args << '--headless' if !@options[:visible]
 
-        Selenium::WebDriver::Remote::W3C::Capabilities.firefox(
-            default_capabilities.merge(
-                firefox_options:       {
-                    args:   args,
-                    binary: self.class.requirements['firefox'][:binary],
-                    prefs: BROWSER_PREFERENCES.merge(
-                        'general.useragent.override'   => @options[:user_agent],
-                        'dom.w3c_touch_events.enabled' => @options[:touch] ? 1 : 0,
-                        'dom.w3c_touch_events.expose'  => @options[:touch] ? 1 : 0,
-                        'layout.css.devPixelsPerPx'    => @options[:pixel_ratio].to_s,
+        Selenium::WebDriver::Firefox::Options.new(
+          args:   args,
+          prefs: BROWSER_PREFERENCES.merge(
+              'general.useragent.override'   => @options[:user_agent],
+              'dom.w3c_touch_events.enabled' => @options[:touch] ? 1 : 0,
+              'dom.w3c_touch_events.expose'  => @options[:touch] ? 1 : 0,
+              'layout.css.devPixelsPerPx'    => @options[:pixel_ratio].to_s,
 
-                        'network.proxy.http'      => proxy_uri.host,
-                        'network.proxy.http_port' => proxy_uri.port,
-                        'network.proxy.ssl'       => proxy_uri.host,
-                        'network.proxy.ssl_port'  => proxy_uri.port
-                    )
-                }
-            )
+              'network.proxy.http'      => proxy_uri.host,
+              'network.proxy.http_port' => proxy_uri.port,
+              'network.proxy.ssl'       => proxy_uri.host,
+              'network.proxy.ssl_port'  => proxy_uri.port
+          )
         )
     end
 

@@ -57,6 +57,7 @@ module WebDriver
                     # sometimes gives us zombies.
                     url:                  spawn,
                     desired_capabilities: capabilities,
+                    options:              options,
                     http_client:          client
                 )
 
