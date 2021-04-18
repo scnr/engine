@@ -22,4 +22,4 @@ end
 server = ::Rack::Handler::WEBrick
 trap( :INT ) { server.shutdown }
 
-server.run( HTTPSServer, options )
+server.run( HTTPSServer, **options )
