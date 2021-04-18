@@ -37,7 +37,7 @@ shared_examples_for 'browser_engine' do
             end
 
             context 'when given' do
-                let(:width) { 400 }
+                let(:width) { 500 }
                 let(:options) { { width: width } }
 
                 it 'sets the window width' do
