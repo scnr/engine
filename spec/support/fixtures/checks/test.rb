@@ -21,7 +21,7 @@ class SCNR::Engine::Checks::Test < SCNR::Engine::Check::Base
 
     def clean_up
         return if !@ran
-        log_issue( page: page, vector: vector )
+        log( page: page, vector: vector )
     end
 
     def vector

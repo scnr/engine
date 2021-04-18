@@ -710,7 +710,8 @@ describe SCNR::Engine::Check::Auditor do
             expect(
                 auditor.class.create_issue(
                     proof: issue.proof,
-                    vector: issue.vector
+                    vector: issue.vector,
+                    referring_page: issue.referring_page
                 )
             ).to eq(issue)
         end
@@ -718,28 +719,22 @@ describe SCNR::Engine::Check::Auditor do
 
     describe '.log_issue' do
         it 'logs an issue' do
-            auditor.class.log_issue( issue_data )
+            expect(SCNR::Engine::Data.issues).to be_empty
+            auditor.class.log_issue( issue )
 
             logged_issue = SCNR::Engine::Data.issues.sort.first
-
-            expect(logged_issue.to_h.tap do |h|
-                h[:page][:dom][:transitions].each { |t| t.delete :time }
-                h[:referring_page][:dom][:transitions].each { |t| t.delete :time }
-            end).to eq (issue.to_h.tap do |h|
-                h[:page][:dom][:transitions].each { |t| t.delete :time }
-                h[:referring_page][:dom][:transitions].each { |t| t.delete :time }
-            end)
+            expect( logged_issue.digest ).to eq issue.digest
         end
 
         it 'assigns a #referring_page' do
-            auditor.log_issue( issue_data )
+            auditor.log_issue( issue )
 
             logged_issue = SCNR::Engine::Data.issues.sort.first
-            expect(logged_issue.referring_page).to eq(auditor.page)
+            expect(logged_issue.referring_page).to eq(issue.referring_page)
         end
 
         it 'returns the issue' do
-            expect(auditor.log_issue( issue_data )).to be_kind_of SCNR::Engine::Issue
+            expect(auditor.log_issue( issue )).to be_kind_of SCNR::Engine::Issue
         end
 
         context 'when #issue_limit_reached?' do
@@ -754,17 +749,15 @@ describe SCNR::Engine::Check::Auditor do
 
     describe '#log_issue' do
         it 'forwards options to .log_issue' do
-            expect(auditor.class).to receive(:log_issue).with(
-                issue_data.merge( referring_page: auditor.page )
-            )
-            auditor.log_issue( issue_data )
+            expect(auditor.class).to receive(:log_issue).with( issue )
+            auditor.log_issue( issue )
         end
 
         it 'assigns a #referring_page' do
-            auditor.log_issue( issue_data )
+            auditor.log_issue( issue )
 
             logged_issue = SCNR::Engine::Data.issues.sort.first
-            expect(logged_issue.referring_page).to eq(auditor.page)
+            expect(logged_issue.referring_page).to eq(issue.referring_page)
         end
     end
 
@@ -841,17 +834,8 @@ describe SCNR::Engine::Check::Auditor do
                 expect do
                     issue_data[:vector].page    = nil
                     issue_data[:referring_page] = nil
-
-                    auditor.class.log( issue_data )
-                end.to raise_error ArgumentError
-            end
-        end
-
-        context 'when no referring page data are available' do
-            it 'raises ArgumentError' do
-                expect do
-                    issue_data[:vector].page    = nil
-                    issue_data[:referring_page] = nil
+                    issue_data[:page]           = nil
+                    issue_data[:response]       = nil
 
                     auditor.class.log( issue_data )
                 end.to raise_error ArgumentError

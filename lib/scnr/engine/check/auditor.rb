@@ -161,35 +161,20 @@ module Auditor
         #
         # @return   [Issue]
         def log( options )
-            options       = options.dup
-            vector        = options[:vector]
-            audit_options = vector.respond_to?( :audit_options ) ?
-                                vector.audit_options : {}
-
-            if options[:referring_page]
-                referring_page = options[:referring_page]
-            elsif vector.page
-                referring_page = vector.page
-            else
-                fail ArgumentError, 'Missing :referring_page option.'
-            end
-
-            if options[:response]
-                page = options.delete(:response).to_page
-            elsif options[:page]
-                page = options.delete(:page)
-            else
-                page = referring_page
-            end
+            issue  = create_issue( options )
+            return if !issue
 
             # Don't check the page scope, the check may have exceeded the DOM depth
             # limit but the check is allowed to do that, only check for an out of
             # scope response.
-            return if !page.response.parsed_url.seed_in_host? && page.response.scope.out?
+            return if !issue.response.parsed_url.seed_in_host? &&
+              issue.page.response.scope.out?
 
+            vector = issue.vector
             msg = "In #{vector.type}"
 
-            active = vector.respond_to?( :affected_input_name ) && vector.affected_input_name
+            active = vector.respond_to?( :affected_input_name ) &&
+              vector.affected_input_name
 
             if active
                 msg << " input '#{vector.affected_input_name}'"
@@ -203,21 +188,68 @@ module Auditor
                 vector.print_verbose "Injected:  #{vector.affected_input_value.inspect}"
             end
 
-            if options[:signature]
-                vector.print_verbose "Signature: #{options[:signature]}"
+            if issue.signature
+                vector.print_verbose "Signature: #{issue.signature}"
             end
 
-            if options[:proof]
-                vector.print_verbose "Proof:     #{options[:proof]}"
+            if issue.proof
+                vector.print_verbose "Proof:     #{issue.proof}"
             end
 
-            if page.dom.transitions.any?
+            if issue.page.dom.transitions.any?
                 vector.print_verbose 'DOM transitions:'
-                page.dom.print_transitions( method(:print_verbose), '    ' )
+                issue.page.dom.print_transitions( method(:print_verbose), '    ' )
             end
 
-            if !(request_dump = page.request.to_s).empty?
+            if !(request_dump = issue.page.request.to_s).empty?
                 vector.print_verbose "Request: \n#{request_dump}"
+            end
+
+            log_issue issue
+        end
+
+        # Helper method for issue logging.
+        #
+        # @param    [Issue]  issue
+        #
+        # @return   [Issue]
+        #
+        # @see .create_issue
+        def log_issue( issue )
+            return if issue_limit_reached?
+            self.issue_counter += 1
+
+            Data.issues << issue
+            issue
+        end
+
+        # Helper method for creating an issue.
+        #
+        # @param    [Hash]  options     {Issue} options.
+        def create_issue( options )
+            options       = options.dup
+            vector        = options[:vector]
+            audit_options = vector.respond_to?( :audit_options ) ?
+                              vector.audit_options : {}
+
+            if options[:referring_page]
+                referring_page = options[:referring_page]
+            elsif vector.page
+                referring_page = vector.page
+            end
+
+            if options[:response]
+                page = options.delete(:response).to_page
+            elsif options[:page]
+                page = options.delete(:page)
+            else
+                page = referring_page
+            end
+
+            referring_page ||= page
+
+            if !referring_page
+                fail ArgumentError, 'Missing :referring_page option.'
             end
 
             # Platform identification by vulnerability.
@@ -227,36 +259,13 @@ module Auditor
                 platform_type = Platform::Manager[vector.action].find_type( platform )
             end
 
-            log_issue(options.merge(
-                platform_name:  platform,
-                platform_type:  platform_type,
-                page:           page,
-                referring_page: referring_page
-            ))
-        end
+            options.merge!(
+              platform_name:  platform,
+              platform_type:  platform_type,
+              page:           page,
+              referring_page: referring_page
+            )
 
-        # Helper method for issue logging.
-        #
-        # @param    [Hash]  options
-        #   {Issue} options.
-        #
-        # @return   [Issue]
-        #
-        # @see .create_issue
-        def log_issue( options )
-            return if issue_limit_reached?
-            self.issue_counter += 1
-
-            issue = create_issue( options )
-            Data.issues << issue
-            issue
-        end
-
-        # Helper method for creating an issue.
-        #
-        # @param    [Hash]  options
-        #   {Issue} options.
-        def create_issue( options )
             check_info = self.info.dup
             check_info.delete( :issue )
             check_info[:shortname] = self.shortname
@@ -370,11 +379,13 @@ module Auditor
         page = page_or_response.is_a?( Page ) ?
             page_or_response : page_or_response.to_page
 
-        issue = log_issue({
-            vector: Element::Server.new( page.url ),
-            proof:  page.response.status_line,
-            page:   page
-        }.merge( options ))
+        issue = create_issue( {
+                vector: Element::Server.new( page.url ),
+                proof:  page.response.status_line,
+                page:   page,
+            }.merge( options )
+        )
+        log_issue( issue )
 
         print_ok( "Found #{page.url}" ) if !silent
 
@@ -384,14 +395,13 @@ module Auditor
 
     # Helper method for issue logging.
     #
-    # @param    [Hash]  options
-    #   {Issue} options.
+    # @param    [Issue]  issue
     #
     # @return   [Issue]
     #
-    # @see .create_issue
-    def log_issue( options )
-        self.class.log_issue( options.merge( referring_page: @page ) )
+    # @see .log_issue
+    def log_issue( issue )
+        self.class.log_issue issue
     end
 
     # Populates and logs an {Engine::Issue}.
@@ -400,6 +410,20 @@ module Auditor
     #   {Engine::Issue} initialization options.
     #
     # @return   [Issue]
+    #
+    # @see .create_issue
+    def create_issue( options )
+        self.class.create_issue( options.merge( referring_page: @page ) )
+    end
+
+    # Populates and logs an {Engine::Issue}.
+    #
+    # @param    [Hash]  options
+    #   {Engine::Issue} initialization options.
+    #
+    # @return   [Issue]
+    #
+    # @see .log
     def log( options )
         self.class.log( options.merge( referring_page: @page ) )
     end
