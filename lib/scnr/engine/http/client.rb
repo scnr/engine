@@ -356,9 +356,9 @@ class Client
     #   Do not include cookies from the {#cookie_jar}.
     # @param  [Block] block  Callback to be passed the {Response response}.
     #
-    # @return [Request, Response]
+    # @return [Request, Response, nil]
     #   {Request} when operating in `:async:` `:mode` (the default), {Response}
-    #   when in `:async:` `:mode`.
+    #   when in `:async:` `:mode`, `nil` on Framework error.
     def request( url = Options.url, options = {}, &block )
         fail ArgumentError, 'URL cannot be empty.' if !url
 
