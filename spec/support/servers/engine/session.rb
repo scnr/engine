@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sinatra/contrib'
 require 'ap'
 
+class Session < Sinatra::Application
+
 set :protection, except: :session_hijacking
 enable :sessions
 
@@ -182,4 +184,7 @@ get '/congrats' do
         Congrats, get to the audit!
         <a href='/link'></a>
     EOHTML
+end
+
+run!
 end

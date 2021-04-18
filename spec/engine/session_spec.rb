@@ -508,20 +508,18 @@ describe SCNR::Engine::Session do
                 subject.ensure_logged_in
                 expect(subject.logged_in?).to be_falsey
             end
-        end
 
-        context 'when the login attempt fails' do
             it 'retries 5 times' do
                 SCNR::Engine::Options.session.check_url     = url
                 SCNR::Engine::Options.session.check_pattern = 'logged-in user'
 
                 subject.configure(
-                    url:    "#{url}/disappearing_login",
-                    inputs: {
-                        username: 'john',
-                        password: 'doe',
-                        submit_me: 'Login!'
-                    }
+                  url:    "#{url}/disappearing_login",
+                  inputs: {
+                    username: 'john',
+                    password: 'doe',
+                    submit_me: 'Login!'
+                  }
                 )
 
                 expect(subject.logged_in?).to be_falsey

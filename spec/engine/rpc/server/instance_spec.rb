@@ -452,6 +452,13 @@ describe 'SCNR::Engine::RPC::Server::Instance' do
                     expect(issues).to be_any
                     expect(issues.first.class).to eq(Hash)
 
+                    issues.tap do
+                        issues.each do |issue|
+                            issue.delete 'platform_name'
+                            issue.delete 'platform_type'
+                        end
+                    end
+
                     issues_h = SCNR::Engine::RPC::Serializer.load(
                         SCNR::Engine::RPC::Serializer.dump(
                             subject.native_report.issues.map(&:to_h)

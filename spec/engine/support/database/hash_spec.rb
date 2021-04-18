@@ -45,7 +45,7 @@ describe SCNR::Engine::Support::Database::Hash do
 
     # http://www.ruby-doc.org/core-1.9.3/Hash.html#method-i-assoc
     it 'implements #assoc( k )' do
-        seeds.each do |k, v|
+        seeds.dup.each do |k, v|
             expect(subject.assoc( k )).to eq(seeds.assoc( k ))
         end
 
