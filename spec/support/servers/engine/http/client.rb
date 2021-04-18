@@ -180,7 +180,7 @@ options '/' do
 end
 
 get '/echo' do
-    YAML.dump params
+    YAML.dump Hash[params]
 end
 
 post '/echo' do

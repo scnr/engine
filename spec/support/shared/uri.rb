@@ -104,16 +104,6 @@ shared_examples_for 'uri' do
         { /articles\/[\w-]+\/(\d+)/ => 'articles.php?id=\1' }
     end
 
-    describe '.URI' do
-        it 'parses and normalize the give string' do
-            @urls.each do |url|
-                uri = SCNR::Engine::URI( url )
-                expect(uri.is_a?( described_class )).to be_truthy
-                expect(uri.to_s).to eq(@ref_normalizer.call( url ))
-            end
-        end
-    end
-
     describe '.rewrite' do
         let(:url) { 'http://test.com/articles/some-stuff/23' }
 
