@@ -705,39 +705,39 @@ class Request < Message
 
         aborted = nil
 
-        if on_headers.any? || on_body.any? || on_body_line.any? || on_body_lines.any?
-            typhoeus_request.on_headers do |typhoeus_response|
-                set_response_data typhoeus_response
+        # In case we're streaming always set this to get the last line via
+        # #on_complete.
+        typhoeus_request.on_headers do |typhoeus_response|
+            set_response_data typhoeus_response
 
-                on_headers.each do |on_header|
-                    exception_jail false do
-                        if on_header.call( self.response ) == :abort
-                            break aborted = :abort
-                        end
+            on_headers.each do |on_header|
+                exception_jail false do
+                    if on_header.call( self.response ) == :abort
+                        break aborted = :abort
+                    end
+                end
+            end
+
+            next aborted if aborted
+
+            # No need to set our own reader in order to enforce max response size
+            # if the response is already been read bit by bit via other callbacks.
+            if on_complete.any? && typhoeus_request.options[:maxfilesize] &&
+              on_body.empty? && on_body_line.empty? && on_body_lines.empty?
+
+                cl = nil
+                if typhoeus_response.headers['Content-Length']
+                    if typhoeus_response.headers['Content-Length'].to_i <=
+                      typhoeus_request.options[:maxfilesize]
+
+                        cl = typhoeus_response.headers['Content-Length'].to_i
+                    else
+                        cl = 0
                     end
                 end
 
-                next aborted if aborted
-
-                # No need to set our own reader in order to enforce max response size
-                # if the response is already been read bit by bit via other callbacks.
-                if on_complete.any? && typhoeus_request.options[:maxfilesize] &&
-                  on_body.empty? && on_body_line.empty? && on_body_lines.empty?
-
-                    cl = nil
-                    if typhoeus_response.headers['Content-Length']
-                        if typhoeus_response.headers['Content-Length'].to_i <=
-                          typhoeus_request.options[:maxfilesize]
-
-                            cl = typhoeus_response.headers['Content-Length'].to_i
-                        else
-                            cl = 0
-                        end
-                    end
-
-                    @response_body_buffer = String.new( '', capacity: cl )
-                    set_body_reader( typhoeus_request, @response_body_buffer )
-                end
+                @response_body_buffer = String.new( '', capacity: cl )
+                set_body_reader( typhoeus_request, @response_body_buffer )
             end
         end
 
@@ -847,7 +847,7 @@ class Request < Message
 
                 # Set either by the default body reader or is a remnant from
                 # a user specified callback like #on_body, #on_body_line, etc.
-                if @response_body_buffer && (@on_body_line.any? || @on_body_lines.any?)
+                if @response_body_buffer && (on_body_line.any? || on_body_lines.any?)
                     typhoeus_response.options[:response_body] =
                       @response_body_buffer
                 end
