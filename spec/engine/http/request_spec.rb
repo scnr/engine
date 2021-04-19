@@ -707,21 +707,6 @@ describe SCNR::Engine::HTTP::Request do
         end
     end
 
-    describe '#clear_callbacks' do
-        it 'clears #on_complete callbacks' do
-            request = described_class.new( url: url )
-
-            passed_response = nil
-            request.on_complete { |res| passed_response = res }
-
-            response = SCNR::Engine::HTTP::Response.new( url: url )
-            request.clear_callbacks
-            request.run
-
-            expect(passed_response).to be_nil
-        end
-    end
-
     describe '#parsed_url' do
         it 'returns the configured URL as a parsed object' do
             expect(described_class.new( url: url ).parsed_url).to eq(SCNR::Engine::URI( url ))
