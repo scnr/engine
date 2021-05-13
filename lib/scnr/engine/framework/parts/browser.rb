@@ -31,6 +31,10 @@ module Browser
         @apply_dom_metadata.call( *args )
     end
 
+    def Browser.set_job_to_crawl( job )
+        job.category = :crawl
+    end
+
     # @return   [BrowserCluster, nil]
     #   A lazy-loaded browser cluster or `nil` if
     #   {OptionGroups::BrowserCluster#pool_size} or
@@ -165,8 +169,8 @@ module Browser
         dom = page.dom.state
         dom.page = nil # Help out the GC.
 
-        tap = proc { |job| job.category = :crawl }
-        browser_cluster.with_browser_and_tap tap, dom, @apply_dom_metadata_cb
+        @tap ||= Browser.method(:set_job_to_crawl)
+        browser_cluster.with_browser_and_tap @tap, dom, @apply_dom_metadata_cb
     end
 
     def apply_dom_metadata( browser, dom )
