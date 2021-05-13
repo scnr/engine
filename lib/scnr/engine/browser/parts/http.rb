@@ -115,6 +115,12 @@ module HTTP
             return
         end
 
+        if request_for_ad?( request )
+            ap '----------------------------------'
+            print_debug_level_2 "Ignoring, ad host: #{request.url}"
+            return
+        end
+
         # We can't have 304 page responses in the framework, we need full request
         # and response data, the browser cache doesn't help us here.
         #
@@ -293,6 +299,23 @@ module HTTP
 
     def request_for_asset?( request )
         ASSET_EXTENSIONS.include?( request.parsed_url.resource_extension.to_s.downcase )
+    end
+
+    def request_for_ad?( request )
+        synchronize do
+            @ad_hosts ||= Support::Filter::Set.new
+
+            if @ad_hosts.empty?
+                File.open( Options.paths.root + 'config/adservers.txt' ) do |f|
+                    f.each_line do |entry|
+                        next if entry.start_with?( '#' )
+                        @ad_hosts << entry.split( ' ' ).last
+                    end
+                end
+            end
+
+            @ad_hosts.include?( request.parsed_url.domain )
+        end
     end
 
     def whitelist_asset_domains( response )
