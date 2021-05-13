@@ -76,6 +76,8 @@ module Audit
             return false
         end
 
+        session.ensure_logged_in
+
         # Initialize the BrowserCluster.
         browser_cluster
 
@@ -234,8 +236,6 @@ module Audit
         @audit_queues_done = false
 
         while !suspended? && !page_limit_reached? && (page = pop_page)
-            session.ensure_logged_in
-
             audit_page( page )
 
             # We do this last because we prefer exhausting all page queue entries
