@@ -149,21 +149,21 @@ describe SCNR::Engine::Trainer do
                 end
             end
 
-            context 'and is buffered' do
-                it 'is ignored' do
-                    expect(framework.pages.size).to eq(0)
-
-                    SCNR::Engine::HTTP::Client.request(
-                        url + '/elems',
-                        train:   true,
-                        on_body: proc {}
-                    )
-
-                    expect(subject).to_not receive(:analyze)
-                    framework.run
-                    framework.trainer.wait
-                end
-
+            # context 'and is buffered' do
+                # it 'is ignored' do
+                #     expect(framework.pages.size).to eq(0)
+                #
+                #     SCNR::Engine::HTTP::Client.request(
+                #         url + '/elems',
+                #         train:   true,
+                #         on_body: proc {}
+                #     )
+                #
+                #     expect(subject).to_not receive(:analyze)
+                #     framework.run
+                #     framework.trainer.wait
+                # end
+                #
                 # it 'passes the response to the Trainer' do
                 #     expect(framework.pages.size).to eq(0)
                 #
@@ -192,7 +192,7 @@ describe SCNR::Engine::Trainer do
                 #         expect(page.links.first.inputs.include?( 'msg' )).to be_truthy
                 #     end
                 # end
-            end
+            # end
         end
     end
 
