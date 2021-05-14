@@ -19,8 +19,6 @@ module HTTP
     end
 
     def wait_for_pending_requests
-        sleep 0.1
-
         t                = Time.now
         last_connections = []
 
@@ -42,7 +40,7 @@ module HTTP
 
             last_connections = connections
 
-            sleep 0.1
+            sleep 0.05
 
             # If the browser sends incomplete data the connection will remain
             # open indefinitely.

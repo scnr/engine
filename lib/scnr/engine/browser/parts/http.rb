@@ -143,11 +143,9 @@ module HTTP
             end
 
             if @add_request_transitions
-                synchronize do
-                    @request_transitions << Page::DOM::Transition.new(
-                        request.url, :request
-                    )
-                end
+                @request_transitions << Page::DOM::Transition.new(
+                    request.url, :request
+                )
             end
         end
 
@@ -302,48 +300,42 @@ module HTTP
     end
 
     def request_for_ad?( request )
-        synchronize do
-            @ad_hosts ||= Support::Filter::Set.new
+        @ad_hosts ||= Support::Filter::Set.new
 
-            if @ad_hosts.empty?
-                File.open( Options.paths.root + 'config/adservers.txt' ) do |f|
-                    f.each_line do |entry|
-                        next if entry.start_with?( '#' )
-                        @ad_hosts << entry.split( ' ' ).last
-                    end
+        if @ad_hosts.empty?
+            File.open( Options.paths.root + 'config/adservers.txt' ) do |f|
+                f.each_line do |entry|
+                    next if entry.start_with?( '#' )
+                    @ad_hosts << entry.split( ' ' ).last
                 end
             end
-
-            @ad_hosts.include?( request.parsed_url.domain )
         end
+
+        @ad_hosts.include?( request.parsed_url.domain )
     end
 
     def whitelist_asset_domains( response )
-        synchronize do
-            @whitelist_asset_domains ||= Support::Filter::Set.new
-            return if @whitelist_asset_domains.include? response.body
-            @whitelist_asset_domains << response.body
+        @whitelist_asset_domains ||= Support::Filter::Set.new
+        return if @whitelist_asset_domains.include? response.body
+        @whitelist_asset_domains << response.body
 
-            ASSET_EXTRACTORS.each do |regexp|
-                response.body.scan( regexp ).flatten.compact.each do |url|
-                    next if !(domain = self.class.add_asset_domain( url ))
+        ASSET_EXTRACTORS.each do |regexp|
+            response.body.scan( regexp ).flatten.compact.each do |url|
+                next if !(domain = self.class.add_asset_domain( url ))
 
-                    print_debug_level_2 "#{domain} from #{url} based on #{regexp.source}"
-                end
+                print_debug_level_2 "#{domain} from #{url} based on #{regexp.source}"
             end
         end
     end
 
     def from_preloads( request, response )
-        synchronize do
-            return if !(preloaded = preloads.delete( request.url ))
+        return if !(preloaded = preloads.delete( request.url ))
 
-            copy_response_data( preloaded, response )
-            response.request = request
-            save_response( response ) if !preloaded.url.include?( request_token )
+        copy_response_data( preloaded, response )
+        response.request = request
+        save_response( response ) if !preloaded.url.include?( request_token )
 
-            preloaded
-        end
+        preloaded
     end
 
     def copy_response_data( source, destination )
@@ -357,24 +349,20 @@ module HTTP
     end
 
     def save_response( response )
-        synchronize do
-            notify_on_response response
-            return response if !response.text?
+        notify_on_response response
+        return response if !response.text?
 
-            @window_responses[response.url] = response
-        end
+        @window_responses[response.url] = response
     end
 
     def get_response( url )
-        synchronize do
-            # Order is important, #normalize_url by can get confused and remove
-            # everything after ';' by treating it as a path parameter.
-            # Rightly so...but we need to bypass it when auditing LinkTemplate
-            # elements.
-            @window_responses[url] ||
-                @window_responses[normalize_watir_url( url )] ||
-                @window_responses[normalize_url( url )]
-        end
+        # Order is important, #normalize_url by can get confused and remove
+        # everything after ';' by treating it as a path parameter.
+        # Rightly so...but we need to bypass it when auditing LinkTemplate
+        # elements.
+        @window_responses[url] ||
+            @window_responses[normalize_watir_url( url )] ||
+            @window_responses[normalize_url( url )]
     end
 
     def normalize_watir_url( url )

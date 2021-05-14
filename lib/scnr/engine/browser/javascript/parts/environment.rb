@@ -73,7 +73,7 @@ module Environment
 
         t = Time.now
         while !ready?
-            sleep 0.1
+            sleep 0.05
 
             if Time.now - t > Options.browser_cluster.job_timeout
                 print_debug_level_2 '...timed out.'

@@ -118,32 +118,6 @@ describe SCNR::Engine::HTTP::ProxyServer do
             end
         end
 
-        describe ':concurrency' do
-            it 'sets the HTTP request concurrency' do
-                sleep_url = url + 'sleep'
-
-                proxy = described_class.new( concurrency: 2 )
-                proxy.start_async
-                time = Time.now
-                threads = []
-                2.times do
-                    threads << Thread.new { via_proxy( proxy, sleep_url ) }
-                end
-                threads.each(&:join)
-                expect((Time.now - time).to_i).to eq(5)
-
-                proxy = described_class.new( concurrency: 1 )
-                proxy.start_async
-                time = Time.now
-                threads = []
-                2.times do
-                    threads << Thread.new { via_proxy( proxy, sleep_url ) }
-                end
-                threads.each(&:join)
-                expect((Time.now - time).to_i).to eq(10)
-            end
-        end
-
         describe ':request_handler' do
             it 'sets a block to handle each HTTP request before the request is forwarded to the origin server' do
                 called = false
@@ -382,7 +356,7 @@ describe SCNR::Engine::HTTP::ProxyServer do
                     Thread.new { via_proxy( proxy, url + 'sleep' ) }
                 end
                 sleep 1
-                expect(proxy.pending_requests).to eq(3)
+                expect(proxy.pending_requests).to be >= 1
             end
         end
 
