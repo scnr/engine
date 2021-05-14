@@ -86,13 +86,11 @@ class Browser
     private
 
     def clear_buffers
-        synchronize do
-            @preloads.clear
-            @captured_pages.clear
-            @page_snapshots.clear
-            @page_snapshots_with_sinks.clear
-            @window_responses.clear
-        end
+        @preloads.clear
+        @captured_pages.clear
+        @page_snapshots.clear
+        @page_snapshots_with_sinks.clear
+        @window_responses.clear
     end
 
     def skip_path?( path )

@@ -63,22 +63,20 @@ class Connection < Arachni::Reactor::Connection
                 next
             end
 
-            @parent.on_available_slot self do
-                if closed?
-                    print_debug_level_3 'Connection closed while waiting for' <<
-                        " slot: #{@parser.http_method} #{@parser.request_url}"
-                    next
-                end
-
-                handle_request @request = SCNR::Engine::HTTP::Request.new(
-                    http_opts.merge(
-                        url:     sanitize_url( @parser.request_url, headers ),
-                        method:  method,
-                        body:    @body,
-                        headers: SCNR::Engine::HTTP::Client.headers.to_h.merge( headers )
-                    )
-                )
+            if closed?
+                print_debug_level_3 'Connection closed while waiting for' <<
+                    " slot: #{@parser.http_method} #{@parser.request_url}"
+                next
             end
+
+            handle_request @request = SCNR::Engine::HTTP::Request.new(
+                http_opts.merge(
+                    url:     sanitize_url( @parser.request_url, headers ),
+                    method:  method,
+                    body:    @body,
+                    headers: SCNR::Engine::HTTP::Client.headers.to_h.merge( headers )
+                )
+            )
         end
     end
 
