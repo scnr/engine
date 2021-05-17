@@ -21,9 +21,8 @@ module Check
 class Base < Component::Base
     include Auditor
 
-    # @param  [Page]        page
-    # @param  [Framework]  framework
-    def initialize( page, framework )
+    # @param  [Page]    page
+    def initialize( page )
         super
     end
 
@@ -49,31 +48,6 @@ class Base < Component::Base
     #
     # @abstract
     def clean_up
-    end
-
-    # Provides access to the plugin manager
-    #
-    # You can use it to gain access to the instances of running plugins like so:
-    #
-    #    p plugins.get( 'profiler' )
-    #    # => #<Thread:0x000000025b2ff0 sleep>
-    #
-    #    p plugins.get( 'profiler' )[:instance]
-    #    # => #<SCNR::Engine::Plugins::Profiler>
-    #
-    # @return   [SCNR::Engine::Plugin::Manager]
-    def plugins
-        framework.plugins if framework
-    end
-
-    # @return   [SCNR::Engine::Session]
-    def session
-        framework.session if framework
-    end
-
-    # @return   [SCNR::Engine::BrowserCluster]
-    def browser_cluster
-        framework.browser_cluster if framework
     end
 
     def preferred

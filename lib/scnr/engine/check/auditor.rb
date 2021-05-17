@@ -305,19 +305,44 @@ module Auditor
     #   Page object to be audited.
     attr_reader :page
 
-    # @return   [SCNR::Engine::Framework]
-    attr_reader :framework
-
     # @param  [Page]        page
-    # @param  [Framework]  framework
-    def initialize( page, framework )
-        @page      = page
-        @framework = framework
+    def initialize( page )
+        @page = page
     end
 
     # @return   [HTTP::Client]
     def http
         HTTP::Client
+    end
+
+    # @return   [SCNR::Engine::Framework]
+    def framework
+        SCNR::Engine::Framework
+    end
+
+    # Provides access to the plugin manager
+    #
+    # You can use it to gain access to the instances of running plugins like so:
+    #
+    #    p plugins.get( 'profiler' )
+    #    # => #<Thread:0x000000025b2ff0 sleep>
+    #
+    #    p plugins.get( 'profiler' )[:instance]
+    #    # => #<SCNR::Engine::Plugins::Profiler>
+    #
+    # @return   [SCNR::Engine::Plugin::Manager]
+    def plugins
+        framework.plugins
+    end
+
+    # @return   [SCNR::Engine::Session]
+    def session
+        framework.session
+    end
+
+    # @return   [SCNR::Engine::BrowserCluster]
+    def browser_cluster
+        framework.browser_cluster
     end
 
     # @note Ignores custom 404 responses.

@@ -26,12 +26,15 @@ class Base < Component::Base
     # @return   [Framework]
     attr_reader :framework
 
-    # @param    [Framework]   framework
-    # @param    [Hash]        options
+    # @param    [Hash]  options
     #   Options to pass to the plugin.
-    def initialize( framework, options )
-        @framework = framework
-        @options   = options
+    def initialize( options )
+        @options = options
+    end
+
+    # @return   [SCNR::Engine::Framework]
+    def framework
+        SCNR::Engine::Framework
     end
 
     # @note **OPTIONAL**

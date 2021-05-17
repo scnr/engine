@@ -20,7 +20,7 @@ module Plugin
 
     def initialize
         super
-        @plugins = SCNR::Engine::Plugin::Manager.new( self )
+        @plugins = SCNR::Engine::Plugin::Manager.new
     end
 
     # @return    [Array<Hash>]
