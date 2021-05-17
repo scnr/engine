@@ -23,7 +23,7 @@ class SCNR::Engine::Plugins::LoginScript < SCNR::Engine::Plugin::Base
         script    = IO.read( @options[:script] )
         @script   = proc do |browser|
             if javascript?
-                browser.goto @framework.options.url
+                browser.goto framework.options.url
                 browser.execute_script script
             else
                 eval script
