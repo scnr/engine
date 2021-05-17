@@ -7,7 +7,7 @@ class AuditorTest < SCNR::Engine::Check::Base
 
     def initialize( framework )
         @framework = framework
-        load_page_from @framework.options.url
+        load_page_from SCNR::Engine::Options.url
 
         http.update_cookies( page.cookie_jar )
     end
@@ -64,6 +64,8 @@ describe SCNR::Engine::Check::Auditor do
     before :each do
         enable_browser_cluster
 
+        framework.reset
+
         SCNR::Engine::Options.url = url
         SCNR::Engine::Options.audit.elements SCNR::Engine::Page::ELEMENTS - [:link_templates]
 
@@ -78,7 +80,7 @@ describe SCNR::Engine::Check::Auditor do
     end
 
     let(:url) { SCNR::Engine::URI.normalize( web_server_url_for( :auditor ) ) }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:auditor) { AuditorTest.new( framework ) }
     let(:issue) { Factory[:issue] }
     let(:issue_data) { Factory[:issue_data].tap { |d| d.delete :check } }

@@ -39,7 +39,7 @@ describe SCNR::Engine::Element::Form::DOM do
         form
     end
     let(:page) { SCNR::Engine::Page.from_url( "#{url}/form" ) }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:auditor) { Auditor.new( page, framework ) }
     let(:parent) { subject.parent }
     let(:url) { web_server_url_for( :form_dom ) }

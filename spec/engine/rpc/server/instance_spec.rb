@@ -155,7 +155,7 @@ describe 'SCNR::Engine::RPC::Server::Instance' do
 
     describe '#list_platforms' do
         it 'lists all available platforms' do
-            expect(subject.list_platforms).to eq(SCNR::Engine::Framework.new.list_platforms)
+            expect(subject.list_platforms).to eq(SCNR::Engine::Framework.unsafe.list_platforms)
         end
     end
 

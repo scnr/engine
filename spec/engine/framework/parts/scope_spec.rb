@@ -7,10 +7,10 @@ describe SCNR::Engine::Framework::Parts::Scope do
         context "when the #{SCNR::Engine::OptionGroups::Scope}#page_limit has" do
             context 'been reached' do
                 it 'returns true' do
-                    SCNR::Engine::Framework.new do |f|
-                        f.options.url = web_server_url_for :framework_multi
-                        f.options.audit.elements :links
-                        f.options.scope.page_limit = 10
+                    SCNR::Engine::Framework.safe do |f|
+                        SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                        SCNR::Engine::Options.audit.elements :links
+                        SCNR::Engine::Options.scope.page_limit = 10
 
                         expect(f.page_limit_reached?).to be_falsey
                         f.run
@@ -23,10 +23,10 @@ describe SCNR::Engine::Framework::Parts::Scope do
 
             context 'not been reached' do
                 it 'returns false' do
-                    SCNR::Engine::Framework.new do |f|
-                        f.options.url = web_server_url_for :framework
-                        f.options.audit.elements :links
-                        f.options.scope.page_limit = 100
+                    SCNR::Engine::Framework.safe do |f|
+                        SCNR::Engine::Options.url = web_server_url_for :framework
+                        SCNR::Engine::Options.audit.elements :links
+                        SCNR::Engine::Options.scope.page_limit = 100
 
                         f.checks.load :signature
 
@@ -39,9 +39,9 @@ describe SCNR::Engine::Framework::Parts::Scope do
 
             context 'not been set' do
                 it 'returns false' do
-                    SCNR::Engine::Framework.new do |f|
-                        f.options.url = web_server_url_for :framework
-                        f.options.audit.elements :links
+                    SCNR::Engine::Framework.safe do |f|
+                        SCNR::Engine::Options.url = web_server_url_for :framework
+                        SCNR::Engine::Options.audit.elements :links
 
                         f.checks.load :signature
 

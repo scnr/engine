@@ -27,7 +27,7 @@ class Manager < ::SCNR::Engine::Check::Manager
     public :load, :available, :loaded, :load_all
 
     def load( checks )
-        @framework.options.checks = super( checks )
+        SCNR::Engine::Options.checks = super( checks )
     end
 
 end

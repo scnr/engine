@@ -11,9 +11,9 @@ describe SCNR::Engine::Framework::Parts::Data do
 
     describe '#sitemap' do
         it 'returns a hash with covered URLs and HTTP status codes' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = "#{url}/"
-                f.options.audit.elements :links, :forms, :cookies
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = "#{url}/"
+                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                 f.checks.load :signature
 
                 f.run
@@ -32,7 +32,7 @@ describe SCNR::Engine::Framework::Parts::Data do
         end
 
         it 'updates the #sitemap with the DOM URL' do
-            subject.options.audit.elements :links, :forms, :cookies
+            SCNR::Engine::Options.audit.elements :links, :forms, :cookies
             subject.checks.load :signature
 
             expect(subject.sitemap).to be_empty
@@ -114,7 +114,7 @@ describe SCNR::Engine::Framework::Parts::Data do
 
     describe '#push_to_url_queue' do
         it 'pushes a URL to the URL audit queue' do
-            subject.options.audit.elements :links, :forms, :cookies
+            SCNR::Engine::Options.audit.elements :links, :forms, :cookies
             subject.checks.load :signature
 
             expect(subject.url_queue_total_size).to eq(0)

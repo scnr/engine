@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe SCNR::Engine::Data::Session do
     subject { described_class.new }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:plugins) { framework.plugins }
     let(:dump_directory) do
         "#{Dir.tmpdir}/session-#{SCNR::Engine::Utilities.generate_token}"

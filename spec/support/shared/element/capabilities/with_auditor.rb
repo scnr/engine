@@ -1,5 +1,5 @@
 shared_examples_for 'with_auditor' do
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:auditor) { Auditor.new( nil, framework ) }
     let(:orphan) { subject.dup.tap { |s| s.auditor = nil } }
     let(:auditable) do

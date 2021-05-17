@@ -17,9 +17,8 @@ class Server
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class ActiveOptions
 
-    def initialize( framework )
-        @framework = framework
-        @options   = framework.options
+    def initialize
+        @options = SCNR::Engine::Options.instance
 
         (@options.public_methods( false ) - public_methods( false ) ).each do |m|
             self.class.class_eval do
@@ -34,15 +33,15 @@ class ActiveOptions
     def set( options )
         @options.set( options )
 
-        if @framework.running?
-
+        framework = SCNR::Engine::Framework.unsafe
+        if framework.running?
             HTTP::Client.reset_options
 
             # Scope may have been updated.
-            @framework.sitemap.reject! { |k, v| Utilities.skip_path? k }
+            framework.sitemap.reject! { |k, v| Utilities.skip_path? k }
 
             @options.scope.extend_paths.each do |url|
-                @framework.push_to_url_queue( url )
+                framework.push_to_url_queue( url )
             end
 
         # Only mess with HTTP state if this is the pre-run config.

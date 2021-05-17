@@ -33,11 +33,10 @@ class Trainer
 
     MAX_TRAININGS_PER_URL = 25
 
-    # @param    [SCNR::Engine::Framework]  framework
-    def initialize( framework )
-        super()
+    def initialize
+        super
 
-        @framework   = framework
+        @framework   = SCNR::Engine::Framework
         @sink_tracer = SinkTracer.new
         @updated     = false
 

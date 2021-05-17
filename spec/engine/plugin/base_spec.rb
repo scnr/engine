@@ -8,7 +8,7 @@ describe SCNR::Engine::Plugin::Base do
 
     subject { described_class.new( framework, {} ) }
     let(:url) { web_server_url_for(:framework) }
-    let(:framework) { SCNR::Engine::Framework.new.tap { |f| f.state.running = true } }
+    let(:framework) { SCNR::Engine::Framework.unsafe.tap { |f| f.state.running = true } }
 
     describe '#info' do
         it 'returns .info' do

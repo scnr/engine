@@ -48,7 +48,7 @@ class Framework < ::SCNR::Engine::Framework
         public  m
     end
 
-    def initialize( * )
+    def initialize
         super
 
         # Override standard framework components with their RPC-server counterparts.
@@ -235,8 +235,8 @@ class Framework < ::SCNR::Engine::Framework
             status:         status,
             busy:           running?,
             seed:           Utilities.random_seed,
-            dispatcher_url: @options.dispatcher.url,
-            queue_url:      @options.queue.url
+            dispatcher_url: SCNR::Engine::Options.dispatcher.url,
+            queue_url:      SCNR::Engine::Options.queue.url
         }
 
         if include_issues

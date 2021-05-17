@@ -44,7 +44,7 @@ describe SCNR::Engine::Element::UIForm::DOM do
 
     subject { element( inputs ) }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:auditor) { Auditor.new( page, framework ) }
     let(:parent) { subject.parent }
     let(:url) { web_server_url_for( :ui_form_dom ) }

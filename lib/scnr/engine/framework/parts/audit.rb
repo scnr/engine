@@ -76,7 +76,7 @@ module Audit
             return false
         end
 
-        session.ensure_logged_in
+        session.ensure_logged_in if session
 
         # Initialize the BrowserCluster.
         browser_cluster
@@ -110,7 +110,7 @@ module Audit
 
         if use_browsers?
             print_info "DOM depth: #{page.dom.depth} (Limit: " <<
-                           "#{options.scope.dom_depth_limit})"
+                           "#{Options.scope.dom_depth_limit})"
 
             if page.dom.transitions.any?
                 print_info '  Transitions:'
@@ -185,9 +185,9 @@ module Audit
 
         state.status = :scanning if !pausing?
 
-        push_to_url_queue( options.url )
-        options.scope.extend_paths.each { |url| push_to_url_queue( url ) }
-        options.scope.restrict_paths.each { |url| push_to_url_queue( url, true ) }
+        push_to_url_queue( Options.url )
+        Options.scope.extend_paths.each { |url| push_to_url_queue( url ) }
+        Options.scope.restrict_paths.each { |url| push_to_url_queue( url, true ) }
 
         # Initialize the BrowserCluster.
         browser_cluster

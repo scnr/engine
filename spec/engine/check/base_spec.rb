@@ -8,7 +8,7 @@ describe SCNR::Engine::Check::Base do
 
     subject { described_class.new( Factory[:page], framework ) }
     let(:framework) do
-        framework = SCNR::Engine::Framework.new
+        framework = SCNR::Engine::Framework.unsafe
         framework.state.running = true
         framework.plugins.load_default
         framework

@@ -3,7 +3,8 @@ require 'spec_helper'
 describe SCNR::Engine::Plugin::Manager do
 
     subject { framework.plugins }
-    let(:framework) { SCNR::Engine::Framework.new.tap { |f| f.state.running = true } }
+    let(:framework) { SCNR::Engine::Framework.unsafe.tap { |f| f.state.running = true } }
+    after( :each ){ framework.reset }
 
     describe '#suspend' do
         before :each do

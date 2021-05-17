@@ -37,7 +37,7 @@ describe SCNR::Engine::Element::LinkTemplate do
         )
     end
     let(:page) { SCNR::Engine::Page.from_url( url ) }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:auditor) { Auditor.new( page, framework ) }
     let(:inputtable) do
         described_class.new(

@@ -24,7 +24,7 @@ describe SCNR::Engine::Element::JSON do
 
     subject { described_class.new( url: "#{url}/submit", inputs: inputs, source: inputs.to_json ) }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:auditor) { Auditor.new( page, framework ) }
     let(:inputs) { { 'input1' => 'value1' } }
     let(:url) { utilities.normalize_url( web_server_url_for( :json ) ) }
