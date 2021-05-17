@@ -619,9 +619,9 @@ describe SCNR::Engine::Element::Form do
                 )
 
                 body_should = "#{f.method}#{f.inputs.to_s}"
-                body = nil
 
-                f.submit.on_complete { |res| body = res.body }
+                body = nil
+                f.submit { |res| body = res.body }
                 http.run
                 expect(body_should).to eq(body)
             end

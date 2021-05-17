@@ -19,7 +19,10 @@ describe SCNR::Engine::Element::Cookie::DOM do
         auditor.browser_cluster.wait
     end
 
-    before(:each) { enable_browser_cluster }
+    before(:each) do
+        enable_browser_cluster
+        auditor.framework.reset
+    end
 
     subject { parent.dom }
     let(:page) { SCNR::Engine::Page.from_url( url ) }

@@ -40,7 +40,10 @@ describe SCNR::Engine::Element::UIForm::DOM do
         e
     end
 
-    before(:each) { enable_browser_cluster }
+    before(:each) do
+        enable_browser_cluster
+        auditor.framework.reset
+    end
 
     subject { element( inputs ) }
     let(:page) { SCNR::Engine::Page.from_url( url ) }

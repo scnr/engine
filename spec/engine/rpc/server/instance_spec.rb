@@ -187,7 +187,7 @@ describe 'SCNR::Engine::RPC::Server::Instance' do
 
             File.delete snapshot_path
 
-            sleep 1 while subject.status != :scanning
+            sleep 1 while subject.status != :done
 
             expect(subject.report[:options]).to eq(options)
         end
