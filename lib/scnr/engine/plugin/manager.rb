@@ -31,12 +31,8 @@ class Manager < SCNR::Engine::Component::Manager
     # Expressions matching default plugins.
     DEFAULT   = %w(defaults/*)
 
-    # @param    [SCNR::Engine::Framework]    framework
-    #   Framework instance.
-    def initialize( framework )
+    def initialize
         super( SCNR::Engine::Options.paths.plugins, NAMESPACE )
-        @framework = framework
-
         @jobs = {}
     end
 
@@ -155,7 +151,7 @@ class Manager < SCNR::Engine::Component::Manager
     end
 
     def create( name, options = {} )
-        self[name].new( @framework, options )
+        self[name].new( options )
     end
 
     # Blocks until all plug-ins have finished executing.
