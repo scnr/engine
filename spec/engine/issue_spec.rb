@@ -51,8 +51,8 @@ describe SCNR::Engine::Issue do
             SCNR::Engine::Options.audit.elements :links, :forms, :cookies
 
             issue = nil
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = "#{web_server_url_for( :auditor )}/link"
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = "#{web_server_url_for( :auditor )}/link"
                 f.checks.load :signature
 
                 f.run

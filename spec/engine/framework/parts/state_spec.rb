@@ -12,9 +12,9 @@ describe SCNR::Engine::Framework::Parts::State do
                 SCNR::Engine::Options.timeout.duration = timeout
                 SCNR::Engine::Options.paths.checks     = fixtures_path + '/signature_check/'
 
-                SCNR::Engine::Framework.new do |f|
-                    f.options.url = web_server_url_for :framework_multi
-                    f.options.audit.elements :links
+                SCNR::Engine::Framework.safe do |f|
+                    SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                    SCNR::Engine::Options.audit.elements :links
 
                     f.plugins.load :wait
                     f.checks.load :signature
@@ -34,9 +34,9 @@ describe SCNR::Engine::Framework::Parts::State do
                     SCNR::Engine::Options.timeout.suspend  = true
                     SCNR::Engine::Options.paths.checks     = fixtures_path + '/signature_check/'
 
-                    SCNR::Engine::Framework.new do |f|
-                        f.options.url = web_server_url_for :framework_multi
-                        f.options.audit.elements :links
+                    SCNR::Engine::Framework.safe do |f|
+                        SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                        SCNR::Engine::Options.audit.elements :links
 
                         f.plugins.load :wait
                         f.checks.load :signature
@@ -84,9 +84,9 @@ describe SCNR::Engine::Framework::Parts::State do
         it 'aborts the system' do
             SCNR::Engine::Options.paths.checks  = fixtures_path + '/signature_check/'
 
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = web_server_url_for :framework_multi
-                f.options.audit.elements :links
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                SCNR::Engine::Options.audit.elements :links
 
                 f.plugins.load :wait
                 f.checks.load :signature
@@ -105,9 +105,9 @@ describe SCNR::Engine::Framework::Parts::State do
         end
 
         it 'sets #status to :aborted' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = web_server_url_for :framework_multi
-                f.options.audit.elements :links
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                SCNR::Engine::Options.audit.elements :links
                 f.checks.load :signature
 
                 t = Thread.new do
@@ -129,9 +129,9 @@ describe SCNR::Engine::Framework::Parts::State do
             SCNR::Engine::Options.paths.checks = fixtures_path + '/signature_check/'
 
             snapshot = nil
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = web_server_url_for :framework_multi
-                f.options.audit.elements :links
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                SCNR::Engine::Options.audit.elements :links
 
                 f.plugins.load :wait
                 f.checks.load :signature
@@ -152,9 +152,9 @@ describe SCNR::Engine::Framework::Parts::State do
         end
 
         it 'sets #status to :suspended' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = web_server_url_for :framework_multi
-                f.options.audit.elements :links
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                SCNR::Engine::Options.audit.elements :links
                 f.checks.load :signature
 
                 t = Thread.new do
@@ -175,9 +175,9 @@ describe SCNR::Engine::Framework::Parts::State do
                 'my_option' => 'my value'
             }
 
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = web_server_url_for :framework_multi
-                f.options.audit.elements :links
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                SCNR::Engine::Options.audit.elements :links
 
                 f.checks.load :signature
                 f.plugins.load :suspendable
@@ -200,13 +200,13 @@ describe SCNR::Engine::Framework::Parts::State do
         context "when #{SCNR::Engine::OptionGroups::Paths}#snapshots" do
             context 'is a directory' do
                 it 'stores the snapshot under it' do
-                    SCNR::Engine::Options.paths.checks   = fixtures_path + '/signature_check/'
+                    SCNR::Engine::Options.paths.checks  = fixtures_path + '/signature_check/'
                     SCNR::Engine::Options.snapshot.path = Dir.tmpdir
 
                     snapshot = nil
-                    SCNR::Engine::Framework.new do |f|
-                        f.options.url = web_server_url_for :framework_multi
-                        f.options.audit.elements :links
+                    SCNR::Engine::Framework.safe do |f|
+                        SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                        SCNR::Engine::Options.audit.elements :links
 
                         f.plugins.load :wait
                         f.checks.load :signature
@@ -234,9 +234,9 @@ describe SCNR::Engine::Framework::Parts::State do
                     SCNR::Engine::Options.snapshot.path = "#{Dir.tmpdir}/snapshot"
 
                     snapshot = nil
-                    SCNR::Engine::Framework.new do |f|
-                        f.options.url = web_server_url_for :framework_multi
-                        f.options.audit.elements :links
+                    SCNR::Engine::Framework.safe do |f|
+                        SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                        SCNR::Engine::Options.audit.elements :links
 
                         f.plugins.load :wait
                         f.checks.load :signature
@@ -266,9 +266,9 @@ describe SCNR::Engine::Framework::Parts::State do
 
             logged_issues = 0
             snapshot = nil
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = multi_url
-                f.options.audit.elements :links
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = multi_url
+                SCNR::Engine::Options.audit.elements :links
 
                 f.plugins.load :wait
                 f.checks.load :signature
@@ -292,7 +292,7 @@ describe SCNR::Engine::Framework::Parts::State do
             reset_options
             SCNR::Engine::Options.paths.checks  = fixtures_path + '/signature_check/'
 
-            SCNR::Engine::Framework.new do |f|
+            SCNR::Engine::Framework.safe do |f|
                 f.restore snapshot
 
                 SCNR::Engine::Data.issues.on_new do
@@ -310,11 +310,11 @@ describe SCNR::Engine::Framework::Parts::State do
             options_hash = nil
 
             snapshot = nil
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = multi_url
-                f.options.audit.elements :links, :forms, :cookies
-                f.options.datastore.my_custom_option = 'my custom value'
-                options_hash = f.options.update( f.options.to_rpc_data ).to_h.deep_clone
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = multi_url
+                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
+                SCNR::Engine::Options.datastore.my_custom_option = 'my custom value'
+                options_hash = SCNR::Engine::Options.update( SCNR::Engine::Options.to_rpc_data ).to_h.deep_clone
 
                 f.checks.load :signature
 
@@ -327,7 +327,7 @@ describe SCNR::Engine::Framework::Parts::State do
             end
 
             SCNR::Engine::Framework.restore( snapshot ) do |f|
-                opts = f.options.to_h
+                opts = SCNR::Engine::Options.to_h
                 opts.delete :timeout
                 options_hash.delete :timeout
 
@@ -339,9 +339,9 @@ describe SCNR::Engine::Framework::Parts::State do
             enable_browser_cluster
 
             snapshot = nil
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/with_ajax'
-                f.options.audit.elements :links, :forms, :cookies
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/with_ajax'
+                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
 
                 f.checks.load :signature
 
@@ -361,8 +361,8 @@ describe SCNR::Engine::Framework::Parts::State do
         it 'restores loaded checks' do
             snapshot = nil
 
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = multi_url
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = multi_url
                 f.checks.load :signature
 
                 t = Thread.new { f.run }
@@ -381,8 +381,8 @@ describe SCNR::Engine::Framework::Parts::State do
         it 'restores loaded plugins' do
             snapshot = nil
 
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = multi_url
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = multi_url
                 f.plugins.load :wait
 
                 t = Thread.new { f.run }
@@ -403,9 +403,9 @@ describe SCNR::Engine::Framework::Parts::State do
             }
 
             snapshot = nil
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = multi_url
-                f.options.audit.elements :links
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = multi_url
+                SCNR::Engine::Options.audit.elements :links
 
                 f.checks.load :signature
                 f.plugins.load :suspendable
@@ -439,47 +439,9 @@ describe SCNR::Engine::Framework::Parts::State do
 
     describe '#pause' do
         it 'pauses the system' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
-                f.options.audit.elements :links, :forms, :cookies
-                f.checks.load :signature
-
-                t = Thread.new do
-                    f.run
-                end
-
-                f.pause
-
-                sleep 10
-
-                expect(f.running?).to be_truthy
-                t.kill
-            end
-        end
-
-        it 'returns an Integer request ID' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
-                f.options.audit.elements :links, :forms, :cookies
-                f.checks.load :signature
-
-                t = Thread.new do
-                    f.run
-                end
-
-                expect(f.pause).to be_kind_of Integer
-
-                sleep 10
-
-                expect(f.running?).to be_truthy
-                t.kill
-            end
-        end
-
-        it 'sets #status to :paused' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
-                f.options.audit.elements :links, :forms, :cookies
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/elem_combo'
+                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                 f.checks.load :signature
 
                 t = Thread.new do
@@ -487,39 +449,22 @@ describe SCNR::Engine::Framework::Parts::State do
                 end
                 sleep 0.1 while f.status != :scanning
 
-                f.pause
+                id = f.pause
+                expect(id).to be_kind_of Integer
                 expect(f.status).to eq(:paused)
+                expect(f.running?).to be_truthy
 
-                t.kill
+                f.resume id
+                t.join
             end
         end
     end
 
     describe '#resume' do
-        it 'resumes the system' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
-                f.options.audit.elements :links, :forms, :cookies
-                f.checks.load :signature
-
-                t = Thread.new do
-                    f.run
-                end
-
-                id = f.pause
-
-                sleep 10
-
-                expect(f.running?).to be_truthy
-                f.resume id
-                t.join
-            end
-        end
-
-        it 'sets #status to scanning' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
-                f.options.audit.elements :links, :forms, :cookies
+        it 'resumes the scan' do
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/elem_combo'
+                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                 f.checks.load :signature
 
                 t = Thread.new do
@@ -533,6 +478,7 @@ describe SCNR::Engine::Framework::Parts::State do
                 Timeout.timeout( 5 ) do
                     sleep 0.1 while f.status != :scanning
                 end
+
                 t.join
             end
         end
@@ -542,8 +488,8 @@ describe SCNR::Engine::Framework::Parts::State do
         it 'shuts down the #browser_cluster' do
             enable_browser_cluster
 
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/elem_combo'
 
                 expect(f.browser_cluster).to receive(:shutdown).at_least(:once)
                 f.clean_up
@@ -551,8 +497,8 @@ describe SCNR::Engine::Framework::Parts::State do
         end
 
         it 'stops the #plugins' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/elem_combo'
                 f.plugins.load :wait
 
                 f.plugins.run
@@ -562,8 +508,8 @@ describe SCNR::Engine::Framework::Parts::State do
         end
 
         it 'sets the status to cleanup' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/elem_combo'
 
                 f.clean_up
                 expect(f.status).to eq(:cleanup)
@@ -571,9 +517,9 @@ describe SCNR::Engine::Framework::Parts::State do
         end
 
         it 'clears the page queue' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
-                f.push_to_page_queue SCNR::Engine::Page.from_url( f.options.url )
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/elem_combo'
+                f.push_to_page_queue SCNR::Engine::Page.from_url( SCNR::Engine::Options.url )
 
                 expect(f.data.page_queue).not_to be_empty
                 f.clean_up
@@ -582,9 +528,9 @@ describe SCNR::Engine::Framework::Parts::State do
         end
 
         it 'clears the URL queue' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
-                f.push_to_url_queue f.options.url
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/elem_combo'
+                f.push_to_url_queue SCNR::Engine::Options.url
 
                 expect(f.data.url_queue).not_to be_empty
                 f.clean_up
@@ -593,8 +539,8 @@ describe SCNR::Engine::Framework::Parts::State do
         end
 
         it 'sets #running? to false' do
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/elem_combo'
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/elem_combo'
                 f.clean_up
                 expect(f).not_to be_running
             end

@@ -27,7 +27,7 @@ describe SCNR::Engine::Element::Link::DOM do
 
     subject { page.links.first.dom.tap { |l| l.auditor = auditor } }
     let(:page) { SCNR::Engine::Page.from_url( "#{url}/link" ) }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:auditor) { Auditor.new( page, framework ) }
     let(:parent) { subject.parent }
     let(:url) { web_server_url_for( :link_dom ) }

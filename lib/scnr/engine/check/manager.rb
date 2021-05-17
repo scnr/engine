@@ -54,18 +54,15 @@ class Manager < SCNR::Engine::Component::Manager
         end
     end
 
-    # @param    [SCNR::Engine::Framework]  framework
-    def initialize( framework )
+    def initialize
         self.class.reset
-
-        @framework = framework
-        super( @framework.options.paths.checks, NAMESPACE )
+        super( SCNR::Engine::Options.paths.checks, NAMESPACE )
     end
 
     # @param    [SCNR::Engine::Page]   page
     #   Page to audit.
-    def run( page )
-        schedule.each { |mod| exception_jail( false ){ run_one( mod, page ) } }
+    def run( framework, page )
+        schedule.each { |mod| exception_jail( false ){ run_one( framework, mod, page ) } }
     end
 
     def on_load( check )
@@ -179,10 +176,10 @@ class Manager < SCNR::Engine::Component::Manager
     # @return   [Bool]
     #   `true` if the check was ran (based on {Check::Auditor.check?}),
     #   `false` otherwise.
-    def run_one( check, page )
+    def run_one( framework, check, page )
         return false if !check.check?( page )
 
-        check_new = check.new( page, @framework )
+        check_new = check.new( page, framework )
         check_new.prepare
         check_new.run
         check_new.clean_up

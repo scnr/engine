@@ -102,7 +102,7 @@ class Manager < Hash
     # @param    [Module,Class]    namespace
     #   Namespace under which all components are directly defined.
     def initialize( lib, namespace )
-        @lib       = lib
+        self.lib   = lib
         @namespace = namespace
 
         @helper_check_cache = {}
@@ -366,6 +366,12 @@ class Manager < Hash
         @paths_cache ||=
             Dir.glob( File.join( "#{@lib}**", "*.rb" ) ).
                 reject{ |path| helper?( path ) }
+    end
+
+    def lib=(l)
+        @lib = l
+        @paths_cache = nil
+        l
     end
 
     def matches_globs?( path, globs )

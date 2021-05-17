@@ -34,7 +34,7 @@ class Manager < SCNR::Engine::Component::Manager
     # @param    [SCNR::Engine::Framework]    framework
     #   Framework instance.
     def initialize( framework )
-        super( framework.options.paths.plugins, NAMESPACE )
+        super( SCNR::Engine::Options.paths.plugins, NAMESPACE )
         @framework = framework
 
         @jobs = {}
@@ -129,7 +129,7 @@ class Manager < SCNR::Engine::Component::Manager
             end
 
             h[name.to_sym] = prepare_options(
-                name, plugin, @framework.options.plugins[name]
+                name, plugin, SCNR::Engine::Options.plugins[name]
             )
             h
         end

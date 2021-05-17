@@ -24,7 +24,7 @@ module Report
         # Deep clone the redundancy rules to preserve their original counters
         # for the reports.
         @original_redundant_path_patterns =
-            options.scope.redundant_path_patterns.deep_clone
+          Options.scope.redundant_path_patterns.deep_clone
 
         @reporters = SCNR::Engine::Reporter::Manager.new
     end
@@ -32,14 +32,14 @@ module Report
     # @return    [Report]
     #   Scan results.
     def report
-        opts = options.to_hash.deep_clone
+        opts = Options.to_hash.deep_clone
 
         # restore the original redundancy rules and their counters
         opts[:scope][:redundant_path_patterns] = @original_redundant_path_patterns
 
         SCNR::Engine::Report.new(
             status:          state.status,
-            options:         options,
+            options:         Options,
             sitemap:         sitemap,
             issues:          SCNR::Engine::Data.issues.sort,
             plugins:         @plugins.results,

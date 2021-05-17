@@ -28,19 +28,8 @@ module State
         # @return   [Framework]
         #   Restored instance.
         def restore( ses, &block )
-            framework = new
-            framework.restore( ses )
-
-            if block_given?
-                begin
-                    block.call framework
-                ensure
-                    framework.clean_up
-                    framework.reset
-                end
-            end
-
-            framework
+            f = self.unsafe.restore( ses )
+            block_given? ? f.safe( &block ) : f
         end
 
         # @note You should first reset {SCNR::Engine::Options}.
@@ -88,10 +77,10 @@ module State
         return @state_archive if @state_archive
 
         default_filename =
-            "#{URI(options.url).host} #{Time.now.to_s.gsub( ':', '_' )} " <<
+            "#{URI(SCNR::Engine::Options.url).host} #{Time.now.to_s.gsub( ':', '_' )} " <<
                 "#{generate_token}.#{Snapshot::EXTENSION}"
 
-        location = options.snapshot.path
+        location = SCNR::Engine::Options.snapshot.path
 
         if !location
             location = default_filename
@@ -140,7 +129,7 @@ module State
 
     # @private
     def reset_trainer
-        @trainer = Trainer.new( self )
+        @trainer = Trainer.new
     end
 
     # @note Prefer this from {.reset} if you already have an instance.
@@ -148,8 +137,12 @@ module State
     #
     # Resets everything and allows the framework to be re-used.
     def reset
-        @cleaned_up  = false
-        @browser_job = nil
+        @state_archive   = nil
+        @cleaned_up      = false
+        @browser_job     = nil
+        @start_datetime  = nil
+        @finish_datetime = nil
+        @browser_cluster = nil
 
         @failures.clear
         @retries.clear
@@ -165,6 +158,10 @@ module State
         @checks.clear
         @reporters.clear
         @plugins.clear
+
+        @checks    = SCNR::Engine::Check::Manager.new
+        @plugins   = SCNR::Engine::Plugin::Manager.new( self )
+        @reporters = SCNR::Engine::Reporter::Manager.new
     end
 
     # @return   [State::Framework]
@@ -182,10 +179,10 @@ module State
 
         browser_job_update_skip_states state.browser_skip_states
 
-        checks.load  Options.checks
-        plugins.load Options.plugins.keys
+        checks.load  SCNR::Engine::Options.checks
+        plugins.load SCNR::Engine::Options.plugins.keys
 
-        nil
+        self
     end
 
     # @return   [Array<String>]
@@ -376,7 +373,7 @@ module State
     def pre_audit_element_filter( page )
         unique_elements  = {}
         page.elements.each do |e|
-            next if !Options.audit.element?( e.type )
+            next if !SCNR::Engine::Options.audit.element?( e.type )
             next if e.is_a?( Cookie ) || e.is_a?( Header )
 
             new_element               = false
@@ -427,9 +424,11 @@ module State
     end
 
     def abort_if_timeout
-        return if !options.timeout.exceeded?( Time.now - @start_datetime )
+        return if @start_datetime && !SCNR::Engine::Options.timeout.exceeded?(
+          Time.now - @start_datetime
+        )
 
-        if options.timeout.suspend?
+        if SCNR::Engine::Options.timeout.suspend?
             suspend_to_disk
         else
             clean_up
@@ -443,6 +442,8 @@ module State
     end
 
     def suspend_to_disk
+        options = SCNR::Engine::Options
+
         options.timeout.duration = nil
         options.timeout.suspend  = nil
 
@@ -455,7 +456,8 @@ module State
         # happening.
         options.checks  = checks.loaded
         options.plugins = plugins.loaded.
-            inject({}) { |h, name| h[name.to_s] = Options.plugins[name.to_s] || {}; h }
+            inject({}) { |h, name| h[name.to_s] =
+                options.plugins[name.to_s] || {}; h }
 
         if browser_cluster_job_skip_states
             state.browser_skip_states.merge browser_cluster_job_skip_states

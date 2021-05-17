@@ -6,6 +6,9 @@
     web site for more information on licensing and terms of use.
 =end
 
+Encoding.default_external = 'BINARY'
+Encoding.default_internal = 'BINARY'
+
 require 'rubygems'
 require 'bundler/setup'
 require 'tmpdir'

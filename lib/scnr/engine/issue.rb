@@ -130,41 +130,39 @@ class Issue
     #
     # @return   [Issue,nil]
     #   Fresh {Issue} if the issue still exists, `nil` otherwise.
-    def recheck( framework = nil )
+    def recheck
         original_options = Options.to_h
 
         new_issue = nil
         checker = proc do |f|
             if active?
                 referring_page.update_element_audit_whitelist vector
-                f.options.audit.elements vector.class.type
-                f.options.audit.include_vector_patterns = [affected_input_name]
+
+                SCNR::Engine::Options.audit.elements vector.class.type
+                SCNR::Engine::Options.audit.include_vector_patterns = [affected_input_name]
             end
 
-            f.options.url = referring_page.url
+            SCNR::Engine::Options.url = referring_page.url
 
             f.checks.load( check[:shortname] )
-            f.plugins.load( f.options.plugins.keys )
+            f.plugins.load( SCNR::Engine::Options.plugins.keys )
 
             f.push_to_page_queue referring_page
+
             # Needs to happen **AFTER** the push to page queue.
-            f.options.scope.do_not_crawl
+            SCNR::Engine::Options.scope.do_not_crawl
 
             f.run
 
             new_issue = Data.issues[digest]
         end
 
-        if framework
-            checker.call framework
-        else
-            Framework.new( &checker )
-        end
+        SCNR::Engine::Framework.safe( &checker )
 
         new_issue
     ensure
-        Options.reset
-        Options.set original_options
+        SCNR::Engine::Options.reset
+        SCNR::Engine::Options.set original_options
     end
 
     # @return   [HTTP::Response]

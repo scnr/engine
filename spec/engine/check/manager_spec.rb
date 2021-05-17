@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe SCNR::Engine::Check::Manager do
 
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
     let(:checks) { framework.checks }
     let(:url) { SCNR::Engine::Utilities.normalize_url( web_server_url_for( :auditor ) ) }
@@ -20,7 +20,7 @@ describe SCNR::Engine::Check::Manager do
         context 'when the check contains invalid platforms' do
             it "raises #{described_class::Error::InvalidPlatforms}" do
                 SCNR::Engine::Options.paths.checks = fixtures_path + 'check_with_invalid_platforms/'
-                checks = SCNR::Engine::Framework.new.checks
+                checks = SCNR::Engine::Framework.unsafe.checks
 
                 expect { checks[:with_invalid_platforms] }.to raise_error described_class::Error::InvalidPlatforms
                 expect(checks.include?(:with_invalid_platforms)).to be_falsey
@@ -104,7 +104,7 @@ describe SCNR::Engine::Check::Manager do
     describe '#run' do
         it 'runs all checks' do
             checks.load_all
-            checks.run( page )
+            checks.run( framework, page )
             expect(issues.size).to equal 1
             expect(issues.first.name).to eq(checks['test'].info[:issue][:name])
         end
@@ -113,7 +113,7 @@ describe SCNR::Engine::Check::Manager do
     describe '#run_one' do
         it 'runs a single check' do
             checks.load :test
-            checks.run_one( checks.values.first, page )
+            checks.run_one( framework, checks.values.first, page )
             expect(issues.size).to equal 1
             expect(issues.first.name).to eq(checks['test'].info[:issue][:name])
         end
@@ -121,7 +121,7 @@ describe SCNR::Engine::Check::Manager do
         context 'when the check was ran' do
             it 'returns true' do
                 checks.load :test
-                expect(checks.run_one( checks.values.first, page )).to be_truthy
+                expect(checks.run_one( framework, checks.values.first, page )).to be_truthy
             end
         end
 
@@ -131,7 +131,7 @@ describe SCNR::Engine::Check::Manager do
 
                 allow(SCNR::Engine::Checks::Test).to receive(:check?).and_return(false)
 
-                expect(checks.run_one( checks.values.first, page )).to be_falsey
+                expect(checks.run_one( framework, checks.values.first, page )).to be_falsey
             end
         end
     end

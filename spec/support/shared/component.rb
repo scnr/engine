@@ -6,7 +6,7 @@ shared_examples_for "component" do
 
     let(:name) { @name }
     let(:component_name) { name }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:session) { framework.session }
     let(:http) { framework.http }
     let(:options) { framework.options }

@@ -4,9 +4,10 @@ describe SCNR::Engine::Reporter::Base do
     before( :each ) do
         SCNR::Engine::Options.paths.reporters = fixtures_path + 'reporters/base_spec'
     end
+    after( :each ){ framework.reset }
 
     let(:reporters) { framework.reporters }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:report) { framework.report }
 
     describe '#report' do

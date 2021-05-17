@@ -11,7 +11,7 @@ shared_examples_for 'wavsep' do
         SCNR::Engine::Element::DOM::Capabilities::WithSinks::Sinks.add_to_max_cost 9999
     end
 
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
 
     def format_error( logged_urls, logged_resources, expected_resources )
         error = "Logged URLs:\n"

@@ -3,51 +3,15 @@ require 'spec_helper'
 describe SCNR::Engine::Framework do
     include_examples 'framework'
 
-    describe '#initialize' do
-        context 'when passed a block' do
-            it 'executes it' do
-                ran = false
-                SCNR::Engine::Framework.new do |f|
-                    ran = true
-                end
-
-                expect(ran).to be_truthy
-            end
-
-            it 'resets the framework' do
-                expect(SCNR::Engine::Checks.constants.include?( :Signature )).to be_falsey
-
-                SCNR::Engine::Framework.new do |f|
-                    expect(f.checks.load_all).to eq(%w(signature))
-                    expect(SCNR::Engine::Checks.constants.include?( :Signature )).to be_truthy
-                end
-
-                expect(SCNR::Engine::Checks.constants.include?( :Signature )).to be_falsey
-            end
-
-            context 'when an exception is raised' do
-                it 'raises it' do
-                    expect { SCNR::Engine::Framework.new { |f| raise } }.to raise_error
-                end
-            end
-        end
-    end
-
     describe '#version' do
         it "returns #{SCNR::Engine::VERSION}" do
             expect(subject.version).to eq(SCNR::Engine::VERSION)
         end
     end
 
-    describe '#options' do
-        it "provides access to #{SCNR::Engine::Options}" do
-            expect(subject.options).to be_kind_of SCNR::Engine::Options
-        end
-    end
-
     describe '#run' do
         it 'follows redirects' do
-            subject.options.url = f_url + '/redirect'
+            SCNR::Engine::Options.url = f_url + '/redirect'
             subject.run
             expect(subject.sitemap).to eq({
                 "#{f_url}/redirect"   => 302,
@@ -56,8 +20,8 @@ describe SCNR::Engine::Framework do
         end
 
         it 'performs the scan' do
-            subject.options.url = url + '/elem_combo'
-            subject.options.audit.elements :links, :forms, :cookies
+            SCNR::Engine::Options.url = url + '/elem_combo'
+            SCNR::Engine::Options.audit.elements :links, :forms, :cookies
             subject.checks.load :signature
             subject.plugins.load :wait
 
@@ -68,9 +32,9 @@ describe SCNR::Engine::Framework do
         end
 
         it 'sets #status to scanning' do
-            described_class.new do |f|
-                f.options.url = url + '/elem_combo'
-                f.options.audit.elements :links, :forms, :cookies
+            described_class.safe do |f|
+                SCNR::Engine::Options.url = url + '/elem_combo'
+                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                 f.checks.load :signature
 
                 t = Thread.new { f.run }
@@ -84,9 +48,9 @@ describe SCNR::Engine::Framework do
         it 'handles heavy load' do
             SCNR::Engine::Options.paths.checks = fixtures_path + '/signature_check/'
 
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = web_server_url_for :framework_multi
-                f.options.audit.elements :links
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = web_server_url_for :framework_multi
+                SCNR::Engine::Options.audit.elements :links
 
                 f.checks.load :signature
 
@@ -98,9 +62,9 @@ describe SCNR::Engine::Framework do
         it 'handles pages with JavaScript code' do
             enable_browser_cluster
 
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/with_javascript'
-                f.options.audit.elements :links, :forms, :cookies
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/with_javascript'
+                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
 
                 f.checks.load :signature
                 f.run
@@ -116,9 +80,9 @@ describe SCNR::Engine::Framework do
         it 'handles AJAX' do
             enable_browser_cluster
 
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url + '/with_ajax'
-                f.options.audit.elements :links, :forms, :cookies
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url + '/with_ajax'
+                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
 
                 f.checks.load :signature
                 f.run
@@ -133,9 +97,9 @@ describe SCNR::Engine::Framework do
 
         context 'when done' do
             it 'sets #status to :done' do
-                described_class.new do |f|
-                    f.options.url = url + '/elem_combo'
-                    f.options.audit.elements :links, :forms, :cookies
+                described_class.safe do |f|
+                    SCNR::Engine::Options.url = url + '/elem_combo'
+                    SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                     f.checks.load :signature
 
                     f.run
@@ -148,11 +112,11 @@ describe SCNR::Engine::Framework do
             it 'logs-in again before continuing with the audit' do
                 enable_browser_cluster
 
-                SCNR::Engine::Framework.new do |f|
+                SCNR::Engine::Framework.safe do |f|
                     url = web_server_url_for( :framework ) + '/'
-                    f.options.url = "#{url}/congrats"
+                    SCNR::Engine::Options.url = "#{url}/congrats"
 
-                    f.options.audit.elements :links, :forms
+                    SCNR::Engine::Options.audit.elements :links, :forms
                     f.checks.load_all
 
                     f.session.configure(
@@ -163,8 +127,8 @@ describe SCNR::Engine::Framework do
                         }
                     )
 
-                    f.options.session.check_url     = url
-                    f.options.session.check_pattern = 'logged-in user'
+                    SCNR::Engine::Options.session.check_url     = url
+                    SCNR::Engine::Options.session.check_pattern = 'logged-in user'
 
                     f.run
                     expect(f.report.issues.size).to eq(1)

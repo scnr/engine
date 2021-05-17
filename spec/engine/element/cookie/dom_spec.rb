@@ -23,7 +23,7 @@ describe SCNR::Engine::Element::Cookie::DOM do
 
     subject { parent.dom }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:auditor) { Auditor.new( page, framework ) }
 
     let(:url) { web_server_url_for( :cookie_dom ) }

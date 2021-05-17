@@ -37,7 +37,7 @@ class Manager < ::SCNR::Engine::Plugin::Manager
             prepare_options( plugin, self[plugin], opts )
         end
 
-        @framework.options.plugins.merge!( plugins )
+        SCNR::Engine::Options.plugins.merge!( plugins )
         super( plugins.keys )
     end
 

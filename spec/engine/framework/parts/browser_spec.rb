@@ -37,14 +37,14 @@ describe SCNR::Engine::Framework::Parts::Browser do
 
     describe '#use_browsers?' do
         before :each do
-            subject.options.scope.dom_depth_limit     = 1
-            subject.options.browser_cluster.pool_size = 1
+            SCNR::Engine::Options.scope.dom_depth_limit     = 1
+            SCNR::Engine::Options.browser_cluster.pool_size = 1
         end
 
         context "when #{SCNR::Engine::OptionGroups::BrowserCluster}#enabled? is" do
             context 'false' do
                 before do
-                    subject.options.browser_cluster.pool_size = 0
+                    SCNR::Engine::Options.browser_cluster.pool_size = 0
                 end
 
                 it 'returns false' do
@@ -54,7 +54,7 @@ describe SCNR::Engine::Framework::Parts::Browser do
 
             context 'true' do
                 before do
-                    subject.options.browser_cluster.pool_size = 1
+                    SCNR::Engine::Options.browser_cluster.pool_size = 1
                 end
 
                 it 'returns true' do
@@ -66,7 +66,7 @@ describe SCNR::Engine::Framework::Parts::Browser do
         context "when #{SCNR::Engine::OptionGroups::Scope}#dom_depth_limit is" do
             context '0' do
                 before do
-                    subject.options.scope.dom_depth_limit = 0
+                    SCNR::Engine::Options.scope.dom_depth_limit = 0
                 end
 
                 it 'returns false' do
@@ -76,7 +76,7 @@ describe SCNR::Engine::Framework::Parts::Browser do
 
             context '> 0' do
                 before do
-                    subject.options.scope.dom_depth_limit = 1
+                    SCNR::Engine::Options.scope.dom_depth_limit = 1
                 end
 
                 it 'returns true' do

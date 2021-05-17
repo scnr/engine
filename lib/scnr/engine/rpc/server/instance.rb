@@ -113,8 +113,8 @@ class Instance
         @options = options
         @token   = token
 
-        @framework      = Server::Framework.new( Options.instance )
-        @active_options = Server::ActiveOptions.new( @framework )
+        @framework      = Server::Framework.unsafe
+        @active_options = Server::ActiveOptions.new
 
         @server = Base.new( @options.rpc.to_server_options, token )
         @server.logger.level = @options.datastore.log_level if @options.datastore.log_level
@@ -512,7 +512,7 @@ class Instance
 
         @active_options.set( opts )
 
-        if @framework.options.url.to_s.empty?
+        if SCNR::Engine::Options.url.to_s.empty?
             fail ArgumentError, 'Option \'url\' is mandatory.'
         end
 

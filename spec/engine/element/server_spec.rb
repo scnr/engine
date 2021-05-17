@@ -22,7 +22,7 @@ describe SCNR::Engine::Element::Server do
     subject do
         described_class.new( response.url )
     end
-    let(:framework) { SCNR::Engine::Framework.new }
+    let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:auditor) { Auditor.new( nil, framework ) }
     let(:url) { web_server_url_for :auditor }
     let(:auditable) do

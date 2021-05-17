@@ -20,7 +20,7 @@ module Check
 
     def initialize
         super
-        @checks = SCNR::Engine::Check::Manager.new( self )
+        @checks = SCNR::Engine::Check::Manager.new
     end
 
     # @return    [Array<Hash>]
@@ -79,7 +79,7 @@ module Check
         end
 
         begin
-            @checks.run_one( check, page )
+            @checks.run_one( self, check, page )
         rescue => e
             print_error "Error in #{check.to_s}: #{e.to_s}"
             print_error "Page: #{page.dom.url}"

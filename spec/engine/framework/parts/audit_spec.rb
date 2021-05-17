@@ -7,10 +7,10 @@ describe SCNR::Engine::Framework::Parts::Audit do
         describe '#exclude_binaries' do
             it 'excludes binary pages from the scan' do
                 audited = []
-                SCNR::Engine::Framework.new do |f|
-                    f.options.url = url
-                    f.options.scope.restrict_paths << url + '/binary'
-                    f.options.audit.elements :links, :forms, :cookies
+                SCNR::Engine::Framework.safe do |f|
+                    SCNR::Engine::Options.url = url
+                    SCNR::Engine::Options.scope.restrict_paths << url + '/binary'
+                    SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                     f.checks.load :signature
 
                     f.on_page_audit { |p| audited << p.url }
@@ -19,10 +19,10 @@ describe SCNR::Engine::Framework::Parts::Audit do
                 expect(audited.sort).to eq([url + '/binary'].sort)
 
                 audited = []
-                SCNR::Engine::Framework.new do |f|
-                    f.options.url = url
-                    f.options.scope.restrict_paths << url + '/binary'
-                    f.options.scope.exclude_binaries = true
+                SCNR::Engine::Framework.safe do |f|
+                    SCNR::Engine::Options.url = url
+                    SCNR::Engine::Options.scope.restrict_paths << url + '/binary'
+                    SCNR::Engine::Options.scope.exclude_binaries = true
                     f.checks.load :signature
 
                     f.on_page_audit { |p| audited << p.url }
@@ -34,10 +34,10 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
         describe '#extend_paths' do
             it 'extends the crawl scope' do
-                SCNR::Engine::Framework.new do |f|
-                    f.options.url = "#{url}/elem_combo"
-                    f.options.scope.extend_paths = %w(/some/stuff /more/stuff)
-                    f.options.audit.elements :links, :forms, :cookies
+                SCNR::Engine::Framework.safe do |f|
+                    SCNR::Engine::Options.url = "#{url}/elem_combo"
+                    SCNR::Engine::Options.scope.extend_paths = %w(/some/stuff /more/stuff)
+                    SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                     f.checks.load :signature
 
                     f.run
@@ -51,16 +51,16 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
         describe '#restrict_paths' do
             it 'serves as a replacement to crawling' do
-                SCNR::Engine::Framework.new do |f|
-                    f.options.url = "#{url}/elem_combo"
-                    f.options.scope.restrict_paths = %w(/log_remote_file_if_exists/true)
-                    f.options.audit.elements :links, :forms, :cookies
+                SCNR::Engine::Framework.safe do |f|
+                    SCNR::Engine::Options.url = "#{url}/elem_combo"
+                    SCNR::Engine::Options.scope.restrict_paths = %w(/log_remote_file_if_exists/true)
+                    SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                     f.checks.load :signature
 
                     f.run
 
                     sitemap = f.report.sitemap.map { |u, _| u.split( '?' ).first }
-                    expect(sitemap.sort.uniq).to eq(f.options.scope.restrict_paths.
+                    expect(sitemap.sort.uniq).to eq(SCNR::Engine::Options.scope.restrict_paths.
                         map { |p| f.to_absolute( p ) }.sort)
                 end
             end
@@ -132,8 +132,8 @@ describe SCNR::Engine::Framework::Parts::Audit do
     describe '#on_page_audit' do
         it 'calls the given block before each page is audited' do
             ok = false
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url
                 f.on_page_audit { ok = true }
 
                 f.audit_page SCNR::Engine::Page.from_url( url + '/link' )
@@ -145,8 +145,8 @@ describe SCNR::Engine::Framework::Parts::Audit do
     describe '#after_page_audit' do
         it 'calls the given block before each page is audited' do
             ok = false
-            SCNR::Engine::Framework.new do |f|
-                f.options.url = url
+            SCNR::Engine::Framework.safe do |f|
+                SCNR::Engine::Options.url = url
                 f.after_page_audit { ok = true }
 
                 f.audit_page SCNR::Engine::Page.from_url( url + '/link' )
@@ -157,7 +157,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
     describe '#audit_page' do
         it 'updates the #sitemap with the DOM URL' do
-            subject.options.audit.elements :links, :forms, :cookies
+            SCNR::Engine::Options.audit.elements :links, :forms, :cookies
             subject.checks.load :signature
 
             expect(subject.sitemap).to be_empty
@@ -169,10 +169,10 @@ describe SCNR::Engine::Framework::Parts::Audit do
             expect(subject.sitemap).to include url + '/link/#/stuff'
         end
 
-        it "runs checks without platforms before ones with platforms" do
+        it 'runs checks without platforms before ones with platforms' do
             SCNR::Engine::Options.paths.checks = fixtures_path + '/checks/'
 
-            SCNR::Engine::Framework.new do |f|
+            SCNR::Engine::Framework.safe do |f|
                 f.checks.load_all
 
                 page = SCNR::Engine::Page.from_url( url + '/link' )
@@ -196,6 +196,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
         context 'when checks were' do
             context 'ran against the page' do
                 it 'returns true' do
+                    subject.checks.lib = fixtures_path + '/signature_check/'
                     subject.checks.load :signature
                     expect(subject.audit_page( SCNR::Engine::Page.from_url( url + '/link' ) )).to be_truthy
                 end
@@ -212,8 +213,8 @@ describe SCNR::Engine::Framework::Parts::Audit do
             it 'analyzes the DOM and pushes new pages to the page queue' do
                 enable_browser_cluster
 
-                SCNR::Engine::Framework.new do |f|
-                    f.options.audit.elements :links, :forms, :cookies
+                SCNR::Engine::Framework.safe do |f|
+                    SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                     f.checks.load :signature
 
                     expect(f.page_queue_total_size).to eq(0)
@@ -229,9 +230,9 @@ describe SCNR::Engine::Framework::Parts::Audit do
             it 'analyzes the DOM and pushes new paths to the url queue' do
                 enable_browser_cluster
 
-                SCNR::Engine::Framework.new do |f|
-                    f.options.url = url
-                    f.options.audit.elements :links, :forms, :cookies
+                SCNR::Engine::Framework.safe do |f|
+                    SCNR::Engine::Options.url = url
+                    SCNR::Engine::Options.audit.elements :links, :forms, :cookies
 
                     expect(f.url_queue_total_size).to eq(0)
 
@@ -245,12 +246,12 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
             context 'when the DOM depth limit has been reached' do
                 it 'does not analyze the DOM' do
-                    SCNR::Engine::Framework.new do |f|
-                        f.options.url = url
+                    SCNR::Engine::Framework.safe do |f|
+                        SCNR::Engine::Options.url = url
 
-                        f.options.audit.elements :links, :forms, :cookies
+                        SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                         f.checks.load :signature
-                        f.options.scope.dom_depth_limit = 1
+                        SCNR::Engine::Options.scope.dom_depth_limit = 1
 
                         page = SCNR::Engine::Page.from_url( url + '/with_javascript' )
                         page.dom.push_transition SCNR::Engine::Page::DOM::Transition.new( :page, :load )
@@ -272,13 +273,13 @@ describe SCNR::Engine::Framework::Parts::Audit do
                         }
                     )
 
-                    SCNR::Engine::Framework.new do |f|
+                    SCNR::Engine::Framework.safe do |f|
                         f.checks.load :signature
 
-                        f.options.scope.dom_depth_limit = 10
+                        SCNR::Engine::Options.scope.dom_depth_limit = 10
                         expect(f.audit_page( page )).to be_truthy
 
-                        f.options.scope.dom_depth_limit = 2
+                        SCNR::Engine::Options.scope.dom_depth_limit = 2
                         expect(f.audit_page( page )).to be_falsey
                     end
                 end
@@ -287,8 +288,8 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
         context 'when the page matches exclusion criteria' do
             it 'does not audit it' do
-                subject.options.scope.exclude_path_patterns << /link/
-                subject.options.audit.elements :links, :forms, :cookies
+                SCNR::Engine::Options.scope.exclude_path_patterns << /link/
+                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
 
                 subject.checks.load :signature
 
@@ -297,7 +298,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
             end
 
             it 'returns false' do
-                subject.options.scope.exclude_path_patterns << /link/
+                SCNR::Engine::Options.scope.exclude_path_patterns << /link/
                 expect(subject.audit_page( SCNR::Engine::Page.from_url( url + '/link' ) )).to be_falsey
             end
         end
@@ -305,14 +306,14 @@ describe SCNR::Engine::Framework::Parts::Audit do
         context "when #{SCNR::Engine::Options}#platforms" do
             before do
                 SCNR::Engine::Platform::Manager.reset
-                subject.options.paths.fingerprinters = fixtures_path + '/empty/'
+                SCNR::Engine::Options.paths.fingerprinters = fixtures_path + '/empty/'
             end
 
             context 'have been provided' do
                 context 'and are supported by the check' do
                     it 'audits it' do
-                        subject.options.platforms = [:unix]
-                        subject.options.audit.elements :links, :forms, :cookies
+                        SCNR::Engine::Options.platforms = [:unix]
+                        SCNR::Engine::Options.audit.elements :links, :forms, :cookies
 
                         subject.checks.load :signature
                         subject.checks[:signature].platforms << :unix
@@ -324,9 +325,9 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
                 context 'and are not supported by the check' do
                     it 'does not audit it' do
-                        subject.options.platforms = [:windows]
+                        SCNR::Engine::Options.platforms = [:windows]
 
-                        subject.options.audit.elements :links, :forms, :cookies
+                        SCNR::Engine::Options.audit.elements :links, :forms, :cookies
 
                         subject.checks.load :signature
                         subject.checks[:signature].platforms << :unix
@@ -339,8 +340,8 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
             context 'have not been provided' do
                 it 'audits it' do
-                    subject.options.platforms = []
-                    subject.options.audit.elements :links, :forms, :cookies
+                    SCNR::Engine::Options.platforms = []
+                    SCNR::Engine::Options.audit.elements :links, :forms, :cookies
 
                     subject.checks.load :signature
                     subject.checks[:signature].platforms << :unix
@@ -368,9 +369,8 @@ describe SCNR::Engine::Framework::Parts::Audit do
             it 'moves to the next one' do
                 enable_browser_cluster
 
-                SCNR::Engine::Options.paths.checks  = fixtures_path + '/checks/'
-
-                SCNR::Engine::Framework.new do |f|
+                SCNR::Engine::Framework.safe do |f|
+                    f.checks.lib = fixtures_path + '/checks/'
                     f.checks.load_all
 
                     allow_any_instance_of(f.checks[:test]).to receive(:run) { raise }

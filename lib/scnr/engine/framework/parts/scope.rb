@@ -19,11 +19,11 @@ module Scope
     #   `true` if the {OptionGroups::Scope#page_limit} has been reached,
     #   `false` otherwise.
     def page_limit_reached?
-        options.scope.page_limit_reached?( sitemap.size )
+        Options.scope.page_limit_reached?( sitemap.size )
     end
 
     def crawl?
-        options.scope.crawl? && options.scope.restrict_paths.empty?
+        Options.scope.crawl? && Options.scope.restrict_paths.empty?
     end
 
     # @return   [Bool]

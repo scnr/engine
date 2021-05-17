@@ -47,6 +47,24 @@ require lib + 'browser_cluster'
 #
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class Framework
+    include Singleton
+
+    class <<self
+
+        def method_missing( sym, *args, &block )
+            if instance.respond_to?( sym )
+                instance.send( sym, *args, &block )
+            else
+                super( sym, *args, &block )
+            end
+        end
+
+        def respond_to?( *args )
+            super || instance.respond_to?( *args )
+        end
+
+    end
+
     include UI::Output
     include Utilities
 
@@ -62,34 +80,6 @@ class Framework
     #
     # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
     class Error < SCNR::Engine::Error
-    end
-
-    # @return   [Options]
-    #   System options
-    attr_reader :options
-
-    # @param    [Options]    options
-    # @param    [Block]      block
-    #   Block to be passed a {Framework} instance which will then be {#reset}.
-    def initialize( options = Options.instance, &block )
-        Encoding.default_external = 'BINARY'
-        Encoding.default_internal = 'BINARY'
-
-        @options = options
-
-        # Initialize the Parts.
-        super()
-
-        # Little helper to run a piece of code and reset the framework to be
-        # ready to be reused.
-        if block_given?
-            begin
-                block.call self
-            ensure
-                clean_up
-                reset
-            end
-        end
     end
 
     # Starts the scan.
@@ -171,5 +161,23 @@ class Framework
         i.clean_up
         i.reset
     end
+
+    def unsafe
+        self
+    end
+
+    def safe( &block )
+        raise ArgumentError, 'Missing block.' if !block_given?
+
+        begin
+            block.call self
+        ensure
+            clean_up
+            reset
+        end
+
+        nil
+    end
 end
+
 end
