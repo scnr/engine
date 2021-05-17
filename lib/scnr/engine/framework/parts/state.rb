@@ -160,7 +160,7 @@ module State
         @plugins.clear
 
         @checks    = SCNR::Engine::Check::Manager.new
-        @plugins   = SCNR::Engine::Plugin::Manager.new( self )
+        @plugins   = SCNR::Engine::Plugin::Manager.new
         @reporters = SCNR::Engine::Reporter::Manager.new
     end
 
