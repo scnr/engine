@@ -183,8 +183,7 @@ class Instance
     # @see #suspend
     # @see #snapshot_path
     def restore( snapshot )
-        @framework.restore snapshot
-        @framework.run
+        @framework.restore( snapshot ).run
         true
     end
 

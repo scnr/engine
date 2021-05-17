@@ -5,6 +5,8 @@ shared_examples_for 'auditable'  do |options = {}|
             SCNR::Engine::Options.audit.elements described_class.type
         rescue SCNR::Engine::OptionGroups::Audit::Error => e
         end
+
+        auditor.framework.reset
     end
 
     let(:seed) { 'my_seed' }

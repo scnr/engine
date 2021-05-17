@@ -119,6 +119,7 @@ describe SCNR::Engine::Plugin::Manager do
         context 'when plugins have :priority' do
             before( :each ) do
                 SCNR::Engine::Options.paths.plugins = "#{fixtures_path}/plugins_with_priorities/"
+                subject.lib = SCNR::Engine::Options.paths.plugins
             end
 
             it 'orders them based on priority' do
@@ -133,6 +134,9 @@ describe SCNR::Engine::Plugin::Manager do
 
         context 'when gem dependencies are not met' do
             it "raises #{SCNR::Engine::Plugin::Error::UnsatisfiedDependency}" do
+                reset_options
+                subject.lib = SCNR::Engine::Options.paths.plugins
+
                 subject.load :bad
                 expect { subject.schedule }.to raise_error SCNR::Engine::Plugin::Error::UnsatisfiedDependency
             end

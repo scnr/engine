@@ -25,6 +25,7 @@ describe SCNR::Engine::Element::LinkTemplate::DOM do
 
     before :each do
         enable_browser_cluster
+        auditor.framework.reset
 
         SCNR::Engine::Options.audit.link_template_doms = [
             /param\/(?<param>.+)/,

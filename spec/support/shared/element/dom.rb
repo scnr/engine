@@ -1,7 +1,10 @@
 shared_examples_for 'element_dom' do
     it_should_behave_like 'element'
 
-    before(:each) { enable_browser_cluster }
+    before(:each) do
+        enable_browser_cluster
+        auditor.framework.reset
+    end
 
     def run
         auditor.browser_cluster.wait

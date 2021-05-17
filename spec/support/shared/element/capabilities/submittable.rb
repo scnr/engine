@@ -1,5 +1,9 @@
 shared_examples_for 'submittable' do
 
+    before( :each ) do
+        auditor.framework.reset
+    end
+
     let(:submittable) do
         s = subject.dup
         s.auditor = auditor

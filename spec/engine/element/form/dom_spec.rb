@@ -29,7 +29,10 @@ describe SCNR::Engine::Element::Form::DOM do
         f.dom
     end
 
-    before(:each) { enable_browser_cluster }
+    before(:each) do
+        enable_browser_cluster
+        auditor.framework.reset
+    end
 
     subject do
         f = page.forms.first

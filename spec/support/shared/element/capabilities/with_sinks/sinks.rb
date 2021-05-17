@@ -1,6 +1,9 @@
 shared_examples_for 'sinks' do |options = {}|
 
-    before(:each) { enable_browser_cluster }
+    before(:each) do
+        enable_browser_cluster
+        auditor.framework.reset
+    end
 
     let( :opts ) do
         {

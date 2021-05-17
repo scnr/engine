@@ -52,7 +52,7 @@ class Framework < ::SCNR::Engine::Framework
         super
 
         # Override standard framework components with their RPC-server counterparts.
-        @checks  = Check::Manager.new( self )
+        @checks  = Check::Manager.new
         @plugins = Plugin::Manager.new( self )
 
         @extended_running = false

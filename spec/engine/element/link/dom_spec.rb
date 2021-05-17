@@ -23,7 +23,10 @@ describe SCNR::Engine::Element::Link::DOM do
         auditor.browser_cluster.wait
     end
 
-    before(:each) { enable_browser_cluster }
+    before(:each) do
+        enable_browser_cluster
+        auditor.framework.reset
+    end
 
     subject { page.links.first.dom.tap { |l| l.auditor = auditor } }
     let(:page) { SCNR::Engine::Page.from_url( "#{url}/link" ) }

@@ -8,6 +8,10 @@ describe SCNR::Engine::Check::Manager do
     let(:url) { SCNR::Engine::Utilities.normalize_url( web_server_url_for( :auditor ) ) }
     let(:issue) { Factory[:issue] }
 
+    before( :each ) do
+        SCNR::Engine::Framework.unsafe.reset
+    end
+
     describe '#load' do
         it 'loads all checks' do
             all = checks.load_all
@@ -21,6 +25,7 @@ describe SCNR::Engine::Check::Manager do
             it "raises #{described_class::Error::InvalidPlatforms}" do
                 SCNR::Engine::Options.paths.checks = fixtures_path + 'check_with_invalid_platforms/'
                 checks = SCNR::Engine::Framework.unsafe.checks
+                checks.lib = SCNR::Engine::Options.paths.checks
 
                 expect { checks[:with_invalid_platforms] }.to raise_error described_class::Error::InvalidPlatforms
                 expect(checks.include?(:with_invalid_platforms)).to be_falsey

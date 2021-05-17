@@ -11,7 +11,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
                     SCNR::Engine::Options.url = url
                     SCNR::Engine::Options.scope.restrict_paths << url + '/binary'
                     SCNR::Engine::Options.audit.elements :links, :forms, :cookies
-                    f.checks.load :signature
+                    f.checks.load_all
 
                     f.on_page_audit { |p| audited << p.url }
                     f.run

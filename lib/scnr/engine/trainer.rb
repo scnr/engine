@@ -33,6 +33,9 @@ class Trainer
 
     MAX_TRAININGS_PER_URL = 25
 
+    # @private
+    attr_accessor :framework
+
     def initialize
         super
 

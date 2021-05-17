@@ -14,7 +14,8 @@ class TrainerMockFramework
         @on_effective_page_audit = []
 
         http.reset
-        @trainer = SCNR::Engine::Trainer.new( self )
+        @trainer = SCNR::Engine::Trainer.new
+        @trainer.framework = self
         @trainer.setup
 
         @options = SCNR::Engine::Options.instance
