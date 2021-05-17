@@ -173,6 +173,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
             SCNR::Engine::Options.paths.checks = fixtures_path + '/checks/'
 
             SCNR::Engine::Framework.safe do |f|
+                f.checks.lib = SCNR::Engine::Options.paths.checks
                 f.checks.load_all
 
                 page = SCNR::Engine::Page.from_url( url + '/link' )
