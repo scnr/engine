@@ -109,7 +109,7 @@ describe SCNR::Engine::Check::Manager do
     describe '#run' do
         it 'runs all checks' do
             checks.load_all
-            checks.run( framework, page )
+            checks.run( page )
             expect(issues.size).to equal 1
             expect(issues.first.name).to eq(checks['test'].info[:issue][:name])
         end
