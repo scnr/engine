@@ -145,9 +145,12 @@ impl URI {
         // Complicated, delegate the path merge to the url crate.
         if let Some(ref path) = self.path.clone() {
 
-            self.path = Some(
-                Url::parse( &reference.to_s() ).unwrap().join( path ).unwrap().path().to_string()
-            );
+            let uri = Url::parse( &reference.to_s() );
+            if uri.is_err() {
+                self.path = None;
+            } else {
+                self.path = Some( uri.unwrap().join( path ).unwrap().path().to_string() )
+            }
 
         // That's an easy one, just use the reference path.
         } else {
