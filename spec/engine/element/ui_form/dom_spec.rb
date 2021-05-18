@@ -42,13 +42,13 @@ describe SCNR::Engine::Element::UIForm::DOM do
 
     before(:each) do
         enable_browser_cluster
-        auditor.framework.reset
+        SCNR::Engine::Framework.unsafe.reset
     end
 
     subject { element( inputs ) }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:parent) { subject.parent }
     let(:url) { web_server_url_for( :ui_form_dom ) }
     let(:inputtable) { element( inputs ) }
@@ -68,7 +68,7 @@ describe SCNR::Engine::Element::UIForm::DOM do
             }
         ).dom
         e.page    = SCNR::Engine::Page.from_url( e.action )
-        e.auditor = Auditor.new( e.page, framework )
+        e.auditor = Auditor.new( e.page )
         e
     end
     let(:with_sinks_in_body) do
@@ -89,7 +89,7 @@ describe SCNR::Engine::Element::UIForm::DOM do
             }
         ).dom
         e.page    = SCNR::Engine::Page.from_url( e.action )
-        e.auditor = Auditor.new( e.page, framework )
+        e.auditor = Auditor.new( e.page )
         e
     end
     let(:with_sinks_active) do
@@ -107,7 +107,7 @@ describe SCNR::Engine::Element::UIForm::DOM do
             }
         ).dom
         e.page    = SCNR::Engine::Page.from_url( e.action )
-        e.auditor = Auditor.new( e.page, framework )
+        e.auditor = Auditor.new( e.page )
         e
     end
 

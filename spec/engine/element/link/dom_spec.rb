@@ -25,13 +25,13 @@ describe SCNR::Engine::Element::Link::DOM do
 
     before(:each) do
         enable_browser_cluster
-        auditor.framework.reset
+        SCNR::Engine::Framework.unsafe.reset
     end
 
     subject { page.links.first.dom.tap { |l| l.auditor = auditor } }
     let(:page) { SCNR::Engine::Page.from_url( "#{url}/link" ) }
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:parent) { subject.parent }
     let(:url) { web_server_url_for( :link_dom ) }
     let(:inputtable) do

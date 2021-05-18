@@ -24,7 +24,7 @@ describe SCNR::Engine::Element::Header do
     subject { described_class.new( url: "#{url}/submit", inputs: inputs ) }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:inputs) { { 'input1' => 'value1' } }
     let(:url) { utilities.normalize_url( web_server_url_for( :header ) ) }
     let(:http) { SCNR::Engine::HTTP::Client }

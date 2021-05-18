@@ -31,7 +31,7 @@ describe SCNR::Engine::Element::Form::DOM do
 
     before(:each) do
         enable_browser_cluster
-        auditor.framework.reset
+        SCNR::Engine::Framework.unsafe.reset
     end
 
     subject do
@@ -43,7 +43,7 @@ describe SCNR::Engine::Element::Form::DOM do
     end
     let(:page) { SCNR::Engine::Page.from_url( "#{url}/form" ) }
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:parent) { subject.parent }
     let(:url) { web_server_url_for( :form_dom ) }
     let(:inputtable) do

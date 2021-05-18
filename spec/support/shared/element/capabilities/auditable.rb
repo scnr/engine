@@ -6,7 +6,7 @@ shared_examples_for 'auditable'  do |options = {}|
         rescue SCNR::Engine::OptionGroups::Audit::Error => e
         end
 
-        auditor.framework.reset
+        SCNR::Engine::Framework.unsafe.reset
     end
 
     let(:seed) { 'my_seed' }

@@ -11,7 +11,7 @@ describe SCNR::Engine::Element::Capabilities::Analyzable::Signature do
     let(:negative){ SCNR::Engine::Element::Link.new( url: url, inputs: { 'inexistent_input' => '' } ).tap { |e| e.auditor = auditor } }
     let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:page) { SCNR::Engine::Page.from_url( page_url ).tap { SCNR::Engine::Platform::Manager.reset } }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:page_url) { web_server_url_for( :signature ) }
     let(:url) { page_url }
 

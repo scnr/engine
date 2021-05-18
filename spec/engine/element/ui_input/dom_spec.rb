@@ -35,13 +35,13 @@ describe SCNR::Engine::Element::UIInput::DOM do
 
     before(:each) do
         enable_browser_cluster
-        auditor.framework.reset
+        SCNR::Engine::Framework.unsafe.reset
     end
 
     subject { element }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:parent) { subject.parent }
     let(:url) { web_server_url_for( :ui_input_dom ) }
     let(:inputtable) { element }
@@ -53,7 +53,7 @@ describe SCNR::Engine::Element::UIInput::DOM do
             source: '<input oninput="handleOnInput();" id="active" name="active" value="value1" />'
         ).dom
         e.page    = SCNR::Engine::Page.from_url( e.action )
-        e.auditor = Auditor.new( page, framework )
+        e.auditor = auditor
         e
     end
     let(:with_sinks_in_body) do
@@ -66,7 +66,7 @@ describe SCNR::Engine::Element::UIInput::DOM do
             source: '<input oninput="handleOnInput();" id="active" name="active" value="value1" />'
         ).dom
         e.page    = SCNR::Engine::Page.from_url( e.action )
-        e.auditor = Auditor.new( page, framework )
+        e.auditor = auditor
         e
     end
 
@@ -77,7 +77,7 @@ describe SCNR::Engine::Element::UIInput::DOM do
             source: '<input oninput="handleOnInput();" id="active" name="active" value="value1" />'
         ).dom
         e.page    = SCNR::Engine::Page.from_url( e.action )
-        e.auditor = Auditor.new( page, framework )
+        e.auditor = auditor
         e
     end
 

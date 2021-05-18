@@ -2,7 +2,7 @@ shared_examples_for 'sinks' do |options = {}|
 
     before(:each) do
         enable_browser_cluster
-        auditor.framework.reset
+        SCNR::Engine::Framework.unsafe.reset
     end
 
     let( :opts ) do

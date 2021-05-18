@@ -29,7 +29,7 @@ describe SCNR::Engine::Element::Link do
     subject { described_class.new( url: "#{url}submit", inputs: inputs, source: html ) }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:inputs) { { 'name1' => 'value1', 'name2' => 'value2' } }
     let(:url) { utilities.normalize_url( web_server_url_for( :link ) ) }
     let(:http) { SCNR::Engine::HTTP::Client }

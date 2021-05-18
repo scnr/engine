@@ -10,7 +10,7 @@ describe SCNR::Engine::Element::Capabilities::Analyzable::Differential do
     subject { SCNR::Engine::Element::Link.new( url: url, inputs: inputs ).tap { |e| e.auditor = auditor } }
     let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:page) { SCNR::Engine::Page.from_url( page_url ) }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:page_url) { web_server_url_for( :differential ) }
     let(:url) { page_url }
     let(:inputs) { { 'input' => 'blah' } }
