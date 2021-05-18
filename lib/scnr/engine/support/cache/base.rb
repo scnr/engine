@@ -17,7 +17,6 @@ module Support::Cache
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 # @abstract
 class Base
-    include MonitorMixin
     include Support::Mixins::Profiler
 
     # @return    [Integer]
@@ -45,20 +44,18 @@ class Base
     end
 
     def statistics
-        synchronize do
-            lookups = @hits + @misses
+        lookups = @hits + @misses
 
-            {
-                lookups:    lookups,
-                hits:       @hits,
-                hit_ratio:  @hits   == 0 ? 0.0 : @hits   / Float( lookups ),
-                misses:     @misses,
-                miss_ratio: @misses == 0 ? 0.0 : @misses / Float( lookups ),
-                prunings:   @prunings,
-                size:       size,
-                max_size:   max_size
-            }
-        end
+        {
+            lookups:    lookups,
+            hits:       @hits,
+            hit_ratio:  @hits   == 0 ? 0.0 : @hits   / Float( lookups ),
+            misses:     @misses,
+            miss_ratio: @misses == 0 ? 0.0 : @misses / Float( lookups ),
+            prunings:   @prunings,
+            size:       size,
+            max_size:   max_size
+        }
     end
 
     def max_size=( max )
@@ -90,9 +87,7 @@ class Base
     # @return   [Integer]
     #   Number of entries in the cache.
     def size
-        synchronize do
-            @cache.size
-        end
+        @cache.size
     end
 
     # Storage method.
@@ -135,30 +130,24 @@ class Base
     def fetch( k, &block )
         k = make_key( k )
 
-        synchronize do
-            if @cache.include?( k )
-                get_with_internal_key( k )
-            else
-                @misses += 1
-                store_with_internal_key( k, profile_proc( &block ) )
-            end
+        if @cache.include?( k )
+            get_with_internal_key( k )
+        else
+            @misses += 1
+            store_with_internal_key( k, profile_proc( &block ) )
         end
     end
 
     # @return   [Bool]
     #   `true` if cache includes an entry for key `k`, false otherwise.
     def include?( k )
-        synchronize do
-            @cache.include?( make_key( k ) )
-        end
+        @cache.include?( make_key( k ) )
     end
 
     # @return   [Bool]
     #   `true` if cache is empty, false otherwise.
     def empty?
-        synchronize do
-            @cache.empty?
-        end
+        @cache.empty?
     end
 
     # @return   [Bool]
@@ -175,16 +164,12 @@ class Base
     # @return   [Object, nil]
     #   Value for key `k`, `nil` if there is no key `k`.
     def delete( k )
-        synchronize do
-            @cache.delete( make_key( k ) )
-        end
+        @cache.delete( make_key( k ) )
     end
 
     # Clears/empties the cache.
     def clear
-        synchronize do
-            @cache.clear
-        end
+        @cache.clear
     end
 
     def ==( other )
@@ -192,15 +177,11 @@ class Base
     end
 
     def hash
-        synchronize do
-            @cache.hash
-        end
+        @cache.hash
     end
 
     def dup
-        synchronize do
-            self.class.new( @options.dup ).tap { |h| h.cache = @cache.dup }
-        end
+        self.class.new( @options.dup ).tap { |h| h.cache = @cache.dup }
     end
 
     protected
@@ -212,14 +193,12 @@ class Base
     private
 
     def store_with_internal_key( k, v )
-        synchronize do
-            while capped? && (size > max_size - 1)
-                prune
-                @prunings += 1
-            end
-
-            _store( k, v )
+        while capped? && (size > max_size - 1)
+            prune
+            @prunings += 1
         end
+
+        _store( k, v )
     end
 
     def _store( k, v )
@@ -227,14 +206,12 @@ class Base
     end
 
     def get_with_internal_key( k )
-        synchronize do
-            if (r = @cache[k])
-                @hits += 1
-            else
-                @misses += 1
-            end
-            r
+        if (r = @cache[k])
+            @hits += 1
+        else
+            @misses += 1
         end
+        r
     end
 
     def make_key( k )
