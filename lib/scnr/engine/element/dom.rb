@@ -72,7 +72,7 @@ class DOM < Base
     def prepare_for_report
         super
 
-        # @page    = nil
+        @page    = nil
         @parent  = nil
         @element = nil
         @browser = nil
