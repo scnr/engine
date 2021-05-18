@@ -3,6 +3,7 @@ require 'spec_helper'
 describe SCNR::Engine::Reporter::Base do
     before( :each ) do
         SCNR::Engine::Options.paths.reporters = fixtures_path + 'reporters/base_spec'
+        reporters.lib = SCNR::Engine::Options.paths.reporters
     end
     after( :each ){ framework.reset }
 
