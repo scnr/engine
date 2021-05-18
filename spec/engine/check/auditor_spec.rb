@@ -974,7 +974,7 @@ describe SCNR::Engine::Check::Auditor do
                             framework.trainer.process page
                             framework.http.run
 
-                            auditor = Auditor.new( page, framework )
+                            auditor = Auditor.new( page )
                             auditor.audit( seed ) do |response, mutation|
                                 next if !response.body.include?( seed ) ||
                                     mutation.affected_input_name != 'you_made_it'
@@ -1009,7 +1009,7 @@ describe SCNR::Engine::Check::Auditor do
                             framework.trainer.process page
                             framework.http.run
 
-                            auditor = SCNR::Engine::Check::Base.new( page, framework )
+                            auditor = SCNR::Engine::Check::Base.new( page )
                             auditor.audit( seed, submit: { train: true } ) do |response, mutation|
                                 next if !response.body.include?( seed ) ||
                                     mutation.affected_input_name != 'you_made_it'
@@ -1041,7 +1041,7 @@ describe SCNR::Engine::Check::Auditor do
                         framework.trainer.process page
                         framework.http.run
 
-                        auditor = SCNR::Engine::Check::Base.new( page, framework )
+                        auditor = SCNR::Engine::Check::Base.new( page )
                         auditor.audit( seed, submit: { train: false } )
 
                         framework.http.run
