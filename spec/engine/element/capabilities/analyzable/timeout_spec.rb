@@ -26,7 +26,7 @@ describe SCNR::Engine::Element::Capabilities::Analyzable::Timeout do
     end
     let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:page) { SCNR::Engine::Page.from_url( "#{url}?ignore" ) }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:url) { web_server_url_for( :timeout ) }
     let(:inputs) { { 'sleep' => '' } }
 

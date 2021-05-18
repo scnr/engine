@@ -6,7 +6,7 @@ describe SCNR::Engine::Plugin::Base do
         framework.plugins.load_default
     end
 
-    subject { described_class.new( framework, {} ) }
+    subject { described_class.new( {} ) }
     let(:url) { web_server_url_for(:framework) }
     let(:framework) { SCNR::Engine::Framework.unsafe.tap { |f| f.state.running = true } }
 

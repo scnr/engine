@@ -23,7 +23,7 @@ describe SCNR::Engine::Element::Server do
         described_class.new( response.url )
     end
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( nil, framework ) }
+    let(:auditor) { Auditor.new }
     let(:url) { web_server_url_for :auditor }
     let(:auditable) do
         s = subject.dup

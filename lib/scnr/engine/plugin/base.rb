@@ -34,7 +34,7 @@ class Base < Component::Base
 
     # @return   [SCNR::Engine::Framework]
     def framework
-        SCNR::Engine::Framework
+        SCNR::Engine::Framework.unsafe
     end
 
     # @note **OPTIONAL**

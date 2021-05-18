@@ -34,7 +34,7 @@ describe SCNR::Engine::Element::XML do
     subject { described_class.new( url: "#{url}submit", source: source ) }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:auditable) { inputtable }
     let(:mutable) { inputtable }
     let(:inputtable) do

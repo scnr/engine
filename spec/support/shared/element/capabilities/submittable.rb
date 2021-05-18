@@ -1,7 +1,7 @@
 shared_examples_for 'submittable' do
 
     before( :each ) do
-        auditor.framework.reset
+        SCNR::Engine::Framework.unsafe.reset
     end
 
     let(:submittable) do

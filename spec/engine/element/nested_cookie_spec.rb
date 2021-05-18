@@ -24,7 +24,7 @@ describe SCNR::Engine::Element::NestedCookie do
 
     let(:page) { SCNR::Engine::Page.from_url( url ) }
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:url) { utilities.normalize_url( web_server_url_for( :nested_cookie ) ) }
     let(:http) { SCNR::Engine::HTTP::Client }
     let(:utilities) { SCNR::Engine::Utilities }

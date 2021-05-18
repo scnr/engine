@@ -2,11 +2,10 @@ class Auditor < SCNR::Engine::Check::Base
     include SCNR::Engine::Check::Auditor
 
     attr_accessor :page
-    attr_accessor :framework
 
     self.shortname = 'auditor_test'
 
-    def initialize( page = nil, framework = nil)
+    def initialize( page = nil )
         super
         http.update_cookies( page.cookie_jar ) if page
     end

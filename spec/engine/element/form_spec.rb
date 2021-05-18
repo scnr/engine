@@ -33,7 +33,7 @@ describe SCNR::Engine::Element::Form do
     subject { described_class.new( options ).tap { |e| e.skip_dom = false } }
     let(:page) { SCNR::Engine::Page.from_url( url ) }
     let(:framework) { SCNR::Engine::Framework.unsafe }
-    let(:auditor) { Auditor.new( page, framework ) }
+    let(:auditor) { Auditor.new( page ) }
     let(:inputs) { options[:inputs] }
     let(:url) { utilities.normalize_url( web_server_url_for( :form ) ) }
     let(:http) { SCNR::Engine::HTTP::Client }
