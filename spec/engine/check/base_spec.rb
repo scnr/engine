@@ -6,7 +6,7 @@ describe SCNR::Engine::Check::Base do
         described_class.clear_info_cache
     end
 
-    subject { described_class.new( Factory[:page], framework ) }
+    subject { described_class.new( Factory[:page] ) }
     let(:framework) do
         framework = SCNR::Engine::Framework.unsafe
         framework.state.running = true

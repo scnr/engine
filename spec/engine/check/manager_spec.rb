@@ -118,7 +118,7 @@ describe SCNR::Engine::Check::Manager do
     describe '#run_one' do
         it 'runs a single check' do
             checks.load :test
-            checks.run_one( framework, checks.values.first, page )
+            checks.run_one( checks.values.first, page )
             expect(issues.size).to equal 1
             expect(issues.first.name).to eq(checks['test'].info[:issue][:name])
         end
@@ -126,7 +126,7 @@ describe SCNR::Engine::Check::Manager do
         context 'when the check was ran' do
             it 'returns true' do
                 checks.load :test
-                expect(checks.run_one( framework, checks.values.first, page )).to be_truthy
+                expect(checks.run_one( checks.values.first, page )).to be_truthy
             end
         end
 
@@ -136,7 +136,7 @@ describe SCNR::Engine::Check::Manager do
 
                 allow(SCNR::Engine::Checks::Test).to receive(:check?).and_return(false)
 
-                expect(checks.run_one( framework, checks.values.first, page )).to be_falsey
+                expect(checks.run_one( checks.values.first, page )).to be_falsey
             end
         end
     end
