@@ -39,7 +39,7 @@ class Trainer
     def initialize
         super
 
-        @framework   = SCNR::Engine::Framework
+        @framework   = Framework
         @sink_tracer = SinkTracer.new
         @updated     = false
 
@@ -50,18 +50,18 @@ class Trainer
         return if @setup
         @setup = true
 
-        @framework.on_effective_page_audit do |page|
+        framework.on_effective_page_audit do |page|
             process page
         end
 
-        @framework.http.on_complete do |response|
+        HTTP::Client.on_complete do |response|
             next if response.request.buffered? || !response.request.train?
 
             if response.redirect?
-                reference_url = @page ? @page.url : @framework.options.url
+                reference_url = @page ? @page.url : Options.url
                 redirect_url  = to_absolute( response.headers.location, reference_url )
 
-                @framework.http.get( redirect_url ) { |res| push res }
+                HTTP::Client.get( redirect_url ) { |res| push res }
                 next
             end
 
@@ -156,14 +156,14 @@ class Trainer
         paths = incoming_page.paths
         synchronize do
             paths.each do |path|
-                @framework.push_to_url_queue( path )
+                framework.push_to_url_queue( path )
             end
         end
 
         if has_new_elements
             synchronize do
                 notify_on_new_page incoming_page
-                @framework.push_to_page_queue( incoming_page )
+                framework.push_to_page_queue( incoming_page )
             end
         else
             incoming_page.clear_cache
@@ -203,7 +203,7 @@ class Trainer
     end
 
     def analyze_response?( response )
-        if !@framework.accepts_more_pages?
+        if !framework.accepts_more_pages?
             print_info 'No more pages accepted, skipping analysis.'
             return
         end
