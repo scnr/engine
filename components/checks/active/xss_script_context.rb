@@ -94,7 +94,7 @@ class SCNR::Engine::Checks::XssScriptContext < SCNR::Engine::Check::Base
     end
 
     def self.seed
-        'window.top._%s_taint_tracer.log_execution_flow_sink()'
+        'window.top.%s_taint_tracer.log_execution_flow_sink()'
     end
 
     def self.payloads
