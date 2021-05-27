@@ -61,32 +61,35 @@ class Firefox < Base
     ]
 
     def self.requirements
-        # We want the exception every time so we put this before the lazy
-        # retrieval of the rest of the info.
-        browser_bin = self.find_executable( 'firefox' )
-        driver_bin  = self.find_executable( DRIVER )
+        synchronize do
+            # We want the exception every time so we put this before the lazy
+            # retrieval of the rest of the info.
+            browser_bin = self.find_executable( 'firefox' )
+            driver_bin  = self.find_executable( DRIVER )
 
-        if @requirements
+            if @requirements
+                @requirements['firefox'][:binary] = browser_bin
+                return @requirements
+            end
+
+            @requirements = REQUIREMENTS.dup
             @requirements['firefox'][:binary] = browser_bin
-            return @requirements
-        end
-        @requirements = REQUIREMENTS.dup
-        @requirements['firefox'][:binary] = browser_bin
 
-        if SCNR::Engine.windows?
-            @requirements['firefox'][:current] =
-                `"#{@requirements['firefox'][:binary]}" --version | more`.
+            if SCNR::Engine.windows?
+                @requirements['firefox'][:current] =
+                  `"#{@requirements['firefox'][:binary]}" --version | more`.
                     scan( /\d+/ ).first.to_i
-        else
-            @requirements['firefox'][:current] =
-                `"#{@requirements['firefox'][:binary]}" --version`.
+            else
+                @requirements['firefox'][:current] =
+                  `"#{@requirements['firefox'][:binary]}" --version`.
                     scan( /\d+/ ).first.to_i
+            end
+
+            @requirements['geckodriver'][:current] =
+              `"#{driver_bin}" --version`.scan( /[\d\.]+/ ).first.to_f
+
+            @requirements
         end
-
-        @requirements['geckodriver'][:current] =
-            `"#{driver_bin}" --version`.scan( /[\d\.]+/ ).first.to_f
-
-        @requirements
     end
 
     def window_width

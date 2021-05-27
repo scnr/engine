@@ -37,48 +37,50 @@ class Chrome < Base
     ]
 
     def self.requirements
-        # We want the exception every time so we put this before the lazy
-        # retrieval of the rest of the info.
-        if SCNR::Engine.mac?
-            browser_bin = self.find_executable( 'Google Chrome' )
-        else
-            browser_bin = begin
-                    self.find_executable( 'google-chrome' )
-                rescue
-                    self.find_executable( 'google-chrome-beta' )
-                rescue
-                    self.find_executable( 'chrome' )
-                end
-        end
-
-        driver_bin = self.find_executable( DRIVER )
-
-        if @requirements
-            @requirements['chrome'][:binary] = browser_bin
-            return @requirements
-        end
-        @requirements = REQUIREMENTS.dup
-        @requirements['chrome'][:binary] = browser_bin
-
-        if SCNR::Engine.windows?
-            # In the same dir as the executable there's a dir with the version
-            # as its name.
-            version = nil
-            Dir.glob( "#{File.dirname( @requirements['chrome'][:binary] )}/*" ).each do |d|
-                version = File.basename( d ).scan( /^\d+?\./ ).first.to_i
-                break if version > 0
+        synchronize do
+            # We want the exception every time so we put this before the lazy
+            # retrieval of the rest of the info.
+            if SCNR::Engine.mac?
+                browser_bin = self.find_executable( 'Google Chrome' )
+            else
+                browser_bin = begin
+                                  self.find_executable( 'google-chrome' )
+                              rescue
+                                  self.find_executable( 'google-chrome-beta' )
+                              rescue
+                                  self.find_executable( 'chrome' )
+                              end
             end
 
-            @requirements['chrome'][:current] = version
-        else
-            @requirements['chrome'][:current] =
-                `"#{@requirements['chrome'][:binary]}" --version`.scan( /\d+/ ).first.to_i
+            driver_bin = self.find_executable( DRIVER )
+
+            if @requirements
+                @requirements['chrome'][:binary] = browser_bin
+                return @requirements
+            end
+            @requirements = REQUIREMENTS.dup
+            @requirements['chrome'][:binary] = browser_bin
+
+            if SCNR::Engine.windows?
+                # In the same dir as the executable there's a dir with the version
+                # as its name.
+                version = nil
+                Dir.glob( "#{File.dirname( @requirements['chrome'][:binary] )}/*" ).each do |d|
+                    version = File.basename( d ).scan( /^\d+?\./ ).first.to_i
+                    break if version > 0
+                end
+
+                @requirements['chrome'][:current] = version
+            else
+                @requirements['chrome'][:current] =
+                  `"#{@requirements['chrome'][:binary]}" --version`.scan( /\d+/ ).first.to_i
+            end
+
+            @requirements['chromedriver'][:current] =
+              `"#{driver_bin}" --version`.scan( /[\d\.]+/ ).first.to_f
+
+            @requirements
         end
-
-        @requirements['chromedriver'][:current] =
-            `"#{driver_bin}" --version`.scan( /[\d\.]+/ ).first.to_f
-
-        @requirements
     end
 
     def window_width
