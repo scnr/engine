@@ -20,7 +20,7 @@ class SCNR::Engine::Checks::OsCmdInjectionTiming < SCNR::Engine::Check::Base
         format:          [Format::STRAIGHT],
         timeout:         4000,
         timeout_divider: 1000,
-        add:             -1000
+        timeout_add:     -1000
     }
 
     def self.payloads
