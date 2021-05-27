@@ -522,7 +522,7 @@ class Page
     end
 
     def paths_hash
-        body.persistent_hash
+        "#{parsed_url.path}-#{body}".persistent_hash
     end
 
     def ==( other )
