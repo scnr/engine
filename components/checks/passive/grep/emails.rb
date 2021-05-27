@@ -6,6 +6,8 @@
     web site for more information on licensing and terms of use.
 =end
 
+require 'resolv'
+
 # Looks for and logs e-mail addresses.
 #
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
