@@ -23,6 +23,11 @@ class Base
 
     class <<self
 
+        def synchronize( &block )
+            @mutex ||= Mutex.new
+            @mutex.synchronize( &block )
+        end
+
         def name
             @name
         end
@@ -37,6 +42,7 @@ class Base
         end
 
     end
+    synchronize{}
 
     include Support::Mixins::Parts
 

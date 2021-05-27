@@ -455,16 +455,23 @@ class BrowserCluster
         print_status "Initializing #{pool_size} #{Options.browser_cluster.engine.capitalize} browsers..."
 
         @workers = []
+        ts = []
         pool_size.times do |i|
-            worker = Worker.new(
-                master: self,
-                width:  Options.device.width,
-                height: Options.device.height
-            )
-            @workers << worker
-            print_status "Spawned ##{i+1} with PID #{worker.engine.pid} " <<
-                "[lifeline at PID #{worker.engine.lifeline_pid}]."
+            ts << Thread.new do
+                worker = Worker.new(
+                  master: self,
+                  width:  Options.device.width,
+                  height: Options.device.height
+                )
+
+                synchronize do
+                    @workers << worker
+                    print_status "Spawned ##{i+1} with PID #{worker.engine.pid} " <<
+                                   "[lifeline at PID #{worker.engine.lifeline_pid}]."
+                end
+            end
         end
+        ts.map(&:join)
 
         print_status "Initialization completed with #{@workers.size} browsers in the pool."
     end
