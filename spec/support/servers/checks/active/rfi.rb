@@ -3,13 +3,12 @@ require 'json'
 require 'sinatra'
 require 'sinatra/contrib'
 require_relative '../check_server'
-require 'open-uri'
 
 def get_variations( str )
     return if str.to_s.empty?
 
     str = "http://#{str}" if !str.downcase.start_with?( 'http://' )
-    open( str.split( "\0" ).first ) rescue nil
+    Typhoeus.get( str.split( "\0" ).first ).body
 end
 
 before do

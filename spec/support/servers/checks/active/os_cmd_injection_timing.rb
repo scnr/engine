@@ -9,29 +9,18 @@ REGEXP = {
     unix:    'sleep (\d+)'
 }
 
-def exec( platform, str, prefix = nil, postfix = nil )
-    return if str.to_s.empty?
-
-    r = ''
-    r << Regexp.escape( prefix ) if prefix
-    r << '^' if !(prefix || postfix)
-    r << ' ' + REGEXP[platform]
-    r << Regexp.escape( postfix ) if postfix
-
-    time = str.scan( Regexp.new( r ) ).flatten.first
-    return if !time
-
-    # ping runtime is -1 second of the injected payload
-    sleep( Integer( time ) - 1) if time
-end
+VARIATIONS = [ '', '&', '&&', '|', ';' ]
 
 def variations
-    @@v ||= [ '', '&', '&&', '|', ';' ]
+    VARIATIONS
 end
 
 def get_variations( platform, str )
     time = str.scan( Regexp.new( REGEXP[platform] ) ).flatten.first
     return if !time
+
+    time = Integer( time )
+    return if time == 0
 
     sleep( Integer( time ) - 1 )
 

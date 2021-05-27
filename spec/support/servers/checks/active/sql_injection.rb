@@ -4,24 +4,24 @@ require 'sinatra'
 require 'sinatra/contrib'
 require_relative '../check_server'
 
-@@errors ||= {}
-if @@errors.empty?
+ERRORS ||= {}
+if ERRORS.empty?
     Dir.glob( File.dirname( __FILE__ ) + '/sql_injection/**/*' ).each do |path|
-        @@errors[File.basename( path )] = IO.read( path )
+        ERRORS[File.basename( path )] = IO.read( path )
     end
 end
 
-@@ignore ||= IO.read(
+IGNORE ||= IO.read(
     File.dirname( __FILE__ ) +
         '/../../../../../components/checks/active/sql_injection/ignore_substrings'
 )
 
 def variations
-    @@variations ||= [ '"\'`--', ')' ]
+    [ '"\'`--', ')' ]
 end
 
 def get_variations( platform, str )
-    @@errors[platform] if variations.find { |v| str.to_s.include? v }
+    ERRORS[platform] if variations.find { |v| str.to_s.include? v }
 end
 
 before do
@@ -39,7 +39,7 @@ before do
     request.body.rewind
 end
 
-@@errors.keys.each do |platform|
+ERRORS.keys.each do |platform|
     platform_str = platform.to_s
 
     get '/' + platform_str do
@@ -75,7 +75,7 @@ end
     end
 
     get "/#{platform_str}/link/ignore" do
-        @@errors.to_s + @@ignore.to_s
+        ERRORS.to_s + IGNORE.to_s
     end
 
     get "/#{platform_str}/link-template" do
