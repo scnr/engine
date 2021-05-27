@@ -4,15 +4,13 @@ require 'sinatra'
 require 'sinatra/contrib'
 require_relative '../check_server'
 
-@@errors ||= {}
-if @@errors.empty?
-    Dir.glob( File.dirname( __FILE__ ) + '/no_sql_injection/*' ).each do |path|
-        @@errors[File.basename( path )] = IO.read( path )
-    end
+ERRORS ||= {}
+Dir.glob( File.dirname( __FILE__ ) + '/no_sql_injection/*' ).each do |path|
+    ERRORS[File.basename( path )] = IO.read( path )
 end
 
 def get_variations( platform, str )
-    @@errors[platform] if str.to_s.include? '\';.")'
+    ERRORS[platform] if str.to_s.include? '\';.")'
 end
 
 before do
@@ -30,7 +28,7 @@ before do
     request.body.rewind
 end
 
-@@errors.keys.each do |platform|
+ERRORS.keys.each do |platform|
     platform_str = platform.to_s
 
     get '/' + platform_str do
@@ -76,7 +74,7 @@ end
         default = 'default'
         return if !val.start_with?( default )
 
-        get_variations( platform, URI.decode( val.split( default ).last.to_s ) )
+        get_variations( platform, URI.decode_www_form_component( val.split( default ).last.to_s ) )
     end
 
     get "/#{platform_str}/form" do

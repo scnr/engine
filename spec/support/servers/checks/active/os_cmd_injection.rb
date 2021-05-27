@@ -87,6 +87,7 @@ STRINGS.keys.each do |platform|
         default = 'default'
         return if !params['input'].start_with?( default )
 
+        p 1
         get_variations( platform, params['input'].split( default ).last )
     end
 
@@ -98,7 +99,7 @@ STRINGS.keys.each do |platform|
     end
 
     get "/#{platform_str}/link-template/straight/input/*/stuff" do
-        val = URI.decode( params[:splat].first )
+        val = URI.decode_www_form_component( params[:splat].first )
         default = 'default'
         return if val.start_with?( default )
 
@@ -106,7 +107,7 @@ STRINGS.keys.each do |platform|
     end
 
     get "/#{platform_str}/link-template/append/input/*/stuff" do
-        val = URI.decode( params[:splat].first )
+        val = URI.decode_www_form_component( params[:splat].first )
         default = 'default'
         return if !val.start_with?( default )
 

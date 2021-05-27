@@ -8,8 +8,8 @@ shared_examples_for "component" do
     let(:component_name) { name }
     let(:framework) { SCNR::Engine::Framework.unsafe }
     let(:session) { framework.session }
-    let(:http) { framework.http }
-    let(:options) { framework.options }
+    let(:http) { SCNR::Engine::HTTP::Client }
+    let(:options) { SCNR::Engine::Options }
 
     def self.use_https
         @use_https = true

@@ -7,7 +7,7 @@ require_relative '../check_server'
 def get_variations( str )
     return if str.to_s.empty?
 
-    str = URI.decode( str )
+    str = URI.decode_www_form_component( str )
     k, v = str.strip.split( ':' )
     custom = { k => v }
     headers( custom )

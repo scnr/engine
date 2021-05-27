@@ -12,16 +12,16 @@ get '/' do
 end
 
 get '/<*' do
-    URI.unescape( env['REQUEST_PATH'] )
+    URI.decode_www_form_component( env['REQUEST_PATH'] )
 end
 
 get '/query/' do
-    URI.unescape( env['QUERY_STRING'] )
+    URI.decode_www_form_component( env['QUERY_STRING'] )
 end
 
 get "/form_action1*" do
     <<-EOHTML
-        <form action=#{URI.unescape( env['REQUEST_PATH'] )}>
+        <form action=#{URI.decode_www_form_component( env['REQUEST_PATH'] )}>
             <input name='input' value='default' />
         </form>
     EOHTML
@@ -29,7 +29,7 @@ end
 
 get "/form_action2*" do
     <<-EOHTML
-        <form action='#{URI.unescape( env['REQUEST_PATH'] )}'>
+        <form action='#{URI.decode_www_form_component( env['REQUEST_PATH'] )}'>
             <input name='input' value='default' />
         </form>
     EOHTML
@@ -37,7 +37,7 @@ end
 
 get "/form_action3*" do
     <<-EOHTML
-        <form action="#{URI.unescape( env['REQUEST_PATH'] )}">
+        <form action="#{URI.decode_www_form_component( env['REQUEST_PATH'] )}">
             <input name='input' value='default' />
         </form>
     EOHTML

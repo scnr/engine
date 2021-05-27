@@ -33,7 +33,7 @@ def exec( lang, str, prefix = nil, postfix = nil )
 end
 
 def variations
-    @@v ||= [' ', ' && ', ';' ]
+    [' ', ' && ', ';' ]
 end
 
 def get_variations( lang, str )
@@ -95,7 +95,7 @@ REGEXP.keys.each do |language|
     end
 
     get "/#{language_str}/link-template/straight/input/*/stuff" do
-        val = URI.decode( params[:splat].first )
+        val = URI.decode_www_form_component( params[:splat].first )
         default = 'default'
         return if val.start_with?( default )
 
@@ -103,7 +103,7 @@ REGEXP.keys.each do |language|
     end
 
     get "/#{language_str}/link-template/append/input/*/stuff" do
-        val = URI.decode( params[:splat].first )
+        val = URI.decode_www_form_component( params[:splat].first )
         default = 'default'
         return if !val.start_with?( default )
 

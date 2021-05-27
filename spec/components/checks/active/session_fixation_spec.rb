@@ -4,8 +4,8 @@ describe name_from_filename do
     include_examples 'check'
 
     before :all do
-        options.session.check_url     = url
-        options.session.check_pattern = /dear user/
+        SCNR::Engine::Options.session.check_url     = url
+        SCNR::Engine::Options.session.check_pattern = /dear user/
     end
 
     def self.cost

@@ -72,7 +72,7 @@ get '/link/in_comment' do
 end
 
 get '/link/double_encoded' do
-    get_variations( URI.decode( params['input'] ) )
+    get_variations( URI.decode_www_form_component( params['input'] ) )
 end
 
 get '/link/append' do
@@ -105,7 +105,7 @@ end
 
 get '/link-template/double_encoded/input/*/stuff' do
     val = params[:splat].first
-    get_variations( URI.decode( val ) )
+    get_variations( URI.decode_www_form_component( val ) )
 end
 
 get '/link-template/append/input/*/stuff' do
@@ -152,7 +152,7 @@ get '/form/in_comment' do
 end
 
 get '/form/double_encoded' do
-    get_variations( URI.decode( params['input'].to_s ) )
+    get_variations( URI.decode_www_form_component( params['input'].to_s ) )
 end
 
 get '/form/append' do
@@ -192,7 +192,7 @@ get '/cookie/double_encoded' do
     default = 'cookie value'
     cookies['cookie'] ||= default
 
-    get_variations( URI.decode( cookies['cookie'] ) )
+    get_variations( URI.decode_www_form_component( cookies['cookie'] ) )
 end
 
 get '/cookie/append' do
@@ -238,7 +238,7 @@ get '/nested_cookie/double_encoded' do
 
     value = SCNR::Engine::NestedCookie.parse_inputs( cookies['nested_cookie'] )['name'].to_s
 
-    get_variations( ::URI.decode( value ) )
+    get_variations( ::URI.decode_www_form_component( value ) )
 end
 
 get '/header' do
@@ -257,7 +257,7 @@ get '/header/double_encoded' do
     default = 'scnr_engine_user'
     return if !env['HTTP_USER_AGENT']
 
-    get_variations( URI.decode( env['HTTP_USER_AGENT'] ) )
+    get_variations( URI.decode_www_form_component( env['HTTP_USER_AGENT'] ) )
 end
 
 get '/header/append' do

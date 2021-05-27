@@ -11,6 +11,8 @@ REGEXP = {
     asp:    'Response.Write\(\s?([0-9]+)\s?\*\s?([0-9]+)\s?\)'
 }
 
+VARIATIONS = [ '', ';%s', "\";%s#", "';%s#" ]
+
 def exec( lang, str, prefix = nil, postfix = nil )
     return if !str
 
@@ -25,7 +27,7 @@ def exec( lang, str, prefix = nil, postfix = nil )
 end
 
 def variations
-    @@v ||= [ '', ';%s', "\";%s#", "';%s#" ]
+    VARIATIONS
 end
 
 def get_variations( lang, str )
@@ -86,7 +88,7 @@ REGEXP.keys.each do |language|
     end
 
     get "/#{language_str}/link-template/straight/input/*/stuff" do
-        val = URI.decode( params[:splat].first )
+        val = URI.decode_www_form_component( params[:splat].first )
         default = 'default'
         return if val.start_with?( default )
 

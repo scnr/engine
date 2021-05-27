@@ -18,7 +18,7 @@ get '/some/path.crap' do
 end
 
 get '/some*' do
-    req = URI.decode( env['PATH_INFO'].gsub( '/some', root ) ).gsub( '\\', '/' )
+    req = URI.decode_www_form_component( env['PATH_INFO'].gsub( '/some', root ) ).gsub( '\\', '/' )
     req << '/' if !req.end_with?( '/' )
 
     #ap req

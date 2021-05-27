@@ -17,19 +17,24 @@ shared_examples_for 'check' do
         @issues = []
     end
 
+    after(:each ) do
+        options.reset
+        framework.reset
+    end
+
     before( :each ) do
+        options.reset
         options.url                        = url
-        options.paths.checks               = nil
         options.audit.parameter_names      = true
         options.audit.with_raw_payloads    = true
         options.audit.with_extra_parameter = true
         options.device.user_agent          = 'scnr_engine_user'
         options.browser_cluster.update( options.browser_cluster.defaults )
 
+        framework.reset
+
         framework.checks.lib = options.paths.checks
         framework.checks.load name
-
-        # framework.http.headers['User-Agent'] = 'scnr_engine_user'
 
         # Do not deduplicate, the check tests need to see everything.
         current_check.instance_eval do

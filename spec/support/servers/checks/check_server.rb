@@ -1,12 +1,14 @@
 require_relative '../../../../lib/scnr/engine'
 
+CURRENT_CHECK = {}
+
 def framework
-    @@framework ||= SCNR::Engine::Framework.new
+    SCNR::Engine::Framework.unsafe
 end
 
 def current_check
-    @@current_check ||=
-        framework.checks[ File.basename( caller.first.split( ':' ).first, '.rb' ) ]
+    shortname = File.basename( caller.first.split( ':' ).first, '.rb' )
+    CURRENT_CHECK[shortname] ||= framework.checks[shortname]
 end
 
 def check_name

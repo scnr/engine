@@ -4,19 +4,17 @@ require 'sinatra'
 require 'sinatra/contrib'
 require_relative '../check_server'
 
-@@errors ||= {}
-if @@errors.empty?
-    Dir.glob( File.dirname( __FILE__ ) + '/xpath_injection/*' ).each do |path|
-        @@errors[File.basename( path )] = IO.read( path )
-    end
+ERRORS = {}
+Dir.glob( File.dirname( __FILE__ ) + '/xpath_injection/*' ).each do |path|
+    ERRORS[File.basename( path )] = IO.read( path )
 end
 
 def variations
-    @@variations ||= %w('" ]]]]]]]]] <!--)
+    %w('" ]]]]]]]]] <!--)
 end
 
 def get_variations( str )
-    @@errors.to_s if variations.find { |v| str.to_s.include? v }
+    ERRORS.to_s if variations.find { |v| str.to_s.include? v }
 end
 
 before do
