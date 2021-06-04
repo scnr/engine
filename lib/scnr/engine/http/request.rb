@@ -474,12 +474,19 @@ class Request < Message
 
         options[:timeout_ms] = timeout if timeout
 
+        # BUG: On OSX this causes a TFT login error on certain servers for some
+        #       reason so for now it's commented out.
+        #
         # This will allow GSS-Negotiate to work out of the box but shouldn't
         # have any adverse effects.
-        if !options[:userpwd] && !parsed_url.user
-            options[:userpwd]  = ':'
-            options[:httpauth] = :gssnegotiate
-        else
+        # if !options[:userpwd] && !parsed_url.user
+        #     options[:userpwd]  = ':'
+        #     options[:httpauth] = :gssnegotiate
+        # elsif Options.http.authentication_type
+        #     options[:httpauth] = Options.http.authentication_type.to_sym
+        # end
+
+        if Options.http.authentication_type
             options[:httpauth] = Options.http.authentication_type.to_sym
         end
 
@@ -504,6 +511,8 @@ class Request < Message
                     "#{Options.http.proxy_username}:#{Options.http.proxy_password}"
             end
         end
+
+        # ap options
 
         set_typhoeus_callbacks(
           Typhoeus::Request.new( url.split( '?' ).first, options )
