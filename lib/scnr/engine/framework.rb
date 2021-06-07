@@ -18,7 +18,6 @@ module SCNR::Engine
 
 lib = Options.paths.lib
 require lib + 'support/mixins/spec_instances'
-require lib + 'system'
 require lib + 'version'
 require lib + 'support'
 require lib + 'ruby'
@@ -26,7 +25,6 @@ require lib + 'error'
 require lib + 'scope'
 require lib + 'utilities'
 require lib + 'uri_common/scope'
-require lib + 'component'
 require lib + 'platform'
 require lib + 'http'
 require lib + 'snapshot'

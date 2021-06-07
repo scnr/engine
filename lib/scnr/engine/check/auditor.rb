@@ -289,6 +289,8 @@ module Auditor
     # injection strings.
     Format = Element::Capabilities::Mutable::Format
 
+    Severity = Issue::Severity
+
     # Non-DOM auditable elements.
     ELEMENTS_WITH_INPUTS = [
         Element::Link, Element::Form, Element::Cookie, Element::Header,

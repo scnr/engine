@@ -6,8 +6,6 @@
     web site for more information on licensing and terms of use.
 =end
 
-require_relative 'rpc/serializer'
-
 module SCNR::Engine
 
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>

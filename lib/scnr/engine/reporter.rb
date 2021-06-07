@@ -7,6 +7,5 @@
 =end
 
 lib = SCNR::Engine::Options.paths.lib
-require lib + 'component/manager'
 require lib + 'reporter/base'
 require lib + 'reporter/manager'

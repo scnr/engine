@@ -71,7 +71,7 @@ class WebServerManager
         server_info = data_for( name )
         return if !server_info[:pid]
 
-        r = process_kill( server_info[:pid] )
+        r = SCNR::Engine::Processes::Manager.kill( server_info[:pid] )
 
         if r
             server_info.delete( :pid )

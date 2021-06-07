@@ -130,7 +130,6 @@ class Parser
 
     require lib + 'page'
     require lib + 'utilities'
-    require lib + 'component/manager'
 
     alias :skip? :skip_path?
 

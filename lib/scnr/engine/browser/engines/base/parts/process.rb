@@ -6,9 +6,6 @@
     web site for more information on licensing and terms of use.
 =end
 
-require 'childprocess'
-require_relative '../../../../processes/manager'
-
 module SCNR::Engine
 class Browser
 class Engines

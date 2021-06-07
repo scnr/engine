@@ -29,7 +29,7 @@ class SCNR::Engine::Checks::Test3 < SCNR::Engine::Check::Base
                 },
                 tags:            ['some', 'tag'],
                 cwe:             '0',
-                severity:        Issue::Severity::HIGH,
+                severity:        Severity::HIGH,
                 remedy_guidance: %q{Watch out!.},
                 remedy_code:     '',
                 metasploitable:  'unix/webapp/blah'
