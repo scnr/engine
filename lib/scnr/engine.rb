@@ -12,7 +12,7 @@ Encoding.default_internal = 'BINARY'
 require 'rubygems'
 require 'bundler/setup'
 require 'tmpdir'
-
+require 'cuboid'
 require 'oj'
 require 'oj_mimic_json'
 
@@ -140,7 +140,11 @@ end
 end
 
 require_relative 'engine/banner'
-require_relative 'engine/ui/output_interface'
+
+SCNR::Engine::UI        = Cuboid::UI
+SCNR::Engine::Component = Cuboid::Component
+SCNR::Engine::RPC       = Cuboid::RPC
+SCNR::Engine::Processes = Cuboid::Processes
 
 # If there's no UI driving us then there's no output interface.
 # Chances are that someone is using Engine as a Ruby lib so there's no

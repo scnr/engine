@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 # gem 'bootsnap', require: false
 
 gem 'rake', '11.3.0'
+gem 'cuboid', path: '../../cuboid/'
 # gem 'pry'
 
 # gem 'ethon', github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'

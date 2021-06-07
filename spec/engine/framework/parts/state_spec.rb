@@ -88,7 +88,6 @@ describe SCNR::Engine::Framework::Parts::State do
                 SCNR::Engine::Options.url = web_server_url_for :framework_multi
                 SCNR::Engine::Options.audit.elements :links
 
-                f.plugins.load :wait
                 f.checks.load :signature
 
                 t = Thread.new do
@@ -133,7 +132,6 @@ describe SCNR::Engine::Framework::Parts::State do
                 SCNR::Engine::Options.url = web_server_url_for :framework_multi
                 SCNR::Engine::Options.audit.elements :links
 
-                f.plugins.load :wait
                 f.checks.load :signature
 
                 t = Thread.new do

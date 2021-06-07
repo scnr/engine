@@ -33,7 +33,7 @@ class Auditor < SCNR::Engine::Check::Base
                 description:     %q{Test description},
                 tags:            ['some', 'tag'],
                 cwe:             '0',
-                severity:        Issue::Severity::HIGH,
+                severity:        Severity::HIGH,
                 remedy_guidance: %q{Watch out!.},
                 remedy_code:     ''
             }

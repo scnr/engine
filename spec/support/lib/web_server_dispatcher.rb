@@ -6,8 +6,6 @@
     web site for more information on licensing and terms of use.
 =end
 
-require_relative '../../../lib/scnr/engine/processes/manager'
-require_relative '../../../lib/scnr/engine/processes/helpers'
 require_relative '../../support/helpers/paths'
 require_relative 'web_server_manager'
 require 'arachni/rpc'

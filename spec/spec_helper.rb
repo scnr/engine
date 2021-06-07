@@ -9,13 +9,12 @@
 require 'rack/test'
 # require 'simplecov'
 require 'faker'
+require 'cuboid'
+
+require_relative '../lib/scnr/engine'
 
 # Enable for debugging.
 require 'scnr/ui/cli'
-
-require_relative '../lib/scnr/engine'
-require_relative '../lib/scnr/engine/processes'
-require_relative '../lib/scnr/engine/processes/helpers'
 
 require_relative 'support/helpers/paths'
 require_relative 'support/helpers/requires'

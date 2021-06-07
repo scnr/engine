@@ -6,6 +6,8 @@
     web site for more information on licensing and terms of use.
 =end
 
+require 'cuboid/processes/helpers'
+
 # Order is important.
 INSTANCES = [
     SCNR::Engine::Framework,
@@ -27,8 +29,6 @@ def reset_options
     options.paths.logs           = spec_path     + 'support/logs/'
     options.paths.reports        = spec_path     + 'support/reports/'
     options.paths.snapshots      = spec_path     + 'support/snapshots/'
-
-    options.rpc.server_address = '127.0.0.1'
 
     options.browser_cluster.disable!
 
@@ -61,9 +61,6 @@ def reset_all
 end
 
 def processes_killall
-    instance_killall
-    dispatcher_killall
-    queue_killall
     process_killall
     process_kill_reactor
 end
