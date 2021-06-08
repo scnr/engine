@@ -98,8 +98,6 @@ module State
         return if @cleaned_up
         @cleaned_up = true
 
-        state.force_resume
-
         state.status = :cleanup
 
         if shutdown_browsers
@@ -120,7 +118,7 @@ module State
         @plugins.block
 
         # Plugins may need the session right till the very end so save it for last.
-        @session.clean_up
+        @session.clean_up if @session
         @session = nil
 
         true
@@ -254,16 +252,8 @@ module State
     #   {#resume} it.
     #
     # Pauses the framework on a best effort basis.
-    #
-    # @param    [Bool]  wait
-    #   Wait until the system has been paused.
-    #
-    # @return   [Integer]
-    #   ID identifying this pause request.
-    def pause( wait = true )
-        id = generate_token.hash
-        state.pause id, wait
-        id
+    def pause
+        state.pause
     end
 
     # @return   [Bool]
@@ -292,36 +282,18 @@ module State
     end
 
     # Aborts the {Framework#run} on a best effort basis.
-    #
-    # @param    [Bool]  wait
-    #   Wait until the system has been aborted.
-    def abort( wait = true )
-        state.abort wait
+    def abort
+        state.abort
     end
 
-    # @note Each call from a unique caller is counted as a pause request
-    #   and in order for the system to resume **all** pause callers need to
-    #   {#resume} it.
-    #
-    # Removes a {#pause} request for the current caller.
-    #
-    # @param    [Integer]   id
-    #   ID of the {#pause} request.
-    def resume( id )
-        state.resume id
+    def resume
+        state.resume
     end
 
     # Writes a {Snapshot.dump} to disk and aborts the scan.
-    #
-    # @param   [Bool]  wait
-    #   Wait for the system to write it state to disk.
-    #
-    # @return   [String,nil]
-    #   Path to the state file `wait` is `true`, `nil` otherwise.
-    def suspend( wait = true )
-        state.suspend( wait )
-        return snapshot_path if wait
-        nil
+    def suspend
+        state.suspend
+        snapshot_path
     end
 
     # @return   [Bool]

@@ -261,17 +261,13 @@ class Framework
         @status == :timed_out
     end
 
-    # @param    [Bool]  block
-    #   `true` if the method should block until an abortion has completed,
-    #   `false` otherwise.
-    #
     # @return   [Bool]
     #   `true` if the abort request was successful, `false` if the system is
     #   already {#suspended?} or is {#suspending?}.
     #
     # @raise    [StateNotAbortable]
     #   When not {#running?}.
-    def abort( block = true )
+    def abort
         return false if aborting? || aborted?
 
         if !running?
@@ -282,7 +278,6 @@ class Framework
         @status = :aborting
         @abort = true
 
-        @aborted_signal.pop if block
         true
     end
 
@@ -328,7 +323,7 @@ class Framework
     #
     # @raise    [StateNotSuspendable]
     #   When {#paused?} or {#pausing?}.
-    def suspend( block = true )
+    def suspend
         return false if suspending? || suspended?
 
         if paused? || pausing?
@@ -343,7 +338,6 @@ class Framework
         @status = :suspending
         @suspend = true
 
-        @suspended_signal.pop if block
         true
     end
 
@@ -379,27 +373,20 @@ class Framework
         @status == :scanning
     end
 
-    # @param    [Object]    caller
-    #   Identification for the caller which issued the pause signal.
-    # @param    [Bool]  block
-    #   `true` if the method should block until the pause has completed,
-    #   `false` otherwise.
-    #
     # @return   [TrueClass]
     #   Pauses the framework on a best effort basis, might take a while to take
     #   effect.
-    def pause( caller, block = true )
+    def pause
         @pre_pause_status ||= @status if !paused? && !pausing?
 
         if !paused?
             @status = :pausing
         end
 
-        @pause_signals << caller
+        @pause_signals << :pause
 
         paused if !running?
 
-        @paused_signal.pop if block && !paused?
         true
     end
 
@@ -407,7 +394,7 @@ class Framework
     def paused
         clear_status_messages
         @status = :paused
-        @paused_signal << nil
+        @paused_signal << :pause
     end
 
     # @return   [Bool]
@@ -430,29 +417,15 @@ class Framework
 
     # Resumes a paused system
     #
-    # @param    [Object]    caller
-    #   Identification for the caller whose {#pause} signal to remove. The
-    #   system is resumed once there are no more {#pause} signals left.
-    #
     # @return   [Bool]
     #   `true` if the system is resumed, `false` if there are more {#pause}
     #   signals pending.
-    def resume( caller )
-        @pause_signals.delete( caller )
+    def resume
+        @pause_signals.clear
 
-        if @pause_signals.empty?
-            @status = @pre_pause_status
-            @pre_pause_status = nil
-            return true
-        end
-
-        false
-    end
-
-    def force_resume
-        @pause_signals.to_a.each do |ref|
-            resume ref
-        end
+        @status = @pre_pause_status
+        @pre_pause_status = nil
+        true
     end
 
     def dump( directory )
