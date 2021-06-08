@@ -144,6 +144,10 @@ module State
         @failures.clear
         @retries.clear
 
+        @checks.clear
+        @reporters.clear
+        @plugins.clear
+
         # This needs to happen before resetting the other components so they
         # will be able to put in their hooks.
         self.class.reset
@@ -151,10 +155,6 @@ module State
         clear_observers
         reset_trainer
         reset_session
-
-        @checks.clear
-        @reporters.clear
-        @plugins.clear
 
         @checks    = SCNR::Engine::Check::Manager.new
         @plugins   = SCNR::Engine::Plugin::Manager.new
