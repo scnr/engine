@@ -444,8 +444,6 @@ describe SCNR::Engine::Framework::Parts::State do
                 sleep 0.1 while f.status != :scanning
 
                 f.pause
-                expect(f.status).to eq(:pausing)
-                expect(f.running?).to be_truthy
 
                 Timeout.timeout 5 do
                     sleep 0.1 while f.status != :paused

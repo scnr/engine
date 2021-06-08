@@ -659,6 +659,7 @@ describe SCNR::Engine::State::Framework do
             expect(subject.status).to be :paused
 
             subject.resume
+            subject.resumed
             expect(subject.status).to be :my_status
         end
 
