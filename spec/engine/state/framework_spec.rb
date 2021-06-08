@@ -298,76 +298,25 @@ describe SCNR::Engine::State::Framework do
         context 'when #running?' do
             before(:each) { subject.running = true }
 
-            context 'when blocking' do
-                it 'waits for a #suspended signal' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.suspended
-                    end
-
-                    time = Time.now
-                    subject.suspend
-                    expect(Time.now - time).to be > 1
-                    t.join
-                end
-
-                it 'sets the #status to :suspended' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.suspended
-                    end
-                    subject.suspend
-                    t.join
-
-                    expect(subject.status).to eq(:suspended)
-                end
-
-                it 'sets the status message to :suspending' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.suspended
-                    end
-                    subject.suspend
-                    t.join
-
-                    expect(subject.status_messages).to eq(
-                        [subject.available_status_messages[:suspending]]
-                    )
-                end
-
-                it 'returns true' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.suspended
-                    end
-                    expect(subject.suspend).to be_truthy
-                    t.join
-
-                    expect(subject.status).to eq(:suspended)
-                end
+            it 'sets the #status to :suspending' do
+                subject.suspend
+                expect(subject.status).to eq(:suspending)
             end
 
-            context 'when non-blocking' do
-                it 'sets the #status to :suspending' do
-                    subject.suspend( false )
-                    expect(subject.status).to eq(:suspending)
-                end
+            it 'sets the status message to :suspending' do
+                subject.suspend
+                expect(subject.status_messages).to eq(
+                    [subject.available_status_messages[:suspending]]
+                )
+            end
 
-                it 'sets the status message to :suspending' do
-                    subject.suspend( false )
-                    expect(subject.status_messages).to eq(
-                        [subject.available_status_messages[:suspending]]
-                    )
-                end
-
-                it 'returns true' do
-                    expect(subject.suspend( false )).to be_truthy
-                end
+            it 'returns true' do
+                expect(subject.suspend).to be_truthy
             end
 
             context 'when already #suspending?' do
                 it 'returns false' do
-                    expect(subject.suspend( false )).to be_truthy
+                    expect(subject.suspend).to be_truthy
                     expect(subject).to be_suspending
                     expect(subject.suspend).to be_falsey
                 end
@@ -375,7 +324,7 @@ describe SCNR::Engine::State::Framework do
 
             context 'when already #suspended?' do
                 it 'returns false' do
-                    expect(subject.suspend( false )).to be_truthy
+                    expect(subject.suspend).to be_truthy
                     subject.suspended
                     expect(subject).to be_suspended
 
@@ -385,7 +334,7 @@ describe SCNR::Engine::State::Framework do
 
             context 'when #pausing?' do
                 it "raises #{described_class::Error::StateNotSuspendable}" do
-                    subject.pause( :caller, false )
+                    subject.pause
 
                     expect{ subject.suspend }.to raise_error described_class::Error::StateNotSuspendable
                 end
@@ -393,7 +342,7 @@ describe SCNR::Engine::State::Framework do
 
             context 'when #paused?' do
                 it "raises #{described_class::Error::StateNotSuspendable}" do
-                    subject.pause( :caller, false )
+                    subject.pause
                     subject.paused
 
                     expect{ subject.suspend }.to raise_error described_class::Error::StateNotSuspendable
@@ -435,7 +384,7 @@ describe SCNR::Engine::State::Framework do
 
         context 'while suspending' do
             it 'returns true' do
-                subject.suspend( false )
+                subject.suspend
                 expect(subject).to be_suspending
             end
         end
@@ -444,7 +393,7 @@ describe SCNR::Engine::State::Framework do
             it 'returns false' do
                 expect(subject).not_to be_suspending
 
-                subject.suspend( false )
+                subject.suspend
                 subject.suspended
                 expect(subject).not_to be_suspending
             end
@@ -456,7 +405,7 @@ describe SCNR::Engine::State::Framework do
 
         context 'when a #suspend signal is in place' do
             it 'returns true' do
-                subject.suspend( false )
+                subject.suspend
                 expect(subject).to be_suspend
             end
         end
@@ -465,7 +414,7 @@ describe SCNR::Engine::State::Framework do
             it 'returns false' do
                 expect(subject).not_to be_suspend
 
-                subject.suspend( false )
+                subject.suspend
                 subject.suspended
                 expect(subject).not_to be_suspend
             end
@@ -476,76 +425,25 @@ describe SCNR::Engine::State::Framework do
         context 'when #running?' do
             before(:each) { subject.running = true }
 
-            context 'when blocking' do
-                it 'waits for an #aborted signal' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.aborted
-                    end
-
-                    time = Time.now
-                    subject.abort
-                    expect(Time.now - time).to be > 1
-                    t.join
-                end
-
-                it 'sets the #status to :aborted' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.aborted
-                    end
-                    subject.abort
-                    t.join
-
-                    expect(subject.status).to eq(:aborted)
-                end
-
-                it 'sets the status message to :aborting' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.aborted
-                    end
-                    subject.abort
-                    t.join
-
-                    expect(subject.status_messages).to eq(
-                        [subject.available_status_messages[:aborting]]
-                    )
-                end
-
-                it 'returns true' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.aborted
-                    end
-                    expect(subject.abort).to be_truthy
-                    t.join
-
-                    expect(subject.status).to eq(:aborted)
-                end
+            it 'sets the #status to :aborting' do
+                subject.abort
+                expect(subject.status).to eq(:aborting)
             end
 
-            context 'when non-blocking' do
-                it 'sets the #status to :aborting' do
-                    subject.abort( false )
-                    expect(subject.status).to eq(:aborting)
-                end
+            it 'sets the status message to :aborting' do
+                subject.abort
+                expect(subject.status_messages).to eq(
+                    [subject.available_status_messages[:aborting]]
+                )
+            end
 
-                it 'sets the status message to :aborting' do
-                    subject.abort( false )
-                    expect(subject.status_messages).to eq(
-                        [subject.available_status_messages[:aborting]]
-                    )
-                end
-
-                it 'returns true' do
-                    expect(subject.abort( false )).to be_truthy
-                end
+            it 'returns true' do
+                expect(subject.abort).to be_truthy
             end
 
             context 'when already #aborting?' do
                 it 'returns false' do
-                    expect(subject.abort( false )).to be_truthy
+                    expect(subject.abort).to be_truthy
                     expect(subject).to be_aborting
                     expect(subject.abort).to be_falsey
                 end
@@ -553,7 +451,7 @@ describe SCNR::Engine::State::Framework do
 
             context 'when already #aborted?' do
                 it 'returns false' do
-                    expect(subject.abort( false )).to be_truthy
+                    expect(subject.abort).to be_truthy
                     subject.aborted
                     expect(subject).to be_aborted
 
@@ -611,7 +509,7 @@ describe SCNR::Engine::State::Framework do
 
         context 'while aborting' do
             it 'returns true' do
-                subject.abort( false )
+                subject.abort
                 expect(subject).to be_aborting
             end
         end
@@ -620,7 +518,7 @@ describe SCNR::Engine::State::Framework do
             it 'returns false' do
                 expect(subject).not_to be_aborting
 
-                subject.abort( false )
+                subject.abort
                 subject.aborted
                 expect(subject).not_to be_aborting
             end
@@ -632,7 +530,7 @@ describe SCNR::Engine::State::Framework do
 
         context 'when a #abort signal is in place' do
             it 'returns true' do
-                subject.abort( false )
+                subject.abort
                 expect(subject).to be_abort
             end
         end
@@ -641,7 +539,7 @@ describe SCNR::Engine::State::Framework do
             it 'returns false' do
                 expect(subject).not_to be_abort
 
-                subject.abort( false )
+                subject.abort
                 subject.aborted
                 expect(subject).not_to be_abort
             end
@@ -674,51 +572,13 @@ describe SCNR::Engine::State::Framework do
         context 'when #running?' do
             before(:each) { subject.running = true }
 
-            context 'when blocking' do
-                it 'waits for a #paused signal' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.paused
-                    end
-
-                    time = Time.now
-                    subject.pause :a_caller
-                    expect(Time.now - time).to be > 1
-                    t.join
-                end
-
-                it 'sets the #status to :paused' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.paused
-                    end
-                    subject.pause :a_caller
-                    t.join
-
-                    expect(subject.status).to eq(:paused)
-                end
-
-                it 'returns true' do
-                    t = Thread.new do
-                        sleep 1
-                        subject.paused
-                    end
-                    expect(subject.pause( :a_caller )).to be_truthy
-                    t.join
-
-                    expect(subject.status).to eq(:paused)
-                end
+            it 'sets the #status to :pausing' do
+                subject.pause
+                expect(subject.status).to eq(:pausing)
             end
 
-            context 'when non-blocking' do
-                it 'sets the #status to :pausing' do
-                    subject.pause( :a_caller, false )
-                    expect(subject.status).to eq(:pausing)
-                end
-
-                it 'returns true' do
-                    expect(subject.pause( :a_caller, false )).to be_truthy
-                end
+            it 'returns true' do
+                expect(subject.pause).to be_truthy
             end
         end
 
@@ -732,7 +592,7 @@ describe SCNR::Engine::State::Framework do
                 end
 
                 time = Time.now
-                subject.pause :a_caller, false
+                subject.pause
                 expect(subject.status).to eq(:paused)
                 expect(Time.now - time).to be < 1
                 t.join
@@ -752,7 +612,7 @@ describe SCNR::Engine::State::Framework do
 
         context 'while pausing' do
             it 'returns true' do
-                subject.pause( :caller, false )
+                subject.pause
                 expect(subject).to be_pausing
             end
         end
@@ -761,7 +621,7 @@ describe SCNR::Engine::State::Framework do
             it 'returns false' do
                 expect(subject).not_to be_pausing
 
-                subject.pause( :caller, false )
+                subject.pause
                 subject.paused
                 expect(subject).not_to be_pausing
             end
@@ -771,7 +631,7 @@ describe SCNR::Engine::State::Framework do
     describe '#pause?' do
         context 'when a #pause signal is in place' do
             it 'returns true' do
-                subject.pause( :caller, false )
+                subject.pause
                 expect(subject).to be_pause
             end
         end
@@ -780,9 +640,9 @@ describe SCNR::Engine::State::Framework do
             it 'returns false' do
                 expect(subject).not_to be_pause
 
-                subject.pause( :caller, false )
+                subject.pause
                 subject.paused
-                subject.resume( :caller )
+                subject.resume
                 expect(subject).not_to be_pause
             end
         end
@@ -791,71 +651,37 @@ describe SCNR::Engine::State::Framework do
     describe '#resume' do
         before(:each) { subject.running = true }
 
-        it 'removes a #pause signal' do
-            subject.pause( :caller, false )
-            expect(subject.pause_signals).to include :caller
-
-            subject.resume( :caller )
-
-            expect(subject.pause_signals).not_to include :caller
-            expect(subject).not_to be_paused
-        end
-
-        it 'operates on a per-caller basis' do
-            subject.pause( :caller, false )
-            subject.pause( :caller, false )
-            subject.pause( :caller, false )
-            subject.paused
-            subject.pause( :caller2, false )
-
-            subject.resume( :caller )
-            expect(subject).to be_paused
-
-            subject.resume( :caller2 )
-            expect(subject).not_to be_paused
-        end
-
         it 'restores the previous #status' do
             subject.status = :my_status
 
-            subject.pause( :caller, false )
+            subject.pause
             subject.paused
             expect(subject.status).to be :paused
 
-            subject.resume( :caller )
+            subject.resume
             expect(subject.status).to be :my_status
         end
 
         context 'when called before a #pause signal has been sent' do
             it '#pause? returns false' do
-                subject.pause( :caller, false )
-                subject.resume( :caller )
+                subject.pause
+                subject.resume
                 expect(subject).not_to be_pause
             end
 
             it '#paused? returns false' do
-                subject.pause( :caller, false )
-                subject.resume( :caller )
+                subject.pause
+                subject.resume
                 expect(subject).not_to be_paused
             end
         end
 
         context 'when there are no more signals' do
             it 'returns true' do
-                subject.pause( :caller, false )
+                subject.pause
                 subject.paused
 
-                expect(subject.resume( :caller )).to be_truthy
-            end
-        end
-
-        context 'when there are more signals' do
-            it 'returns false' do
-                subject.pause( :caller, false )
-                subject.pause( :caller2, false )
-                subject.paused
-
-                expect(subject.resume( :caller )).to be_falsey
+                expect(subject.resume).to be_truthy
             end
         end
     end

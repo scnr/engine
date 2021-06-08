@@ -115,8 +115,6 @@ describe SCNR::Engine::Framework::Parts::State do
                 sleep 0.1 while f.status != :scanning
 
                 f.abort
-                expect(f.status).to eq(:aborted)
-
                 t.join
                 expect(f.status).to eq(:aborted)
             end
@@ -161,8 +159,6 @@ describe SCNR::Engine::Framework::Parts::State do
                 sleep 0.1 while f.status != :scanning
 
                 f.suspend
-                expect(f.status).to eq(:suspended)
-
                 t.join
                 expect(f.status).to eq(:suspended)
             end
@@ -447,12 +443,15 @@ describe SCNR::Engine::Framework::Parts::State do
                 end
                 sleep 0.1 while f.status != :scanning
 
-                id = f.pause
-                expect(id).to be_kind_of Integer
-                expect(f.status).to eq(:paused)
+                f.pause
+                expect(f.status).to eq(:pausing)
                 expect(f.running?).to be_truthy
 
-                f.resume id
+                Timeout.timeout 5 do
+                    sleep 0.1 while f.status != :paused
+                end
+
+                f.resume
                 t.join
             end
         end
@@ -469,10 +468,12 @@ describe SCNR::Engine::Framework::Parts::State do
                     f.run
                 end
 
-                id = f.pause
-                expect(f.status).to eq(:paused)
+                f.pause
+                Timeout.timeout 5 do
+                    sleep 0.1 while f.status != :paused
+                end
 
-                f.resume id
+                f.resume
                 Timeout.timeout( 5 ) do
                     sleep 0.1 while f.status != :scanning
                 end
