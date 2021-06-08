@@ -5,6 +5,7 @@ describe SCNR::Engine::Reporter::Manager do
         SCNR::Engine::Options.paths.reporters = fixtures_path + 'reporters/manager_spec/'
     end
 
+    after { subject.clear }
     subject { described_class.new }
     let(:report) { Factory[:report] }
 
