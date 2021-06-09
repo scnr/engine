@@ -29,6 +29,7 @@ def reset_options
     options.paths.logs           = spec_path     + 'support/logs/'
     options.paths.reports        = spec_path     + 'support/reports/'
     options.paths.snapshots      = spec_path     + 'support/snapshots/'
+    options.snapshot.path        = options.paths.snapshots
 
     options.browser_cluster.disable!
 

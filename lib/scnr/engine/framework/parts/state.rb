@@ -252,7 +252,7 @@ module State
     #   {#resume} it.
     #
     # Pauses the framework on a best effort basis.
-    def pause
+    def pause!
         state.pause
     end
 
@@ -282,16 +282,16 @@ module State
     end
 
     # Aborts the {Framework#run} on a best effort basis.
-    def abort
+    def abort!
         state.abort
     end
 
-    def resume
+    def resume!
         state.resume
     end
 
     # Writes a {Snapshot.dump} to disk and aborts the scan.
-    def suspend
+    def suspend!
         state.suspend
         snapshot_path
     end

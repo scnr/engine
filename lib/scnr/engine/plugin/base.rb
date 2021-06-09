@@ -16,8 +16,11 @@ module Plugin
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 # @abstract
 class Base < Component::Base
+    include SCNR::Engine
+    include UI::Output
     include Component
     include MonitorMixin
+    include Utilities
 
     # @return   [Hash]
     #   Plugin options.
@@ -34,7 +37,7 @@ class Base < Component::Base
 
     # @return   [SCNR::Engine::Framework]
     def framework
-        SCNR::Engine::Framework.unsafe
+        Framework.unsafe
     end
 
     # @note **OPTIONAL**
