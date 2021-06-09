@@ -57,6 +57,9 @@ while sleep( 1 )
    break if !response_data['busy']
 end
 
+request :get, "instances/#{instance_id}/report.crf"
+ap Cuboid::Report.from_crf( response_data )
+
 request :delete, "instances/#{instance_id}"
 
 Cuboid::Processes::Manager.kill pid
