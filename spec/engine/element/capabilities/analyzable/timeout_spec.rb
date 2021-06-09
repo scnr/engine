@@ -147,7 +147,7 @@ describe SCNR::Engine::Element::Capabilities::Analyzable::Timeout do
         end
         context 'when the server is not responsive' do
             let(:subject) { SCNR::Engine::Element::Link.new( url: url + '/sleep' ) }
-            it 'returns false', focus: true do
+            it 'returns false' do
                 expect(subject.ensure_responsiveness( 1_000 )).to be_falsey
             end
         end
