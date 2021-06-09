@@ -29,7 +29,7 @@ module Report
         @reporters = SCNR::Engine::Reporter::Manager.new
     end
 
-    # @return    [Report]
+    # @return    [SCNR::Engine::Report]
     #   Scan results.
     def report
         opts = Options.to_hash.deep_clone
