@@ -1,21 +1,14 @@
-# Get the CLI output interface implementation.
-# require 'scnr/ui/cli/output'
-#
-# module Cuboid
-# module UI
-#     Output = SCNR::UI::CLI::Output
-# end
-# end
-
-# # Now get the Engine.
 require_relative '../lib/scnr/engine'
+
+require_relative 'application/rpc_proxy'
+require_relative 'application/rest_proxy'
 
 module SCNR
 class Application < ::Cuboid::Application
 
     # Let's say one for the scanner and another for the browsers.
     provision_cores  2
-    provision_memory 2 * 1024 * 1024 * 1024
+    provision_memory 1 * 1024 * 1024 * 1024
     provision_disk   2 * 1024 * 1024 * 1024
 
     validate_options_with :validate_options
@@ -24,11 +17,12 @@ class Application < ::Cuboid::Application
     handler_for :resume,  :do_resume
     handler_for :abort,   :do_abort
 
-    def run
-        # Cuboid::UI::Output.print_info 'Test'
-        # Engine::UI::Output.print_info 'Test2'
-        # exit
+    rpc_service_for  :proxy, RPCProxy
+    rest_service_for :proxy, RESTProxy
 
+    attr_reader :framework
+
+    def run
         Engine::Framework.safe do |f|
             # Hacky.
             @framework = f
@@ -42,12 +36,6 @@ class Application < ::Cuboid::Application
 
             ap Engine::Data.issues.size
         end
-    end
-
-    def statistics
-        super.merge(
-          application: @framework.statistics
-        )
     end
 
     def validate_options( options )
