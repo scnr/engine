@@ -80,7 +80,7 @@ describe SCNR::Engine::Framework::Parts::State do
         end
     end
 
-    describe '#abort' do
+    describe '#abort!' do
         it 'aborts the system' do
             SCNR::Engine::Options.paths.checks  = fixtures_path + '/signature_check/'
 
@@ -96,7 +96,7 @@ describe SCNR::Engine::Framework::Parts::State do
 
                 sleep 0.1 while SCNR::Engine::Data.issues.size < 2
 
-                f.abort
+                f.abort!
                 t.join
 
                 expect(SCNR::Engine::Data.issues.size).to be < 500
@@ -114,14 +114,14 @@ describe SCNR::Engine::Framework::Parts::State do
                 end
                 sleep 0.1 while f.status != :scanning
 
-                f.abort
+                f.abort!
                 t.join
                 expect(f.status).to eq(:aborted)
             end
         end
     end
 
-    describe '#suspend' do
+    describe '#suspend!' do
         it 'suspends the system' do
             SCNR::Engine::Options.paths.checks = fixtures_path + '/signature_check/'
 
@@ -138,7 +138,7 @@ describe SCNR::Engine::Framework::Parts::State do
 
                 sleep 0.1 while SCNR::Engine::Data.issues.size < 2
 
-                snapshot = f.suspend
+                snapshot = f.suspend!
                 t.join
 
                 expect(SCNR::Engine::Data.issues.size).to be < 500
@@ -158,7 +158,7 @@ describe SCNR::Engine::Framework::Parts::State do
                 end
                 sleep 0.1 while f.status != :scanning
 
-                f.suspend
+                f.suspend!
                 t.join
                 expect(f.status).to eq(:suspended)
             end
@@ -182,7 +182,7 @@ describe SCNR::Engine::Framework::Parts::State do
 
                 sleep 0.1 while f.status != :scanning
 
-                f.suspend
+                f.suspend!
                 t.join
 
                 expect(SCNR::Engine::State.plugins.runtime[:suspendable][:data]).to eq(1)
@@ -211,7 +211,7 @@ describe SCNR::Engine::Framework::Parts::State do
 
                         sleep 0.1 while SCNR::Engine::Data.issues.size < 2
 
-                        snapshot = f.suspend
+                        snapshot = f.suspend!
                         t.join
 
                         expect(SCNR::Engine::Data.issues.size).to be < 500
@@ -241,7 +241,7 @@ describe SCNR::Engine::Framework::Parts::State do
 
                         sleep 0.1 while SCNR::Engine::Data.issues.size < 2
 
-                        snapshot = f.suspend
+                        snapshot = f.suspend!
                         t.join
 
                         expect(SCNR::Engine::Data.issues.size).to be < 500
@@ -254,7 +254,7 @@ describe SCNR::Engine::Framework::Parts::State do
         end
     end
 
-    describe '#restore' do
+    describe '#restore!' do
         it 'restores a suspended scan' do
             SCNR::Engine::Options.paths.checks  = fixtures_path + '/signature_check/'
 
@@ -277,7 +277,7 @@ describe SCNR::Engine::Framework::Parts::State do
 
                 sleep 0.1 while logged_issues < 200
 
-                snapshot = f.suspend
+                snapshot = f.suspend!
                 t.join
 
                 expect(logged_issues).to be < 500
@@ -287,7 +287,7 @@ describe SCNR::Engine::Framework::Parts::State do
             SCNR::Engine::Options.paths.checks  = fixtures_path + '/signature_check/'
 
             SCNR::Engine::Framework.safe do |f|
-                f.restore snapshot
+                f.restore! snapshot
 
                 SCNR::Engine::Data.issues.on_new do
                     logged_issues += 1
@@ -315,12 +315,12 @@ describe SCNR::Engine::Framework::Parts::State do
                 t = Thread.new { f.run }
                 sleep 0.1 while f.status != :scanning
 
-                snapshot = f.suspend
+                snapshot = f.suspend!
 
                 t.join
             end
 
-            SCNR::Engine::Framework.restore( snapshot ) do |f|
+            SCNR::Engine::Framework.restore!( snapshot ) do |f|
                 opts = SCNR::Engine::Options.to_h
                 opts.delete :timeout
                 options_hash.delete :timeout
@@ -342,12 +342,12 @@ describe SCNR::Engine::Framework::Parts::State do
                 t = Thread.new { f.run }
 
                 sleep 0.1 while f.browser_cluster.done?
-                snapshot = f.suspend
+                snapshot = f.suspend!
 
                 t.join
             end
 
-            SCNR::Engine::Framework.restore( snapshot ) do |f|
+            SCNR::Engine::Framework.restore!( snapshot ) do |f|
                 expect(f.browser_cluster_job_skip_states).to be_any
             end
         end
@@ -362,12 +362,12 @@ describe SCNR::Engine::Framework::Parts::State do
                 t = Thread.new { f.run }
                 sleep 0.1 while f.status != :scanning
 
-                snapshot = f.suspend
+                snapshot = f.suspend!
 
                 t.join
             end
 
-            SCNR::Engine::Framework.restore( snapshot ) do |f|
+            SCNR::Engine::Framework.restore!( snapshot ) do |f|
                 expect(f.checks.loaded).to eq(['signature'])
             end
         end
@@ -382,11 +382,11 @@ describe SCNR::Engine::Framework::Parts::State do
                 t = Thread.new { f.run }
                 sleep 0.1 while f.status != :scanning
 
-                snapshot = f.suspend
+                snapshot = f.suspend!
                 t.join
             end
 
-            SCNR::Engine::Framework.restore( snapshot ) do |f|
+            SCNR::Engine::Framework.restore!( snapshot ) do |f|
                 expect(f.plugins.loaded).to eq(['wait'])
             end
         end
@@ -410,13 +410,13 @@ describe SCNR::Engine::Framework::Parts::State do
 
                 sleep 0.1 while f.status != :scanning
 
-                snapshot = f.suspend
+                snapshot = f.suspend!
                 t.join
 
                 expect(SCNR::Engine::State.plugins.runtime[:suspendable][:data]).to eq(1)
             end
 
-            SCNR::Engine::Framework.restore( snapshot ) do |f|
+            SCNR::Engine::Framework.restore!( snapshot ) do |f|
                 t = Thread.new do
                     f.run
                 end
@@ -425,13 +425,13 @@ describe SCNR::Engine::Framework::Parts::State do
 
                 expect(f.plugins.jobs[:suspendable][:instance].counter).to eq(2)
 
-                f.abort
+                f.abort!
                 t.join
             end
         end
     end
 
-    describe '#pause' do
+    describe '#pause!' do
         it 'pauses the system' do
             SCNR::Engine::Framework.safe do |f|
                 SCNR::Engine::Options.url = url + '/elem_combo'
@@ -443,19 +443,19 @@ describe SCNR::Engine::Framework::Parts::State do
                 end
                 sleep 0.1 while f.status != :scanning
 
-                f.pause
+                f.pause!
 
                 Timeout.timeout 5 do
                     sleep 0.1 while f.status != :paused
                 end
 
-                f.resume
+                f.resume!
                 t.join
             end
         end
     end
 
-    describe '#resume' do
+    describe '#resume!' do
         it 'resumes the scan' do
             SCNR::Engine::Framework.safe do |f|
                 SCNR::Engine::Options.url = url + '/elem_combo'
@@ -466,12 +466,12 @@ describe SCNR::Engine::Framework::Parts::State do
                     f.run
                 end
 
-                f.pause
+                f.pause!
                 Timeout.timeout 5 do
                     sleep 0.1 while f.status != :paused
                 end
 
-                f.resume
+                f.resume!
                 Timeout.timeout( 5 ) do
                     sleep 0.1 while f.status != :scanning
                 end

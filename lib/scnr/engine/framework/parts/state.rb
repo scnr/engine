@@ -27,8 +27,8 @@ module State
         #
         # @return   [Framework]
         #   Restored instance.
-        def restore( ses, &block )
-            f = self.unsafe.restore( ses )
+        def restore!( ses, &block )
+            f = self.unsafe.restore!( ses )
             block_given? ? f.safe( &block ) : f
         end
 
@@ -171,7 +171,7 @@ module State
     #
     # @return   [Framework]
     #   Restored instance.
-    def restore( ses )
+    def restore!( ses )
         Snapshot.load ses
 
         browser_job_update_skip_states state.browser_skip_states

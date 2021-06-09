@@ -98,19 +98,17 @@ class Base < Component::Base
 
     # Pauses the {#framework}.
     def framework_pause
-        @pause_id ||= framework.pause
+        @pause_id ||= framework.pause!
     end
 
     # Aborts the {#framework}.
     def framework_abort
-        Thread.new do
-            framework.abort
-        end
+        framework.abort!
     end
 
     # Resumes the {#framework}.
     def framework_resume
-        framework.resume
+        framework.resume!
     end
 
     # Should return an array of plugin related gem dependencies.
