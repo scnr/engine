@@ -16,4 +16,6 @@ while instance.busy?
     sleep 1
 end
 
+ap instance.generate_report
+
 instance.shutdown

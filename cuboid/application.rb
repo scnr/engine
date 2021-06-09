@@ -20,6 +20,8 @@ class Application < ::Cuboid::Application
     rpc_service_for  :proxy, RPCProxy
     rest_service_for :proxy, RESTProxy
 
+    serialize_with Marshal
+
     attr_reader :framework
 
     def run
@@ -34,7 +36,7 @@ class Application < ::Cuboid::Application
 
             f.run
 
-            ap Engine::Data.issues.size
+            report f.report
         end
     end
 

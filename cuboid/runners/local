@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
-require_relative '../application'
-
+#
 # Get the CLI output interface implementation.
 require 'scnr/ui/cli/output'
+
+require_relative '../application'
 
 module Cuboid
 module UI
@@ -27,3 +28,5 @@ Thread.new do
 end
 
 application.run
+
+ap application.generate_report
