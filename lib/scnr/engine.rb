@@ -141,10 +141,11 @@ end
 
 require_relative 'engine/banner'
 
-SCNR::Engine::UI        = Cuboid::UI
 SCNR::Engine::Component = Cuboid::Component
 SCNR::Engine::RPC       = Cuboid::RPC
 SCNR::Engine::Processes = Cuboid::Processes
+
+require_relative 'engine/ui/output_interface'
 
 # If there's no UI driving us then there's no output interface.
 # Chances are that someone is using Engine as a Ruby lib so there's no
