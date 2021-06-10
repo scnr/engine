@@ -141,7 +141,6 @@ end
 
 require_relative 'engine/banner'
 
-SCNR::Engine::Component = Cuboid::Component
 SCNR::Engine::RPC       = Cuboid::RPC
 SCNR::Engine::Processes = Cuboid::Processes
 

@@ -2,7 +2,7 @@ module SCNR
 module Engine
 module UI
 
-# The system needs an {OutputInterface interface} as a {Cuboid::UI::Output}
+# The system needs an {OutputInterface interface} as a {SCNR::Engine::UI::Output}
 # module and every UI should provide one.
 #
 # This one however is in case that one isn't available and it's basically

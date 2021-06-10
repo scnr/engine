@@ -16,7 +16,7 @@ module ErrorLogging
 
         @@error_fd      = nil
         @@error_buffer  = []
-        @@error_logfile = "#{Cuboid::Options.paths.logs}error-#{Process.pid}.log"
+        @@error_logfile = "#{Options.paths.logs}error-#{Process.pid}.log"
     end
 
     # @param    [String]    logfile
@@ -82,7 +82,7 @@ module ErrorLogging
                 h = {}
                 ENV.each { |k, v| h[k] = v }
 
-                options = Cuboid::Options.to_rpc_data.to_yaml
+                options = Options.to_rpc_data.to_yaml
 
                 ['ENV:', h.to_yaml, '-' * 80, 'OPTIONS:', options].each do |s|
 

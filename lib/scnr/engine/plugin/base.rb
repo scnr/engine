@@ -16,11 +16,8 @@ module Plugin
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 # @abstract
 class Base < Component::Base
-    include SCNR::Engine
-    include UI::Output
-    include Component
     include MonitorMixin
-    include Utilities
+    include Component
 
     # @return   [Hash]
     #   Plugin options.

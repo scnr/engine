@@ -31,7 +31,7 @@ module OutputInterface
     include Controls
     include Personalization
 
-    # Must be called after the entire {Cuboid} environment has been loaded.
+    # Must be called after the entire {SCNR::Engine} environment has been loaded.
     def self.initialize
         Controls.initialize
         ErrorLogging.initialize

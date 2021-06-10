@@ -19,10 +19,7 @@ module Check
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 # @abstract
 class Base < Component::Base
-    include SCNR::Engine
-    include Component::Output
     include Auditor
-    include Utilities
 
     # def self.included( check )
     #     check.personalize_output!

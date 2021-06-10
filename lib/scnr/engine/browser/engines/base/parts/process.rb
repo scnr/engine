@@ -34,7 +34,7 @@ module Parts
 module Process
 
     # How much time to wait for the browser process to start before restarting.
-    SPAWN_TIMEOUT = 60
+    SPAWN_TIMEOUT = 10
 
     # @return   [Integer]
     #   PID of the lifeline process managing the browser process.
@@ -106,12 +106,12 @@ module Process
             ri, @kill_process = IO.pipe
 
             @lifeline_pid = Processes::Manager.spawn(
-                :browser,
+                "#{Options.paths.executables}/browser.rb",
                 executable:   driver_path,
                 args:         {
                     port: port
                 }.merge( driver_args ),
-                without_scnr: true,
+                without_cuboid: true,
                 fork:         false,
                 new_pgroup:   true,
                 stdin:        ri,
