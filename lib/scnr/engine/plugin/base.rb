@@ -95,7 +95,7 @@ class Base < Component::Base
 
     # Pauses the {#framework}.
     def framework_pause
-        @pause_id ||= framework.pause!
+        framework.pause!
     end
 
     # Aborts the {#framework}.
