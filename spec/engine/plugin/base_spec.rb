@@ -30,7 +30,7 @@ describe SCNR::Engine::Plugin::Base do
 
     describe '#framework_pause' do
         it 'pauses the framework' do
-            expect(framework).to receive(:pause)
+            expect(framework).to receive(:pause!)
             subject.framework_pause
         end
     end
@@ -41,7 +41,7 @@ describe SCNR::Engine::Plugin::Base do
 
             subject.framework_pause
 
-            expect(framework).to receive(:resume)
+            expect(framework).to receive(:resume!)
             subject.framework_resume
         end
     end
