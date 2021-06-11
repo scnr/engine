@@ -116,7 +116,6 @@ module HTTP
         end
 
         if request_for_ad?( request )
-            ap '----------------------------------'
             print_debug_level_2 "Ignoring, ad host: #{request.url}"
             return
         end
