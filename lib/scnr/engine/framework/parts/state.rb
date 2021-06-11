@@ -288,6 +288,7 @@ module State
 
     def resume!
         state.resume
+        state.resumed
     end
 
     # Writes a {Snapshot.dump} to disk and aborts the scan.
