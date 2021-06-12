@@ -460,8 +460,8 @@ describe SCNR::Engine::Browser::Javascript::TaintTracer do
                             entry = sink[7]
                             expect(entry.object).to eq('angular.element')
                             expect(entry.function.name).to eq('html')
-                            expect(entry.function.arguments).to eq(["Blah blah blah #{taint}\n"])
-                            expect(entry.tainted_value).to eq("Blah blah blah #{taint}\n")
+                            expect(entry.function.arguments.first).to include "Blah blah blah #{taint}\n"
+                            expect(entry.tainted_value).to include "Blah blah blah #{taint}\n"
                             expect(entry.taint).to eq(taint)
                             expect(entry.trace[0].url).to eq("#{url}angular-route.js")
                         end

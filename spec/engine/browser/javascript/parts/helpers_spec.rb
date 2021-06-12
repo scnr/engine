@@ -105,6 +105,7 @@ describe SCNR::Engine::Browser::Javascript::Parts::Helpers do
             it 'returns true' do
                 expect(subject).to_not have_sinks
 
+                subject.taint = '1'
                 browser.load "#{taint_tracer_url}/debug?input=#{subject.log_execution_flow_sink_stub(1)}"
                 browser.watir.form.submit
 

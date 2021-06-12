@@ -143,7 +143,7 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                 expect(sinks.size).to eq(1)
             end
 
-            context 'and has already been seen' do
+            context 'and has not already been seen' do
                 it 'calls #on_new_page_with_sink callbacks' do
                     sinks = []
                     subject.on_new_page_with_sink do |page|
