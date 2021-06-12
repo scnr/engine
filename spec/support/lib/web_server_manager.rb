@@ -93,7 +93,8 @@ class WebServerManager
             url_for( name, false ),
             ssl_verifypeer: false,
             ssl_verifyhost: 0,
-            forbid_reuse:   true
+            forbid_reuse:   true,
+            timeout:        1
         ).code != 0
     end
 
