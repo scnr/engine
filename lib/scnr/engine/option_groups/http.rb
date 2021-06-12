@@ -245,7 +245,7 @@ class HTTP < SCNR::Engine::OptionGroup
     set_defaults(
         request_timeout:        20_000,
         request_redirect_limit: 5,
-        request_concurrency:    14,
+        request_concurrency:    10,
         request_queue_size:     50,
         request_headers:        {},
         response_max_size:      500_000,

@@ -51,7 +51,7 @@ class BrowserCluster < SCNR::Engine::OptionGroup
         local_storage:       {},
         session_storage:     {},
         wait_for_elements:   {},
-        pool_size:           5,
+        pool_size:           4,
         # TODO: Not actually a timeout for the job anymore, sets a
         # timeout for Selenium communication HTTP requests.
         # Name hijacked for compatibility, but should probably change in the

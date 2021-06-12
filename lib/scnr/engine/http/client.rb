@@ -79,9 +79,6 @@ class Client
 
     require Options.paths.lib + 'http/cookie_jar'
 
-    # Default maximum concurrency for HTTP requests.
-    MAX_CONCURRENCY = 14
-
     # Default 1 minute timeout for HTTP requests.
     HTTP_TIMEOUT = 60_000
 
@@ -122,7 +119,7 @@ class Client
     end
 
     def reset_options
-        @original_max_concurrency = Options.http.request_concurrency || MAX_CONCURRENCY
+        @original_max_concurrency = Options.http.request_concurrency
         self.max_concurrency      = @original_max_concurrency
 
         headers.clear
