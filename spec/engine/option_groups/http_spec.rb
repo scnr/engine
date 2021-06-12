@@ -14,8 +14,8 @@ describe SCNR::Engine::OptionGroups::HTTP do
     end
 
     describe '#request_concurrency' do
-        it 'defaults to 14' do
-            expect(subject.request_concurrency).to eq(14)
+        it 'defaults' do
+            expect(subject.request_concurrency).to eq(10)
         end
     end
 

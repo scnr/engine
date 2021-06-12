@@ -145,7 +145,7 @@ describe SCNR::Engine::HTTP::Client do
                 it 'uses a default max concurrency setting' do
                     SCNR::Engine::Options.http.request_concurrency = nil
                     subject.reset
-                    expect(subject.max_concurrency).to eq(SCNR::Engine::HTTP::Client::MAX_CONCURRENCY)
+                    expect(subject.max_concurrency).to eq(SCNR::Engine::Options.http.defaults[:request_concurrency])
                 end
             end
         end
@@ -555,17 +555,17 @@ describe SCNR::Engine::HTTP::Client do
 
     describe '#original_max_concurrency' do
         it 'returns the original max concurrency' do
-            expect(subject.original_max_concurrency).to eq(14)
+            expect(subject.original_max_concurrency).to eq(SCNR::Engine::Options.http.request_concurrency)
             expect(subject.original_max_concurrency).to eq(subject.max_concurrency)
 
             subject.max_concurrency = 10
-            expect(subject.original_max_concurrency).to eq(14)
+            expect(subject.original_max_concurrency).to eq(SCNR::Engine::Options.http.request_concurrency)
         end
     end
 
     describe '#max_concurrency' do
-        it 'defaults to 14' do
-            expect(subject.max_concurrency).to eq(14)
+        it 'defaults' do
+            expect(subject.max_concurrency).to eq(SCNR::Engine::Options.http.request_concurrency)
         end
         it 'respects the http_request_concurrency option' do
             SCNR::Engine::Options.http.request_concurrency = 50
