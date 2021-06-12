@@ -67,25 +67,13 @@ impl Signature {
     }
 
     fn refine( &self, other: &Signature ) -> Signature {
-        let mut intersection = BTreeSet::new();
-
-        for token in self.tokens.intersection( &other.tokens ).cloned() {
-            intersection.insert( token );
+        Signature {
+            tokens: self.tokens.intersection( &other.tokens ).cloned().collect()
         }
-
-        Signature { tokens: intersection }
     }
 
     fn refine_bang( &mut self, other: &Signature ) -> &mut Signature {
-        let tokens           = self.tokens.clone();
-        let mut intersection = BTreeSet::new();
-
-        for token in tokens.intersection( &other.tokens ).cloned() {
-            intersection.insert( token );
-        }
-
-        self.tokens = intersection;
-
+        self.tokens = self.tokens.intersection( &other.tokens ).cloned().collect();
         self
     }
 

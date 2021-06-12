@@ -186,7 +186,7 @@ class Response < Message
         return false if headers['X-Content-Type-Options'].to_s.downcase.include?( 'nosniff' )
 
         # If there's a doctype then we're good to go.
-        return true if body.start_with?( '<!DOCTYPE html' )
+        return true if body.optimized_include?( '<!DOCTYPE html' )
 
         # Last resort, sniff the content-type from several HTML tags.
         HTML_IDENTIFIER_REGEXPS.find { |regexp| regexp.match? body }
