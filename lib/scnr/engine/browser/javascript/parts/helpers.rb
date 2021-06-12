@@ -114,15 +114,17 @@ module Helpers
     def html?( response )
         return false if response.body.empty?
 
-        # We only care about HTML responses.
-        return false if !response.html?
-
         # The last check isn't fool-proof, so don't do it when loading the page
         # for the first time, but only when the page loads stuff via AJAX and whatnot.
         #
         # Well, we can be pretty sure that the root page will be HTML anyways.
         return true if @browser.last_url == response.url
 
+        # We only care about HTML responses.
+        return false if !response.html?
+
+        # Too resource intensive, but keep commented as an FYI.
+        #
         # Finally, verify that we're really working with markup (hopefully HTML)
         # and that the previous checks weren't just flukes matching some other
         # kind of document.
@@ -131,11 +133,11 @@ module Helpers
         # includes HTML -- it happens.
         #
         # Beware, if there's a doctype in the beginning this will get fooled.
-        if !Parser.markup?( response.body )
-            print_debug "Does not look like HTML: #{response.url}"
-            print_debug "\n#{response.body}"
-            return false
-        end
+        # if !Parser.markup?( response.body )
+        #     print_debug "Does not look like HTML: #{response.url}"
+        #     print_debug "\n#{response.body}"
+        #     return false
+        # end
 
         true
     end
@@ -161,7 +163,7 @@ module Helpers
     end
 
     def has_sinks?
-        return false if !supported?
+        return if !supported?
         taint_tracer.has_sinks( @taint )
     end
 

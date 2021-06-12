@@ -175,21 +175,24 @@ class Response < Message
     end
 
     def html?
+        return false if body.empty?
+
+        html_ct = nil
         # IF we've got a Content-Type that's all we need to know.
         if (ct = headers.content_type)
             ct = ct.split( ';' ).first
             ct.strip!
-            return HTML_CONTENT_TYPES.include?( ct.downcase )
+            ct.downcase!
+            html_ct = !!HTML_CONTENT_TYPES.find { |type| ct.optimized_include? type }
         end
 
-        # Server insists we should only only use the content-type. respect it.
+        return true if html_ct
+
+        # Server insists we should only use the content-type. respect it.
         return false if headers['X-Content-Type-Options'].to_s.downcase.include?( 'nosniff' )
 
-        # If there's a doctype then we're good to go.
-        return true if body.optimized_include?( '<!DOCTYPE html' )
-
         # Last resort, sniff the content-type from several HTML tags.
-        HTML_IDENTIFIER_REGEXPS.find { |regexp| regexp.match? body }
+        !!HTML_IDENTIFIER_REGEXPS.find { |regexp| regexp.match? body }
     end
 
     def body=( body )

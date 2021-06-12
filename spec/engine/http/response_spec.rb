@@ -158,7 +158,8 @@ describe SCNR::Engine::HTTP::Response do
                     code:    200,
                     headers: {
                         'Content-Type' => content_type
-                    }
+                    },
+                    body: 'blah'
                 )
             end
 
