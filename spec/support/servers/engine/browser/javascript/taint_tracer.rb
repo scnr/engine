@@ -820,4 +820,5 @@ get '/needs-injector' do
 end
 
 get '/without_javascript_support' do
+    json 'test'
 end

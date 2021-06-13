@@ -101,6 +101,16 @@ class Headers < Hash
         (ct = self[CONTENT_TYPE]).is_a?( Array ) ? ct.first : ct
     end
 
+    def simple_content_type
+        ct = self.content_type
+        return if !ct
+
+        ct = ct.split( ';' ).first
+        ct.strip!
+        ct.downcase!
+        ct
+    end
+
     # @return   [String, nil]
     #   Value of the `Location` field.
     def location

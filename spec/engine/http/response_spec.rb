@@ -137,19 +137,19 @@ describe SCNR::Engine::HTTP::Response do
     end
 
     describe '#html?' do
-        context 'when it starts with an HTML doctype' do
-            subject do
-                described_class.new(
-                    url:  'http://test.com',
-                    code: 200,
-                    body: body
-                )
-            end
-
-            let(:body) { '<!DOCTYPE html' }
-
-            expect_it { to be_html }
-        end
+        # context 'when it starts with an HTML doctype' do
+        #     subject do
+        #         described_class.new(
+        #             url:  'http://test.com',
+        #             code: 200,
+        #             body: body
+        #         )
+        #     end
+        #
+        #     let(:body) { '<!DOCTYPE html' }
+        #
+        #     expect_it { to be_html }
+        # end
 
         context 'when the Content-Type is' do
             subject do
@@ -199,54 +199,19 @@ describe SCNR::Engine::HTTP::Response do
                                 )
                             end
 
-                            described_class::HTML_IDENTIFIERS.each do |id|
-                                context id.downcase do
-                                    let(:body) { id.downcase }
-
-                                    expect_it { to be_html }
-                                end
-
-                                context id.upcase do
-                                    let(:body) { id.upcase }
-
-                                    expect_it { to be_html }
-                                end
-                            end
-
-                            context 'other' do
-                                let(:body) { 'Stuff here' }
-
-                                expect_it { to_not be_html }
-                            end
-                        end
-                    end
-
-                    context 'nosniff' do
-                        context 'and the body includes HTML identifier' do
-                            subject do
-                                described_class.new(
-                                    url:  'http://test.com',
-                                    code: 200,
-                                    body: body,
-                                    headers: {
-                                        'X-Content-Type-Options' => 'nosniff'
-                                    }
-                                )
-                            end
-
-                            described_class::HTML_IDENTIFIERS.each do |id|
-                                context id.downcase do
-                                    let(:body) { id.downcase }
-
-                                    expect_it { to_not be_html }
-                                end
-
-                                context id.upcase do
-                                    let(:body) { id.upcase }
-
-                                    expect_it { to_not be_html }
-                                end
-                            end
+                            # described_class::HTML_IDENTIFIERS.each do |id|
+                            #     context id.downcase do
+                            #         let(:body) { id.downcase }
+                            #
+                            #         expect_it { to be_html }
+                            #     end
+                            #
+                            #     context id.upcase do
+                            #         let(:body) { id.upcase }
+                            #
+                            #         expect_it { to be_html }
+                            #     end
+                            # end
 
                             context 'other' do
                                 let(:body) { 'Stuff here' }
@@ -255,6 +220,41 @@ describe SCNR::Engine::HTTP::Response do
                             end
                         end
                     end
+
+                    # context 'nosniff' do
+                    #     context 'and the body includes HTML identifier' do
+                    #         subject do
+                    #             described_class.new(
+                    #                 url:  'http://test.com',
+                    #                 code: 200,
+                    #                 body: body,
+                    #                 headers: {
+                    #                     'X-Content-Type-Options' => 'nosniff'
+                    #                 }
+                    #             )
+                    #         end
+                    #
+                    #         described_class::HTML_IDENTIFIERS.each do |id|
+                    #             context id.downcase do
+                    #                 let(:body) { id.downcase }
+                    #
+                    #                 expect_it { to_not be_html }
+                    #             end
+                    #
+                    #             context id.upcase do
+                    #                 let(:body) { id.upcase }
+                    #
+                    #                 expect_it { to_not be_html }
+                    #             end
+                    #         end
+                    #
+                    #         context 'other' do
+                    #             let(:body) { 'Stuff here' }
+                    #
+                    #             expect_it { to_not be_html }
+                    #         end
+                    #     end
+                    # end
                 end
 
             end

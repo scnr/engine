@@ -16,10 +16,6 @@ class Response < Message
     require_relative 'response/scope'
 
     HTML_CONTENT_TYPES = Set.new(%w(text/html application/xhtml+xml))
-    HTML_IDENTIFIERS   = [
-        '<!doctype html', '<html', '<head', '<body', '<title', '<script'
-    ]
-    HTML_IDENTIFIER_REGEXPS = HTML_IDENTIFIERS.map { |s| Regexp.new s, Regexp::IGNORECASE }
 
     # @return   [Integer]
     #   HTTP response status code.
@@ -175,24 +171,14 @@ class Response < Message
     end
 
     def html?
-        return false if body.empty?
+        HTML_CONTENT_TYPES.include?( headers.simple_content_type )
+    end
 
-        html_ct = nil
-        # IF we've got a Content-Type that's all we need to know.
-        if (ct = headers.content_type)
-            ct = ct.split( ';' ).first
-            ct.strip!
-            ct.downcase!
-            html_ct = !!HTML_CONTENT_TYPES.find { |type| ct.optimized_include? type }
-        end
+    def javascript?
+        sct = headers.simple_content_type
+        return if !sct
 
-        return true if html_ct
-
-        # Server insists we should only use the content-type. respect it.
-        return false if headers['X-Content-Type-Options'].to_s.downcase.include?( 'nosniff' )
-
-        # Last resort, sniff the content-type from several HTML tags.
-        !!HTML_IDENTIFIER_REGEXPS.find { |regexp| regexp.match? body }
+        sct.optimized_include? 'javascript'
     end
 
     def body=( body )

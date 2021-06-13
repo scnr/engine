@@ -108,38 +108,13 @@ module Helpers
     end
 
     def javascript?( response )
-        response.headers.content_type.to_s.downcase.optimized_include?( 'javascript' )
+        response.javascript?
     end
 
     def html?( response )
-        return false if response.body.empty?
-
-        # The last check isn't fool-proof, so don't do it when loading the page
-        # for the first time, but only when the page loads stuff via AJAX and whatnot.
-        #
-        # Well, we can be pretty sure that the root page will be HTML anyways.
-        return true if @browser.last_url == response.url
-
-        # We only care about HTML responses.
-        return false if !response.html?
-
-        # Too resource intensive, but keep commented as an FYI.
-        #
-        # Finally, verify that we're really working with markup (hopefully HTML)
-        # and that the previous checks weren't just flukes matching some other
-        # kind of document.
-        #
-        # For example, it may have been JSON with the wrong content-type that
-        # includes HTML -- it happens.
-        #
-        # Beware, if there's a doctype in the beginning this will get fooled.
-        # if !Parser.markup?( response.body )
-        #     print_debug "Does not look like HTML: #{response.url}"
-        #     print_debug "\n#{response.body}"
-        #     return false
-        # end
-
-        true
+        # If the server says it's HTML dig deeper to ensure it.
+        # We don't want wrong response headers messing up the JS env.
+        response.html? && Parser.html?( response.body )
     end
 
     # @return   [String]
