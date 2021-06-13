@@ -142,7 +142,7 @@ class DOM
     # @return   [Browser, nil]
     #   Live page in the `browser` if successful, `nil` otherwise.
     def restore( browser, take_snapshot = false )
-        playables = self.playable_transitions
+        playables = self.playable_transitions.dup
 
         # First transition will always be the page load and if that's all there
         # is then we're done.
@@ -153,7 +153,7 @@ class DOM
         # Alternatively, try to load the page via its DOM#url in case it can
         # restore itself via its URL fragments and whatnot.
         else
-            browser.goto url, take_snapshot: take_snapshot
+            browser.goto self.url, take_snapshot: take_snapshot
         end
 
         # No transitions, nothing more to be done.
@@ -172,12 +172,15 @@ class DOM
         #
         # However, it doesn't cost us anything so it's worth a shot.
         if browser_dom == self
-            browser.print_debug "Loaded snapshot by URL: #{url}"
+            browser.print_debug "Loaded snapshot by URL: #{self.url}"
             return browser
         end
 
         browser.print_debug "Could not load snapshot by URL (#{url}), " <<
             'will load by replaying transitions.'
+
+        # Already loaded the URL from before.
+        playables.shift if browser.url == self.url
 
         # The URL restore failed, replay its transitions.
         playables.each do |transition|
