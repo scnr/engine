@@ -203,7 +203,7 @@ module Snapshots
             end
         end
 
-        r = r.deep_clone
+        r = r.dup
         javascript.remove_env_from_html!( r.body )
 
         page                 = r.to_page

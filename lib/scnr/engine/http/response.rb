@@ -219,6 +219,10 @@ class Response < Message
         hash
     end
 
+    def dup
+        self.class.from_rpc_data( to_rpc_data.deep_clone )
+    end
+
     # @return   [Hash]
     #   Data representing this instance that are suitable the RPC transmission.
     def to_rpc_data
