@@ -112,7 +112,7 @@ describe SCNR::Engine::BrowserCluster::Worker do
 
             context 'Selenium::WebDriver::Error::WebDriverError' do
                 it 'respawns' do
-                    expect(custom_job).to receive(:configure_and_run) do
+                    expect(custom_job).to receive(:configure_and_run).at_least(:once) do
                         raise Selenium::WebDriver::Error::WebDriverError
                     end
 
@@ -252,11 +252,11 @@ describe SCNR::Engine::BrowserCluster::Worker do
 
         context 'when a Selenium request takes more than OptionGroup::BrowserCluster#job_timeout' do
             before do
-                allow(subject).to receive(:trigger_events) { raise Timeout::Error }
+                allow(job).to receive(:configure_and_run) { raise Timeout::Error }
             end
 
             it "retries #{described_class::TRIES} times" do
-                expect(subject).to receive(:reset).at_least(described_class::TRIES).times
+                expect(job).to receive(:configure_and_run).at_least(described_class::TRIES).times
 
                 browser_cluster.queue( job, (proc_to_method {}))
                 browser_cluster.wait

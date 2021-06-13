@@ -27,7 +27,9 @@ class Parser
 
     CACHE = {
         parse:     [100, freeze: false],
-        parse_xml: 50
+        parse_xml: 50,
+        markup?:   100_000,
+        html?:     100_000
     }.inject({}) do |h, (name, (size, options))|
         h.merge name => Support::Cache::LeastRecentlyPushed.new( (options || {}).merge( size: size ) )
     end
@@ -86,15 +88,33 @@ class Parser
             end
         end
 
+        def html?( string )
+            CACHE[__method__].fetch string do
+                begin
+                    _html? string
+                rescue => e
+                    false
+                end
+            end
+        end
+
         def markup?( string )
-            begin
-                Ox.parse( string ).is_a?( Ox::Element )
-            rescue => e
-                false
+            CACHE[__method__].fetch string do
+                begin
+                    Ox.parse( string ).is_a?( Ox::Element )
+                rescue => e
+                    false
+                end
             end
         end
 
         private
+
+        def _html?( string )
+            parse( string ).traverse do |n|
+                return true if n.is_a? Nodes::Element
+            end
+        end
 
         def push_parse_pool
             @push_parse_pool ||= Concurrent::CachedThreadPool.new
