@@ -86,9 +86,16 @@ class Worker < SCNR::Engine::Browser
         rescue Selenium::WebDriver::Error::WebDriverError,
             Watir::Exception::Error => e
 
-            print_debug "WebDriver error while processing job: #{@job}"
-            print_debug_exception e
+            tries += 1
+            if !@shutdown && tries <= TRIES
+                print_info "Retrying (#{tries}/#{TRIES}) due to error, job: #{@job}"
+                print_debug e
+                print_debug_exception e
 
+                retry
+            end
+
+            # Could have left us with a broken browser.
             engine_reboot
 
         # This can be thrown by a Selenium call somewhere down the line,
@@ -99,8 +106,6 @@ class Worker < SCNR::Engine::Browser
             if !@shutdown && tries <= TRIES
                 print_info "Retrying (#{tries}/#{TRIES}) due to time out: #{@job}"
                 print_debug_exception e
-
-                engine_reboot
 
                 retry
             end
