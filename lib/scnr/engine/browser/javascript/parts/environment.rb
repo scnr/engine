@@ -88,7 +88,7 @@ module Environment
     # @return   [Bool]
     #   `true` if our custom JS environment has been initialized.
     def ready?
-        run( "return #{js_initializer}" )
+        run( "return (typeof #{js_initializer} !== 'undefined' && document.readyState === 'complete')" )
     rescue => e
         print_debug_exception e, 2
         false
