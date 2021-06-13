@@ -201,9 +201,6 @@ module Events
                 r = @javascript.events.fire( tag_name, locator.css, event, options )
                 fail Selenium::WebDriver::Error::WebDriverError, 'Event fire failed.' if !r
 
-                # In case of fade-in effects and whatnot.
-                sleep 0.1
-
                 print_debug_level_2 "[waiting for requests]: #{event} (#{options}) #{locator}"
                 engine.wait_for_pending_requests
                 print_debug_level_2 "[done waiting for requests]: #{event} (#{options}) #{locator}"
