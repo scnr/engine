@@ -177,7 +177,7 @@ module Mutable
 
         options          = prepare_mutation_options( options )
         generated        = Support::Filter::Set.new
-        filled_in_inputs = Options.input.fill( @inputs )
+        filled_in_inputs = Options.input.fill( self.dup ).inputs
 
         if options[:parameter_values]
             @inputs.keys.each do |name|

@@ -20,4 +20,14 @@ describe SCNR::Engine::Error do
         end
         expect(caught).to be_truthy
     end
+
+    it 'notifies' do
+        exception = nil
+        described_class.on_new do |e|
+            exception = e
+        end
+
+        ex = described_class.new
+        expect(exception).to eq ex
+    end
 end

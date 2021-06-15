@@ -230,6 +230,10 @@ class Session
         @login_sequence = block
     end
 
+    def record_login_check( &block )
+        @login_check = block
+    end
+
     # Uses the information provided by {#configure} or {#login_sequence} to login.
     #
     # @return   [Page, nil]
@@ -278,30 +282,34 @@ class Session
     def logged_in?( http_options = {}, &block )
         fail Error::NoLoginCheck if !has_login_check?
 
-        http_options = http_options.merge(
-            method:          :get,
-            mode:            block_given? ? :async : :sync,
-            follow_location: true,
-            performer:       self
-        )
-        http_options.merge!( @check_options )
+        if @login_check
+            @login_check.call( &block )
+        else
+            http_options = http_options.merge(
+              method:          :get,
+              mode:            block_given? ? :async : :sync,
+              follow_location: true,
+              performer:       self
+            )
+            http_options.merge!( @check_options )
 
-        print_debug 'Performing login check.'
+            print_debug 'Performing login check.'
 
-        bool = nil
-        http.request( Options.session.check_url, http_options ) do |response|
-            bool = !!response.body.match( Options.session.check_pattern )
+            bool = nil
+            http.request( Options.session.check_url, http_options ) do |response|
+                bool = !!response.body.match( Options.session.check_pattern )
 
-            print_debug "Login check done: #{bool}"
+                print_debug "Login check done: #{bool}"
 
-            if !bool
-                print_debug "\n#{response.request}#{response}"
+                if !bool
+                    print_debug "\n#{response.request}#{response}"
+                end
+
+                block.call( bool ) if block
             end
 
-            block.call( bool ) if block
+            bool
         end
-
-        bool
     end
 
     # @return   [Bool]

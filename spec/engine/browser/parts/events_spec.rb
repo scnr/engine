@@ -7,6 +7,8 @@ describe SCNR::Engine::Browser::Parts::Events do
         SCNR::Engine::Browser::ElementLocator.from_html( element.opening_tag )
     end
 
+    after { described_class.reset }
+
     describe '#each_element_with_events' do
         before :each do
             subject.load url
@@ -275,6 +277,68 @@ describe SCNR::Engine::Browser::Parts::Events do
             subject.load url
         end
 
+        it 'notifies of :before_event' do
+            args = nil
+            described_class.before_event do |*a|
+                args = a
+            end
+
+            locator = selenium_to_locator( subject.selenium.find_element( id: 'my-div' ) )
+            options = {}
+            event = :click
+
+            subject.fire_event locator, event, options
+
+            l, e, opts, browser = *args
+
+            expect(locator).to be l
+            expect(event).to be e
+            expect(options).to be opts
+            expect(browser).to be subject
+        end
+
+        it 'notifies of :on_event' do
+            args = nil
+            described_class.on_event do |*a|
+                args = a
+            end
+
+            locator = selenium_to_locator( subject.selenium.find_element( id: 'my-div' ) )
+            options = {}
+            event = :click
+
+            transition = subject.fire_event( locator, event, options )
+
+            r, l, e, opts, browser = *args
+
+            expect(r).to be !!transition
+            expect(locator).to be l
+            expect(event).to be e
+            expect(options).to be opts
+            expect(browser).to be subject
+        end
+
+        it 'notifies of :after_event' do
+            args = nil
+            described_class.after_event do |*a|
+                args = a
+            end
+
+            locator = selenium_to_locator( subject.selenium.find_element( id: 'my-div' ) )
+            options = {}
+            event = :click
+
+            transition = subject.fire_event( locator, event, options )
+
+            t, l, e, opts, browser = *args
+
+            expect(transition).to be t
+            expect(locator).to be l
+            expect(event).to be e
+            expect(options).to be opts
+            expect(browser).to be subject
+        end
+
         it 'fires the given event' do
             subject.fire_event selenium_to_locator( subject.selenium.find_element( id: 'my-div' ) ), :click
             pages_should_have_form_with_input [subject.to_page], 'by-ajax'
@@ -299,6 +363,54 @@ describe SCNR::Engine::Browser::Parts::Events do
 
             transition.play subject
             pages_should_have_form_with_input [subject.to_page], 'by-ajax'
+        end
+
+        context 'when select?' do
+            let(:locator) do
+                selenium_to_locator( subject.selenium.find_element( id: 'my-div' ) )
+            end
+            let(:event) { :click }
+            let(:options) { {} }
+
+            context 'returns true' do
+                it 'fires the event' do
+                    args = nil
+                    described_class.select do |*a|
+                        args = a
+                        true
+                    end
+
+                    transition = subject.fire_event( locator, event, options )
+
+                    l, e, opts, browser = *args
+
+                    expect(transition).to be_truthy
+                    expect(locator).to be l
+                    expect(event).to be e
+                    expect(options).to be opts
+                    expect(browser).to be subject
+                end
+            end
+
+            context 'returns false' do
+                it 'does not fire the event' do
+                    args = nil
+                    described_class.reject do |*a|
+                        args = a
+                        true
+                    end
+
+                    transition = subject.fire_event( locator, event, options )
+
+                    l, e, opts, browser = *args
+
+                    expect(transition).to be_falsey
+                    expect(locator).to be l
+                    expect(event).to be e
+                    expect(options).to be opts
+                    expect(browser).to be subject
+                end
+            end
         end
 
         context 'when new elements are introduced' do
@@ -789,25 +901,6 @@ describe SCNR::Engine::Browser::Parts::Events do
                     end
                 end
             end
-        end
-    end
-
-    describe '#on_fire_event' do
-        it 'gets called before each event is triggered' do
-            subject.load "#{url}/trigger_events"
-
-            calls = []
-            subject.on_fire_event do |element, event|
-                calls << [element.to_s, event]
-            end
-
-            subject.fire_event selenium_to_locator( subject.selenium.find_element( id: 'my-div' ) ), :click
-            subject.fire_event selenium_to_locator( subject.selenium.find_element( id: 'my-div' ) ), :mouseover
-
-            expect(calls).to eq([
-                [ "<div id=\"my-div\" onclick=\"addForm();\">", :click ],
-                [ "<div id=\"my-div\" onclick=\"addForm();\">", :mouseover ]
-            ])
         end
     end
 

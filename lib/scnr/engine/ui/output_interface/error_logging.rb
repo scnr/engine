@@ -25,6 +25,10 @@ module ErrorLogging
         @@error_logfile = logfile
     end
 
+    def on_error( &block )
+        on_error_blocks << block
+    end
+
     # @return  [String]
     #   Location of the error log file.
     def error_logfile
@@ -64,6 +68,8 @@ module ErrorLogging
     #
     # @param    [String]    str
     def log_error( str = '' )
+        notify_on_error( str )
+
         fd = error_log_fd
 
         if !@@error_log_written_env
@@ -110,6 +116,14 @@ module ErrorLogging
         end
 
         nil
+    end
+
+    def notify_on_error( error )
+        on_error_blocks.each { |b| b.call error }
+    end
+
+    def on_error_blocks
+        @@on_error_blocks ||= []
     end
 
 end

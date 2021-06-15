@@ -16,6 +16,7 @@ class Browser
     include UI::Output
     personalize_output!
 
+    include Support::Mixins::Observable
     prepend Support::Mixins::SpecInstances
 
     # {Browser} error namespace.

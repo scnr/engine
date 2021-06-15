@@ -438,7 +438,7 @@ module Timeout
     end
 
     def timeout_control
-        self.dup.reset.tap { |e| e.inputs = Options.input.fill( e.inputs ) }
+        self.dup.reset.tap { |e| Options.input.fill( e ) }
     end
 
     def payload_delay_from_options( *args )

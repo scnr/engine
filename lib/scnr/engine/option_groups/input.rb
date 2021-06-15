@@ -61,13 +61,11 @@ class Input < SCNR::Engine::OptionGroup
     # Tries to fill a hash with values of appropriate type based on the key of
     # the parameter.
     #
-    # @param  [Hash]  parameters
-    #   Parameters hash.
+    # @param  [SCNR::Element::Capabilities::Inputtable]  element
     #
     # @return   [Hash]
-    def fill( parameters )
-        parameters = parameters.dup
-
+    def fill( element )
+        parameters = element.inputs.dup
         parameters.each do |k, v|
             next if !force? && !v.to_s.empty?
 
@@ -82,7 +80,20 @@ class Input < SCNR::Engine::OptionGroup
             end
         end
 
-        parameters
+        element.inputs = parameters
+
+        if @filler
+            inputs = @filler.call( element )
+            if inputs
+                element.inputs = inputs
+            end
+        end
+
+        element
+    end
+
+    def filler( &block )
+        @filler = block
     end
 
     # @param    [String]    name

@@ -434,7 +434,7 @@ describe SCNR::Engine::Element::Form do
 
                         if m.mutation_with_sample_values?
                             expect(m.affected_input_name).to eq(described_class::SAMPLE_VALUES)
-                            expect(m.inputs).to eq(SCNR::Engine::Options.input.fill( e.inputs ))
+                            expect(m.inputs).to eq(SCNR::Engine::Options.input.fill( e ).inputs)
                             has_sample ||= true
                         end
                     end

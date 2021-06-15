@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe SCNR::Engine::URI::Scope do
 
+    after { described_class.reset }
     let(:scope){ SCNR::Engine::Options.scope }
 
     describe '#too_deep?' do
@@ -178,7 +179,8 @@ describe SCNR::Engine::URI::Scope do
     end
 
     describe '#exclude?' do
-        subject { SCNR::Engine::URI.parse( 'http://test.com/exclude/' ).scope }
+        let(:url) { SCNR::Engine::URI.parse( 'http://test.com/exclude/' ) }
+        subject { url.scope }
 
         context 'when self matches the provided exclude rules' do
             it 'returns true' do
@@ -219,6 +221,21 @@ describe SCNR::Engine::URI::Scope do
                 end
             end
         end
+
+        context 'when .reject?' do
+            context 'returns true' do
+                it 'returns true' do
+                    u = nil
+                    described_class.reject do |url|
+                        u = url
+                        true
+                    end
+
+                    expect(subject.exclude?).to be_truthy
+                    expect(u).to eq url
+                end
+            end
+        end
     end
 
     describe '#exclude_file_extension?' do
@@ -242,7 +259,8 @@ describe SCNR::Engine::URI::Scope do
     end
 
     describe '#include?' do
-        subject { SCNR::Engine::URI.parse( 'http://test.com/include/' ).scope }
+        let(:url) { SCNR::Engine::URI.parse( 'http://test.com/include/' ) }
+        subject { url.scope }
 
         context 'when self matches the provided include rules in' do
             it 'returns true' do
@@ -255,6 +273,21 @@ describe SCNR::Engine::URI::Scope do
             it 'returns false' do
                 scope.include_path_patterns = [ /boo/ ]
                 expect(subject.include?).to be_falsey
+            end
+        end
+
+        context 'when .select?' do
+            context 'returns true' do
+                it 'returns true' do
+                    u = nil
+                    described_class.select do |url|
+                        u = url
+                        true
+                    end
+
+                    expect(subject.include?).to be_truthy
+                    expect(u).to eq url
+                end
             end
         end
     end

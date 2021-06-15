@@ -16,6 +16,14 @@ module WithScope
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class Scope < URICommon::Scope
 
+    class <<self
+        include Support::Mixins::Decisions
+
+        query :select
+        query :reject
+    end
+    ask!
+
     # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
     class Error < URICommon::Scope::Error
     end
@@ -34,7 +42,8 @@ class Scope < URICommon::Scope
         rescue SCNR::Engine::OptionGroups::Audit::Error::InvalidElementType
         end
 
-        super || redundant?
+        (super || redundant? || Scope.reject?( @element )) ||
+          (Scope.ask_select? && !Scope.select?( @element ) )
     end
 
 end

@@ -272,27 +272,53 @@ describe SCNR::Engine::Session do
         end
 
         context 'when a login check is available' do
-            it 'takes into account #check_options' do
-                subject.check_options = {
-                    cookies: {
+            context 'via options' do
+                it 'takes into account #check_options' do
+                    subject.check_options = {
+                      cookies: {
                         'custom-cookie' => 'value'
+                      }
                     }
-                }
 
-                SCNR::Engine::Options.session.check_url = url
+                    SCNR::Engine::Options.session.check_url = url
 
-                expect(subject.http).to receive(:request).with(
-                    SCNR::Engine::Options.session.check_url,
-                    hash_including( subject.check_options )
-                )
+                    expect(subject.http).to receive(:request).with(
+                      SCNR::Engine::Options.session.check_url,
+                      hash_including( subject.check_options )
+                    )
 
-                configured.logged_in?
+                    configured.logged_in?
+                end
+
+                context 'and a valid session is available' do
+                    it 'returns true' do
+                        configured.login
+                        expect(configured).to be_logged_in
+                    end
+                end
             end
 
-            context 'and a valid session is available' do
-                it 'returns true' do
-                    configured.login
-                    expect(configured).to be_logged_in
+            context 'via block' do
+                context 'and it returns true' do
+                    it 'returns true' do
+                        configured.record_login_check do
+                            true
+                        end
+
+                        configured.login
+                        expect(configured).to be_logged_in
+                    end
+                end
+
+                context 'and it returns false' do
+                    it 'returns false' do
+                        configured.record_login_check do
+                            false
+                        end
+
+                        configured.login
+                        expect(configured).to_not be_logged_in
+                    end
                 end
             end
 
@@ -302,22 +328,6 @@ describe SCNR::Engine::Session do
                     SCNR::Engine::Options.session.check_pattern = 'logged-in user'
 
                     expect(subject).not_to be_logged_in
-                end
-            end
-
-            context 'when a block is given' do
-                it 'performs the check asynchronously' do
-                    configured.login
-
-                    bool = false
-                    configured.logged_in? { |b| bool = b }
-                    configured.http.run
-                    expect(bool).to be_truthy
-
-                    not_bool = true
-                    configured.logged_in?( no_cookie_jar: true ) { |b| not_bool = b }
-                    configured.http.run
-                    expect(not_bool).to be_falsey
                 end
             end
         end

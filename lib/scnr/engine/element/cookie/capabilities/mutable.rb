@@ -83,7 +83,8 @@ module Mutable
             c.auditor = auditor
             c.audit_options[:submit] ||= {}
             c.audit_options[:submit][:cookies] = mutation.inputs.dup
-            c.inputs = SCNR::Engine::Options.input.fill( c.inputs.dup )
+
+            SCNR::Engine::Options.input.fill( c )
 
             yield c
         end

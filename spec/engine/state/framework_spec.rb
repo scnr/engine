@@ -12,6 +12,18 @@ describe SCNR::Engine::State::Framework do
         "#{Dir.tmpdir}/framework-#{SCNR::Engine::Utilities.generate_token}"
     end
 
+    describe '#status=' do
+        it 'notifies' do
+            s = nil
+            subject.on_state_change do |state|
+                s = state.status
+            end
+
+            subject.status = :pause
+            expect(s).to be :pause
+        end
+    end
+
     describe '#status_messages' do
         it 'returns the assigned status messages' do
             message = 'Hey!'

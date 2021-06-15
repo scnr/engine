@@ -19,6 +19,13 @@ module Auditable
     include Utilities
     include WithAuditor
 
+    class <<self
+        include Support::Mixins::Decisions
+
+        query :pause_here
+    end
+    ask!
+
     # Load and include all available analysis/audit techniques.
     Dir.glob( File.dirname( __FILE__ ) + '/auditable/**/*.rb' ).each { |f| require f }
 
@@ -44,8 +51,8 @@ module Auditable
     # Unless you're sure you need this, set the :redundant flag to true when
     # calling audit methods to bypass it.
     def Auditable.reset
+        super
         State.audit.clear
-        @@skip_like_blocks = []
     end
     reset
 
@@ -55,16 +62,6 @@ module Auditable
         )
 
         payloads_size * options[:format].size
-    end
-
-    # @param    [Block] block
-    #   Block to decide whether an element should be skipped or not.
-    #
-    # @return   [Auditable] `self`
-    def self.skip_like( &block )
-        fail 'Missing block.' if !block_given?
-        skip_like_blocks << block
-        self
     end
 
     def initialize( options )
@@ -220,15 +217,6 @@ module Auditable
         coverage_id.persistent_hash
     end
 
-    # @return [Boolean]
-    #   `true` if the element matches one or more {.skip_like_blocks},
-    #   `false` otherwise.
-    #
-    # @see .skip_like_blocks
-    def matches_skip_like_blocks?
-        Auditable.matches_skip_like_blocks? self
-    end
-
     def dup
         copy_auditable( super )
     end
@@ -290,6 +278,7 @@ module Auditable
     #
     # @see #submit
     def audit_single( payload, opts = { }, &block )
+        Auditable.pause_here?( self )
 
         if !valid_input_data?( payload )
             print_debug_level_2 "Payload not supported by #{self}: #{payload.inspect}"
@@ -309,8 +298,8 @@ module Auditable
         end
         audited caudit_id
 
-        if matches_skip_like_blocks?
-            print_debug_level_2 'Element matches one or more skip_like blocks, skipping.'
+        if scope.out?
+            print_debug_level_2 'Element matches out-of-scope rules, skipping.'
             return false
         end
 
@@ -329,8 +318,8 @@ module Auditable
                 next
             end
 
-            if elem.matches_skip_like_blocks?
-                print_debug_level_2 'Element matches one or more skip_like blocks, skipping.'
+            if elem.scope.out?
+                print_info "Skipping audit of out of scope '#{elem.affected_input_name}' #{type} input vector."
                 next
             end
 

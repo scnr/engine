@@ -49,6 +49,7 @@ Gem::Specification.new do |s|
     s.rdoc_options      = [ '--charset=UTF-8' ]
 
     s.add_dependency 'cuboid'
+    s.add_dependency 'dsel'
 
     s.add_dependency 'webrick',              '1.7.0'
 

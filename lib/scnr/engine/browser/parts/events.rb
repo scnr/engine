@@ -16,8 +16,18 @@ module Parts
 module Events
     include Support::Mixins::Observable
 
-    # @!method on_fire_event( &block )
-    advertise :on_fire_event
+    class <<self
+        include Support::Mixins::Observable
+        advertise :before_event
+        advertise :on_event
+        advertise :after_event
+
+        include Support::Mixins::Decisions
+        query :select
+        query :reject
+    end
+    observe!
+    ask!
 
     # How much time to wait for a targeted HTML element to appear on the page
     # after the page is loaded.
@@ -172,6 +182,11 @@ module Events
 
         options[:inputs] = options[:inputs].my_stringify if options[:inputs]
 
+        return if Events.reject?( locator, event, options, self )
+        return if Events.ask_select? && !Events.select?( locator, event, options, self )
+
+        Events.notify_before_event locator, event, options, self
+
         # Only forms will have inputs, for any other element the call will
         # return an empty array, if however the element does not even exist
         # it will return false so we can both get info we can possibly use
@@ -183,8 +198,6 @@ module Events
         end
 
         print_debug_level_2 "[start]: #{event} (#{options}) #{locator}"
-
-        notify_on_fire_event( locator, event )
 
         begin
             transition = Page::DOM::Transition.new( locator, event, options ) do
@@ -199,6 +212,7 @@ module Events
                 end
 
                 r = @javascript.events.fire( tag_name, locator.css, event, options )
+                Events.notify_on_event( r, locator, event, options, self )
                 fail Selenium::WebDriver::Error::WebDriverError, 'Event fire failed.' if !r
 
                 print_debug_level_2 "[waiting for requests]: #{event} (#{options}) #{locator}"
@@ -215,6 +229,7 @@ module Events
 
             print_debug_level_2 "[done in #{transition.time}s]: #{event} (#{options}) #{locator}"
 
+            Events.notify_after_event transition, locator, event, options, self
             transition
         rescue Selenium::WebDriver::Error::WebDriverError => e
 

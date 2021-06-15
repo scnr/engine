@@ -2,7 +2,9 @@ require 'spec_helper'
 
 describe SCNR::Engine::Element::Capabilities::WithScope::Scope do
 
-    subject { SCNR::Engine::Element::Base.new( url: 'http://stuff/' ).scope }
+    after { described_class.reset }
+    let(:element) { SCNR::Engine::Element::Base.new( url: 'http://stuff/' ) }
+    subject { element.scope }
 
     describe '#out?' do
         it 'returns false' do
@@ -23,6 +25,36 @@ describe SCNR::Engine::Element::Capabilities::WithScope::Scope do
                 it 'returns true' do
                     allow(SCNR::Engine::Options.audit).to receive(:element?) { false }
                     expect(subject).to be_out
+                end
+            end
+        end
+
+        context 'when .reject?' do
+            context 'returns true' do
+                it 'returns true' do
+                    p = nil
+                    described_class.reject do |element|
+                        p = element
+                        true
+                    end
+
+                    expect(subject.out?).to be_truthy
+                    expect(p).to eq element
+                end
+            end
+        end
+
+        context 'when .select?' do
+            context 'returns true' do
+                it 'returns false' do
+                    p = nil
+                    described_class.select do |element|
+                        p = element
+                        true
+                    end
+
+                    expect(subject.out?).to be_falsey
+                    expect(p).to eq element
                 end
             end
         end

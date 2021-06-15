@@ -14,6 +14,14 @@ module URICommon
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class Scope < SCNR::Engine::Scope
 
+    class <<self
+        include Support::Mixins::Decisions
+
+        query :select
+        query :reject
+    end
+    ask!
+
     # {Scope} error namespace.
     #
     # All {Scope} errors inherit from and live under it.
@@ -43,11 +51,15 @@ class Scope < SCNR::Engine::Scope
     # @see OptionGroups::Scope#exclude_path_patterns
     # @see #exclude_file_extension?
     def exclude?
-        return true  if exclude_file_extension?
-        return false if options.exclude_path_patterns.empty?
+        return true if exclude_file_extension?
 
-        s = @url.to_s
-        !!options.exclude_path_patterns.find { |pattern| pattern.match? s }
+        exc = false
+        if options.exclude_path_patterns.any?
+            s = @url.to_s
+            exc = !!options.exclude_path_patterns.find { |pattern| pattern.match? s }
+        end
+
+        exc || Scope.reject?( @url )
     end
 
     # @return   [Bool]
@@ -68,10 +80,19 @@ class Scope < SCNR::Engine::Scope
     #
     # @see OptionGroups::Scope#include_path_patterns
     def include?
-        rules = options.include_path_patterns
-        return true if rules.empty?
+        inc = nil
 
-        !!rules.find { |pattern| pattern.match? @url.to_s }
+        rules = options.include_path_patterns
+        s = @url.to_s
+        if rules.any?
+            inc = !!rules.find { |pattern| pattern.match? s }
+        end
+
+        if Scope.ask_select?
+            inc ||= Scope.select?( @url )
+        end
+
+        inc.nil? ? true : inc
     end
 
     # @return   [Bool]

@@ -12,6 +12,14 @@ module Parts
 
 module Navigation
 
+    class <<self
+        include Support::Mixins::Observable
+
+        advertise :before_load
+        advertise :after_load
+    end
+    observe!
+
     class Error < Browser::Error
 
         # Raised when a given resource can't be loaded.
@@ -56,12 +64,20 @@ module Navigation
 
         case resource
             when String
+                Navigation.notify_before_load resource, options, self
+
                 @transitions = []
                 goto resource, options
 
+                Navigation.notify_after_load resource, options, self
+
             when SCNR::Engine::HTTP::Response
+                Navigation.notify_before_load resource, options, self
+
                 @transitions = []
                 goto preload( resource ), options
+
+                Navigation.notify_after_load resource, options, self
 
             when Page
                 SCNR::Engine::HTTP::Client.update_cookies resource.cookie_jar
@@ -69,6 +85,8 @@ module Navigation
                 load resource.dom
 
             when Page::DOM
+                Navigation.notify_before_load resource, options, self
+
                 @transitions = resource.transitions.dup
                 update_skip_states resource.skip_states
 
@@ -76,10 +94,13 @@ module Navigation
                 resource.restore *[self, options[:take_snapshot]].compact
                 @add_request_transitions = true
 
+                Navigation.notify_after_load resource, options, self
+
             else
                 fail Error::Load,
                      "Can't load resource of type #{resource.class}."
         end
+
 
         self
     end

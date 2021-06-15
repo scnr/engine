@@ -27,8 +27,6 @@ module Observable
     include UI::Output
     include Utilities
 
-    include MonitorMixin
-
     def self.included( base )
         base.extend ClassMethods
     end
@@ -43,8 +41,6 @@ module Observable
                 define_method "notify_#{event}" do |*args|
                     notify_observers( event, *args )
                 end
-
-                private "notify_#{event}"
             end
 
             nil
@@ -52,9 +48,13 @@ module Observable
     end
 
     def initialize
-        super
+        super if defined? super
+        observe!
+    end
 
+    def observe!
         @__observers = {}
+        @__mutex = Monitor.new
     end
 
     private
@@ -98,6 +98,10 @@ module Observable
         synchronize do
             observers.clear
         end
+    end
+
+    def synchronize( &block )
+        @__mutex.synchronize( &block )
     end
 
 end
