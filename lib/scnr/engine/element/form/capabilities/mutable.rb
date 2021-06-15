@@ -114,7 +114,9 @@ module Mutable
         try_input do
             # Sample values, in case they reveal new resources.
             elem = self.dup
-            elem.inputs = SCNR::Engine::Options.input.fill( inputs.dup )
+
+            SCNR::Engine::Options.input.fill( elem )
+
             elem.affected_input_name = SAMPLE_VALUES
             elem.mutation_with_sample_values
             yield elem if !generated.include?( elem )

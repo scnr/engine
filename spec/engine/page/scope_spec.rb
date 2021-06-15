@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe SCNR::Engine::Page::Scope do
 
+    after { described_class.reset }
     let(:scope){ SCNR::Engine::Options.scope }
     let(:page) { Factory[:page] }
     subject { page.scope }
@@ -40,6 +41,36 @@ describe SCNR::Engine::Page::Scope do
                 it 'returns false' do
                     allow(subject).to receive(:dom_depth_limit_reached?) { false }
                     expect(subject.out?).to be_falsey
+                end
+            end
+        end
+
+        context 'when .reject?' do
+            context 'returns true' do
+                it 'returns true' do
+                    p = nil
+                    described_class.reject do |page|
+                        p = page
+                        true
+                    end
+
+                    expect(subject.out?).to be_truthy
+                    expect(p).to eq page
+                end
+            end
+        end
+
+        context 'when .select?' do
+            context 'returns true' do
+                it 'returns false' do
+                    p = nil
+                    described_class.select do |page|
+                        p = page
+                        true
+                    end
+
+                    expect(subject.out?).to be_falsey
+                    expect(p).to eq page
                 end
             end
         end

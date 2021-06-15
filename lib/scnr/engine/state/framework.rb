@@ -17,6 +17,9 @@ class State
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class Framework
     extend Forwardable
+    include Support::Mixins::Observable
+
+    advertise :on_state_change
 
     attr_accessor :state_machine
     def_delegators :@state_machine,
@@ -108,6 +111,8 @@ class Framework
     attr_accessor :audited_page_count
 
     def initialize
+        super
+
         @rpc = RPC.new
         @audited_page_count = 0
 
@@ -121,6 +126,12 @@ class Framework
         @element_pre_check_filter = Support::Filter::Set.new(hasher: :coverage_and_trace_hash )
 
         @state_machine = StateMachine.new
+    end
+
+    def status=( s )
+        @state_machine.status = s
+        notify_on_state_change self
+        s
     end
 
     def statistics

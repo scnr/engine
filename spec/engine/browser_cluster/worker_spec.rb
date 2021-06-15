@@ -203,15 +203,6 @@ describe SCNR::Engine::BrowserCluster::Worker do
                 expect(subject.observer_count_for(:on_response)).to eq(0)
             end
 
-            it 'clears #on_fire_event callbacks' do
-                subject.on_fire_event{}
-
-                browser_cluster.queue( custom_job, (proc_to_method {}))
-                browser_cluster.wait
-
-                expect(subject.observer_count_for(:on_fire_event)).to eq(0)
-            end
-
             it 'removes #job' do
                 browser_cluster.queue( custom_job, (proc_to_method {}))
                 browser_cluster.wait

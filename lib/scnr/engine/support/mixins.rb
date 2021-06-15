@@ -11,6 +11,7 @@ end
 
 lib = SCNR::Engine::Options.paths.mixins
 require lib + 'observable'
+require lib + 'decisions'
 require lib + 'terminal'
 require lib + 'profiler'
 require lib + 'parts'

@@ -449,6 +449,7 @@ describe SCNR::Engine::Browser::Parts::Navigation do
     end
 
     describe '#load' do
+
         it 'returns self' do
             expect(subject.load( url )).to eq(subject)
         end
@@ -511,34 +512,136 @@ describe SCNR::Engine::Browser::Parts::Navigation do
 
                     expect(hit_count).to eq(1)
                 end
+
+                it 'notifies of :before_load' do
+                    args = nil
+                    described_class.before_load do |*a|
+                        args = a
+                    end
+
+                    options = {}
+                    subject.load( url, options )
+
+                    r, o, b = *args
+
+                    expect(url).to be r
+                    expect(options).to be o
+                    expect(subject).to be b
+                end
+
+                it 'notifies of :after_load' do
+                    args = nil
+                    described_class.after_load do |*a|
+                        args = a
+                    end
+
+                    options = {}
+                    subject.load( url, options )
+
+                    r, o, b = *args
+
+                    expect(url).to be r
+                    expect(options).to be o
+                    expect(subject).to be b
+                end
             end
 
             describe 'Engine::HTTP::Response' do
+                let(:resource) do
+                    SCNR::Engine::HTTP::Client.get( url, mode: :sync )
+                end
+
                 it 'loads it' do
                     expect(hit_count).to eq(0)
 
-                    subject.load SCNR::Engine::HTTP::Client.get( url, mode: :sync )
+                    subject.load resource
                     expect(subject.source).to include( ua )
                     expect(subject.preloads).not_to include( url )
 
                     expect(hit_count).to eq(1)
                 end
+
+                it 'notifies of :before_load' do
+                    args = nil
+                    described_class.before_load do |*a|
+                        args = a
+                    end
+
+                    options = {}
+                    subject.load( resource, options )
+
+                    r, o, b = *args
+
+                    expect(resource).to be r
+                    expect(options).to be o
+                    expect(subject).to be b
+                end
+
+                it 'notifies of :after_load' do
+                    args = nil
+                    described_class.after_load do |*a|
+                        args = a
+                    end
+
+                    options = {}
+                    subject.load( resource, options )
+
+                    r, o, b = *args
+
+                    expect(resource).to be r
+                    expect(options).to be o
+                    expect(subject).to be b
+                end
             end
 
             describe 'Engine::Page::DOM' do
+                let(:resource) do
+                    SCNR::Engine::HTTP::Client.get( url, mode: :sync ).to_page.dom
+                end
+
                 it 'loads it' do
                     expect(hit_count).to eq(0)
-
-                    page = SCNR::Engine::HTTP::Client.get( url, mode: :sync ).to_page
-
+                    resource
                     expect(hit_count).to eq(1)
 
-                    subject.load page.dom
+                    subject.load resource
 
                     expect(subject.source).to include( ua )
                     expect(subject.preloads).not_to include( url )
 
                     expect(hit_count).to eq(2)
+                end
+
+                it 'notifies of :before_load' do
+                    args = nil
+                    described_class.before_load do |*a|
+                        args = a
+                    end
+
+                    options = {}
+                    subject.load( resource, options )
+
+                    r, o, b = *args
+
+                    expect(resource).to be r
+                    expect(options).to be o
+                    expect(subject).to be b
+                end
+
+                it 'notifies of :after_load' do
+                    args = nil
+                    described_class.after_load do |*a|
+                        args = a
+                    end
+
+                    options = {}
+                    subject.load( resource, options )
+
+                    r, o, b = *args
+
+                    expect(resource).to be r
+                    expect(options).to be o
+                    expect(subject).to be b
                 end
 
                 it 'replays its #transitions' do

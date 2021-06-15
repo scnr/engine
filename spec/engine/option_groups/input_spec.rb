@@ -123,22 +123,27 @@ describe SCNR::Engine::OptionGroups::Input do
     end
 
     describe '#fill' do
+        let(:element) { Factory[:form].tap { |i| i.inputs = inputs } }
         let(:inputs) { { 'name' => 'john' } }
 
         it 'fills in all empty inputs' do
-            expect(subject.fill(
-                'nAMe'    => nil,
-                'usEr'    => nil,
-                'uSR'     => nil,
-                'pAsS'    => nil,
-                'tXt'     => nil,
-                'nUm'     => nil,
-                'AmoUnt'  => nil,
-                'mAIL'    => nil,
-                'aCcouNt' => nil,
-                'stuff'   => 'stuff value',
-                'iD'      => nil
-            )).to eq({
+            element.inputs = {
+              'nAMe'    => nil,
+              'usEr'    => nil,
+              'uSR'     => nil,
+              'pAsS'    => nil,
+              'tXt'     => nil,
+              'nUm'     => nil,
+              'AmoUnt'  => nil,
+              'mAIL'    => nil,
+              'aCcouNt' => nil,
+              'stuff'   => 'stuff value',
+              'iD'      => nil
+            }
+
+            subject.fill( element )
+
+            expect( element.inputs ).to eq({
                 'nAMe'    => 'scnr_engine_name',
                 'usEr'    => 'scnr_engine_user',
                 'uSR'     => 'scnr_engine_user',
@@ -157,7 +162,9 @@ describe SCNR::Engine::OptionGroups::Input do
             let(:inputs) { { 'stuff' => '' } }
 
             it 'does not overwrite it' do
-                expect(subject.fill( inputs )).to eq({
+                subject.fill( element )
+
+                expect( element.inputs ).to eq({
                     'stuff' => described_class::DEFAULT
                 })
             end
@@ -165,24 +172,48 @@ describe SCNR::Engine::OptionGroups::Input do
 
         context 'when there is a value' do
             it 'skips it' do
-                expect(subject.fill( inputs )).to eq(inputs)
+                subject.fill( element )
+
+                expect( element.inputs ).to eq(inputs)
             end
 
             context '#force?' do
                 it 'overwrites it' do
                     subject.force = true
-                    expect(subject.fill( inputs )).to eq({ 'name' => 'scnr_engine_name' })
+                    subject.fill( element )
+
+                    expect( element.inputs  ).to eq({ 'name' => 'scnr_engine_name' })
                 end
 
                 context 'when no value could be found' do
                     let(:inputs) { { 'stuff' => 'test' } }
 
                     it 'does not overwrite it' do
+                        subject.fill( element )
                         subject.force = true
-                        expect(subject.fill( inputs )).to eq(inputs)
+
+                        expect( element.inputs ).to eq(inputs)
                     end
                 end
             end
+        end
+    end
+
+    describe '#filler' do
+        let(:element) { Factory[:form] }
+
+        it 'is used to fill inputs' do
+            e = nil
+            r = { 'test' => 't' }
+            subject.filler do |element|
+                e = element
+                r
+            end
+
+            subject.fill( element )
+
+            expect(element).to eq e
+            expect(element.inputs).to eq r
         end
     end
 

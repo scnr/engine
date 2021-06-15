@@ -16,6 +16,11 @@ class Data
 #
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class Framework
+    include Support::Mixins::Observable
+
+    advertise :on_page
+    advertise :on_url
+    advertise :on_sitemap_entry
 
     # {Framework} error namespace.
     #
@@ -45,6 +50,8 @@ class Framework
     attr_accessor :url_queue_total_size
 
     def initialize
+        super
+
         @rpc = RPC.new
 
         @sitemap = {}
@@ -74,6 +81,8 @@ class Framework
     # @param    [Page]  page
     #   Page to push to the {#page_queue}.
     def push_to_page_queue( page )
+        notify_on_page( page )
+
         @page_queue << page
         add_page_to_sitemap( page )
         @page_queue_total_size += 1
@@ -84,6 +93,8 @@ class Framework
     # @param    [String]  url
     #   URL to push to the {#url_queue}.
     def push_to_url_queue( url )
+        notify_on_url( url )
+
         @url_queue << url
         @url_queue_total_size += 1
     end
@@ -99,6 +110,8 @@ class Framework
             # Feedback from the trainer or whatever, don't include it in the
             # sitemap, it'll just add noise.
             next if url.include?( Utilities.random_seed )
+
+            notify_on_sitemap_entry( url => code )
 
             @sitemap[url] = code
         end

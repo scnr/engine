@@ -77,6 +77,16 @@ describe SCNR::Engine::Data::Framework do
             expect(subject.sitemap[url]).to eq(code)
         end
 
+        it 'notifies' do
+            entry = nil
+            subject.on_sitemap_entry do |e|
+                entry = e
+            end
+            subject.update_sitemap( url => code )
+
+            expect(entry).to eq({ url => code })
+        end
+
         context "when the URL includes #{SCNR::Engine::Utilities}.random_seed" do
             let(:url) { super() + SCNR::Engine::Utilities.random_seed }
 
@@ -101,6 +111,16 @@ describe SCNR::Engine::Data::Framework do
         it 'updates the sitemap' do
             expect(subject).to receive(:add_page_to_sitemap).with(page)
             subject.push_to_page_queue page
+        end
+
+        it 'notifies' do
+            page2 = nil
+            subject.on_page do |p|
+                page2 = p
+            end
+            subject.push_to_page_queue( page )
+
+            expect(page2).to eq(page)
         end
     end
 
@@ -131,6 +151,16 @@ describe SCNR::Engine::Data::Framework do
             expect(subject.url_queue_total_size).to eq(0)
             subject.push_to_url_queue url
             expect(subject.url_queue_total_size).to eq(1)
+        end
+
+        it 'notifies' do
+            url2 = nil
+            subject.on_url do |p|
+                url2 = p
+            end
+            subject.push_to_url_queue( url )
+
+            expect(url2).to eq(url)
         end
     end
 

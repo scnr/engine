@@ -14,6 +14,14 @@ class Page
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class Scope < HTTP::Response::Scope
 
+    class <<self
+        include Support::Mixins::Decisions
+
+        query :select
+        query :reject
+    end
+    ask!
+
     # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
     class Error < HTTP::Response::Scope::Error
     end
@@ -35,7 +43,8 @@ class Scope < HTTP::Response::Scope
     #
     # @see #dom_depth_limit_reached?
     def out?
-        dom_depth_limit_reached? || super
+        (Scope.reject?( @page ) || dom_depth_limit_reached? || super) ||
+          (Scope.ask_select? && !Scope.select?( @page ))
     end
 
     # @return   [Bool]

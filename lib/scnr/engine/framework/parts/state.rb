@@ -59,7 +59,7 @@ module State
     def initialize
         super
 
-        Element::Capabilities::Auditable.skip_like do |element|
+        Element::Capabilities::Auditable.pause_here do |element|
             if pause?
                 print_debug "Blocking on element audit: #{element.audit_id}"
             end

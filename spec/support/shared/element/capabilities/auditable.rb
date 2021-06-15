@@ -76,42 +76,6 @@ shared_examples_for 'auditable'  do |options = {}|
         end
     end
 
-    describe '.skip_like' do
-        it 'skips elements based on the block\'s return value' do
-            audited = false
-            auditable.audit( 'seed' ){ audited = true }
-            run
-            expect(audited).to be_truthy
-
-            SCNR::Engine::Element::Capabilities::Auditable.reset
-            SCNR::Engine::Element::Capabilities::Auditable.skip_like do
-                true
-            end
-
-            audited = false
-            auditable.audit( 'seed' ){ audited = true }
-            run
-            expect(audited).to be_falsey
-        end
-
-        it 'skips element mutations based on the block\'s return value' do
-            called = false
-            auditable.audit( 'seed' ){ called = true }
-            run
-            expect(called).to be_truthy
-
-            SCNR::Engine::Element::Capabilities::Auditable.reset
-            SCNR::Engine::Element::Capabilities::Auditable.skip_like do |element|
-                !!element.affected_input_name
-            end
-
-            i = 0
-            auditable.audit( 'seed' ){ i += 1 }
-            run
-            expect(i).to eq(0)
-        end
-    end
-
     describe '#audit_id' do
         let(:action) { "#{url}/action" }
 
