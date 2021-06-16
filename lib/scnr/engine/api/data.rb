@@ -1,16 +1,25 @@
 child :data, :Data do
-    child :framework, :Framework do
+
+    child :sitemap, :Sitemap do
         define :on
 
-        def_on :sitemap_entry do |&block|
+        def_on :new do |&block|
             SCNR::Engine::Framework.unsafe.data.on_sitemap_entry( &block )
         end
+    end
 
-        def_on :url do |&block|
+    child :urls, :URLs do
+        define :on
+
+        def_on :new do |&block|
             SCNR::Engine::Framework.unsafe.data.on_url( &block )
         end
+    end
 
-        def_on :page do |&block|
+    child :pages, :Pages do
+        define :on
+
+        def_on :new do |&block|
             SCNR::Engine::Framework.unsafe.data.on_page( &block )
         end
     end

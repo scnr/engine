@@ -1,7 +1,10 @@
 child :state, :State do
+    UnsafeFramework = SCNR::Engine::Framework.unsafe
+
     define :on
 
     def_on :change do |&block|
-        SCNR::Engine::Framework.unsafe.state.on_state_change( &block )
+        UnsafeFramework.state.on_state_change( &block )
     end
+
 end
