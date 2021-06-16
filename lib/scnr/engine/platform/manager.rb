@@ -260,9 +260,9 @@ class Manager
         synchronize do
             return page if !fingerprint? page
 
-            fingerprinters.available.each do |name|
+            fingerprinters.each do |name, fingerprinter|
                 exception_jail( false ) do
-                    fingerprinters[name].new( page ).run
+                    fingerprinter.new( page ).run
                 end
             end
 
