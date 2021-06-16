@@ -36,7 +36,7 @@ child :scan, :Scan do
     define :progress
     def_progress do
         {
-          busy:             busy?,
+          running:          running?,
           status:           status,
           status_messages:  status_messages,
           sitemap:          sitemap,
@@ -51,20 +51,10 @@ child :scan, :Scan do
         Hash[UnsafeFramework.sitemap.to_a[index..-1] || {}]
     end
 
-    define :busy?
-    def_busy? do
-        !!UnsafeFramework.running?
-    end
-
     define :status
     def_status do
         s = UnsafeFramework.state.status
         s.nil? ? :nil : s
-    end
-
-    define :status_messages
-    def_status_messages do
-        UnsafeFramework.status_messages
     end
 
     define :errors
@@ -79,29 +69,18 @@ child :scan, :Scan do
           reject { |i| without.include? i.digest }
     end
 
-    define :statistics
-    def_statistics do
-        UnsafeFramework.statistics
-    end
-
-    define :pause!
-    def_pause! do
-        UnsafeFramework.pause!
-    end
-
-    define :resume!
-    def_resume! do
-        UnsafeFramework.resume!
-    end
-
-    define :abort!
-    def_abort! do
-        UnsafeFramework.abort!
-    end
-
-    define :suspend!
-    def_suspend! do
-        UnsafeFramework.suspend!
+    %w(
+        status_messages
+        statistics
+        running?
+        scanning?
+        pause! pausing? paused?
+        resume!
+        abort!
+        suspend! suspended?
+    ).each do |m|
+        define m
+        send( "def_#{m}", &proc { UnsafeFramework.send( m ) } )
     end
 
     define :restore!
