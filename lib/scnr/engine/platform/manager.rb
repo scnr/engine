@@ -227,6 +227,7 @@ class Manager
         @manager.clear if @manager
         @manager = nil
 
+        @loaded = false
         @mutex  = Monitor.new
 
         self
@@ -260,7 +261,8 @@ class Manager
         synchronize do
             return page if !fingerprint? page
 
-            fingerprinters.each do |name, fingerprinter|
+            @loaded ||= !!fingerprinters.load_all
+            fingerprinters.each do |_, fingerprinter|
                 exception_jail( false ) do
                     fingerprinter.new( page ).run
                 end
