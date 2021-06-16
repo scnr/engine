@@ -40,7 +40,7 @@ module Report
         SCNR::Engine::Report.new(
             status:          state.status,
             options:         Options,
-            sitemap:         sitemap,
+            sitemap:         sitemap.dup,
             issues:          SCNR::Engine::Data.issues.sort,
             plugins:         @plugins.results,
             start_datetime:  @start_datetime,
