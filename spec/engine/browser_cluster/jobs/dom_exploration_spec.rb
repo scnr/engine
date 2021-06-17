@@ -22,7 +22,6 @@ describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration do
 
             if result.job.is_a? described_class::EventTrigger
                 has_event_triggers = true
-                expect(result.job.forwarder).to be_kind_of described_class
             end
 
             pages << result.page

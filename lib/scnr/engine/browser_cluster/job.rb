@@ -218,8 +218,7 @@ class Job
             args:         args,
             skip_states:  skip_states,
             category:     category,
-            never_ending: never_ending?,
-            forwarder:    self.clean_copy
+            never_ending: never_ending?
         )
     end
 
