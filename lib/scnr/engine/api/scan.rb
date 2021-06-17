@@ -77,7 +77,7 @@ child :scan, :Scan do
         pause! pausing? paused?
         resume!
         abort!
-        suspend! suspended?
+        suspend! suspending? suspended?
     ).each do |m|
         define m
         send( "def_#{m}", &proc { UnsafeFramework.send( m ) } )
@@ -87,6 +87,11 @@ child :scan, :Scan do
     def_restore! do |snapshot|
         UnsafeFramework.restore! snapshot
         nil
+    end
+
+    define :generate_report
+    def_generate_report do
+        UnsafeFramework.report
     end
 
 end
