@@ -310,6 +310,10 @@ module State
         state.suspended?
     end
 
+    def suspending?
+        state.suspending?
+    end
+
     private
 
     # @note Must be called before calling any audit methods.
