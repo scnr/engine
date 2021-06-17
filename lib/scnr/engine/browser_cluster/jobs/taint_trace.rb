@@ -49,6 +49,15 @@ class TaintTrace < DOMExploration
     end
     alias :inspect :to_s
 
+    private
+
+    def forward_options( options )
+        super.merge(
+          taint:    taint,
+          injector: injector
+        )
+    end
+
 end
 
 end

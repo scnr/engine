@@ -16,9 +16,17 @@ class EventTrigger < DOMExploration::EventTrigger
 
     require_relative 'event_trigger/result'
 
+    # @return [String]
+    #   Taint to trace throughout the data-flow of the JS environment.
+    attr_accessor :taint
+
+    # @return [String]
+    #   JS code to execute in order to introduce the taint.
+    attr_accessor :injector
+
     def run
-        browser.javascript.taint       = forwarder.taint
-        browser.javascript.custom_code = forwarder.injector
+        browser.javascript.taint       = self.taint
+        browser.javascript.custom_code = self.injector
 
         browser.on_new_page_with_sink { |page| save_result( page: page ) }
 
@@ -31,10 +39,19 @@ class EventTrigger < DOMExploration::EventTrigger
 
     def to_s
         "#<#{self.class}:#{object_id} @resource=#{@resource} " +
+          "@taint=#{@taint.inspect} @injector=#{@injector.inspect} " +
             "@event=#{@event.inspect} @element=#{@element.inspect} " +
-            "@forwarder=#{@forwarder} time=#{@time} timed_out=#{timed_out?}>"
+            "time=#{@time} timed_out=#{timed_out?}>"
     end
 
+    private
+
+    def forward_options( options )
+        super.merge(
+          taint:    taint,
+          injector: injector
+        )
+    end
 end
 
 end

@@ -228,10 +228,6 @@ describe SCNR::Engine::BrowserCluster::Job do
     describe '#forward' do
         subject { JobForwardTest.new( args: args, my_data: 'stuff', category: :stuff ) }
 
-        it 'sets the original Job as the #forwarder' do
-            expect(subject.forward.forwarder).to eq(subject)
-        end
-
         it 'creates a new Job with the same #id' do
             id = subject.id
             expect(subject.forward.id).to eq(id)
@@ -278,11 +274,6 @@ describe SCNR::Engine::BrowserCluster::Job do
 
     describe '#forward_as' do
         subject { JobForwardTest.new( args: args, my_data: 'stuff', category: :stuff  ) }
-
-        it 'sets the original Job as the #forwarder' do
-            id = subject.id
-            expect(subject.forward_as( JobForwardAsTest ).forwarder).to eq(subject)
-        end
 
         it 'creates a new Job type with a new #id' do
             expect(subject).not_to be_kind_of JobForwardAsTest
