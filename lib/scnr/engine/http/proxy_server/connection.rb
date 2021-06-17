@@ -124,29 +124,55 @@ class Connection < Arachni::Reactor::Connection
                 # the HTTP::Client in order to handle cookie update and
                 # fingerprinting handlers.
                 HTTP::Client.queue( request )
-                response = request.run
 
-                print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
+                @parent.thread_pool.post do
+                    response = request.run
+
+                    if closed?
+                        print_debug_level_3 '-- Connection closed, will not respond.'
+                        return
+                    end
+
+                    reactor.schedule do
+                        handle_response( response )
+                        print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
+                        print_debug_level_3 'Processed request.'
+                    end
+                end
             else
                 print_debug_level_3 '-- Handler did not approve, will not run.'
+
+                if closed?
+                    print_debug_level_3 '-- Connection closed, will not respond.'
+                    return
+                end
+
+                reactor.schedule do
+                    handle_response( response )
+                    print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
+                    print_debug_level_3 'Processed request.'
+                end
             end
         else
             print_debug_level_3 '-- Running...'
 
             HTTP::Client.queue( request )
-            response = request.run
 
-            print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
+            @parent.thread_pool.post do
+                response = request.run
+
+                if closed?
+                    print_debug_level_3 '-- Connection closed, will not respond.'
+                    return
+                end
+
+                reactor.schedule do
+                    handle_response( response )
+                    print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
+                    print_debug_level_3 'Processed request.'
+                end
+            end
         end
-
-        print_debug_level_3 'Processed request.'
-
-        if closed?
-            print_debug_level_3 '-- Connection closed, will not respond.'
-            return
-        end
-
-        reactor.schedule { handle_response( response ) }
     end
 
     def http_version

@@ -46,6 +46,10 @@ class ProxyServer
         @options[:port]        ||= Utilities.available_port
     end
 
+    def thread_pool
+        @thread_pool ||= Concurrent::CachedThreadPool.new
+    end
+
     # Starts the server without blocking, it'll only block until the server is
     # up and running and ready to accept connections.
     def start_async
@@ -68,6 +72,9 @@ class ProxyServer
 
     def shutdown
         print_debug_level_2 'Shutting down...'
+
+        @thread_pool.kill if @thread_pool
+        @thread_pool = nil
 
         @reactor.stop
         @reactor.wait
