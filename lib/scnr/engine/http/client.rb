@@ -492,9 +492,11 @@ class Client
     #   Extracts cookies from `response` and updates the cookie-jar.
     def parse_and_set_cookies( response )
         cookies = Cookie.from_response( response )
-        update_cookies( cookies )
 
-        notify_on_new_cookies( cookies, response )
+        if cookies.any?
+            update_cookies( cookies )
+            notify_on_new_cookies( cookies, response )
+        end
     end
 
     def self.method_missing( sym, *args, &block )
