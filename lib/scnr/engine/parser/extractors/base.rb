@@ -33,9 +33,9 @@ class Base
     def run
     end
 
-    def check_for?( string_or_regexp )
+    def check_for?( substring )
         return true if !@html
-        !!@downcased_html[string_or_regexp]
+        !!@downcased_html.optimized_include?( substring )
     end
 
     def document
