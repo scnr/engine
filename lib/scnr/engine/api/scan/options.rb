@@ -1,5 +1,4 @@
 child :options, :Options do
-    define :set
 
     describe 'Sets Engine options.'
     def_set do |*args|

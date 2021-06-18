@@ -1,5 +1,4 @@
 child :scope, :Scope do
-    define :select
 
     def_select :url do |&block|
         SCNR::Engine::URI::Scope.select( &block )
@@ -17,8 +16,6 @@ child :scope, :Scope do
         SCNR::Engine::Browser::Parts::Events.select( &block )
     end
 
-
-    define :reject
 
     def_reject :url do |&block|
         SCNR::Engine::URI::Scope.reject( &block )
