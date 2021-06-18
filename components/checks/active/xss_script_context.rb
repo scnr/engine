@@ -131,12 +131,12 @@ class SCNR::Engine::Checks::XssScriptContext < SCNR::Engine::Check::Base
         self.class.optimization_cache
     end
 
-    def taints( browser_cluster )
-        self.class.payloads.map { |taint| taint % browser_cluster.javascript_token }
+    def taints( browser_pool )
+        self.class.payloads.map { |taint| taint % browser_pool.javascript_token }
     end
 
     def run
-        with_browser_cluster do |cluster|
+        with_browser_pool do |cluster|
             audit taints( cluster ), self.class.options do |response, element|
                 next if !response.html?
 
@@ -156,10 +156,10 @@ class SCNR::Engine::Checks::XssScriptContext < SCNR::Engine::Check::Base
         # this also serves as a rudimentary check for really simple cases.
         return if !tainted?( response, element.seed )
 
-        with_browser_cluster do |cluster|
+        with_browser_pool do |cluster|
             print_info 'Response is tainted, scheduling a taint-trace.'
 
-            # Pass the response to the BrowserCluster for evaluation and see if the
+            # Pass the response to the BrowserPool for evaluation and see if the
             # JS payload we injected got executed by inspecting the page's
             # execution-flow sink.
             cluster.trace_taint(
@@ -203,7 +203,7 @@ class SCNR::Engine::Checks::XssScriptContext < SCNR::Engine::Check::Base
         return if seed.to_s.empty? || !response.body.to_s.include?( seed )
 
         Parser.sax_parse(
-            SAX.new( self.class.seed % browser_cluster.javascript_token ),
+            SAX.new( self.class.seed % browser_pool.javascript_token ),
             response.body
         ).tainted?
     end

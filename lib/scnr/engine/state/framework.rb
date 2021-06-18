@@ -44,12 +44,12 @@ class Framework
         def available_status_messages
             {
               suspending:                       'Will suspend as soon as the current page is audited.',
-              waiting_for_browser_cluster_jobs: 'Waiting for %i browser cluster jobs to finish.',
+              waiting_for_browser_pool_jobs: 'Waiting for %i browser cluster jobs to finish.',
               suspending_plugins:               'Suspending plugins.',
               saving_snapshot:                  'Saving snapshot at: %s',
               snapshot_location:                'Snapshot location: %s',
-              browser_cluster_startup:          'Initialising the browser cluster.',
-              browser_cluster_shutdown:         'Shutting down the browser cluster.',
+              browser_pool_startup:          'Initialising the browser cluster.',
+              browser_pool_shutdown:         'Shutting down the browser cluster.',
               clearing_queues:                  'Clearing the audit queues.',
               waiting_for_plugins:              'Waiting for the plugins to finish.',
               aborting:                         'Aborting the scan.',

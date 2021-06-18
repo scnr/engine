@@ -10,7 +10,7 @@ module SCNR::Engine
 class Framework
 module Parts
 
-# Provides access to the {BrowserCluster} and relevant helpers.
+# Provides access to the {BrowserPool} and relevant helpers.
 #
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 module Browser
@@ -35,19 +35,19 @@ module Browser
         job.category = :crawl
     end
 
-    # @return   [BrowserCluster, nil]
+    # @return   [BrowserPool, nil]
     #   A lazy-loaded browser cluster or `nil` if
-    #   {OptionGroups::BrowserCluster#pool_size} or
+    #   {OptionGroups::DOM#size} or
     #   {OptionGroups::Scope#dom_depth_limit} are 0 or not
     #   {#host_has_browser?}.
-    def browser_cluster
+    def browser_pool
         return if !use_browsers?
-        return @browser_cluster if @browser_cluster
+        return @browser_pool if @browser_pool
 
         # Initialization may take a while so since we lazy load this make sure
         # that only one thread gets to this code at a time.
         synchronize do
-            state.set_status_message :browser_cluster_startup
+            state.set_status_message :browser_pool_startup
 
             # We need class-level methods as browser-cluster callbacks so work
             # around that limitation.
@@ -60,8 +60,8 @@ module Browser
             Browser.apply_dom_metadata = method(:apply_dom_metadata )
             @apply_dom_metadata_cb = Browser.method(:apply_dom_metadata )
 
-            @browser_cluster = BrowserCluster.new(
-                pool_size: Options.browser_cluster.pool_size,
+            @browser_pool = BrowserPool.new(
+                size: Options.dom.pool_size,
                 on_pop:    proc do
                     next if !pause?
 
@@ -78,31 +78,31 @@ module Browser
 
             state.clear_status_messages
 
-            @browser_cluster
+            @browser_pool
         end
     end
 
-    def wait_for_browser_cluster?
-        @browser_cluster && !browser_cluster.done?
+    def wait_for_browser_pool?
+        @browser_pool && !browser_pool.done?
     end
 
     # @private
-    def browser_cluster_job_skip_states
+    def browser_pool_job_skip_states
         browser_job.skip_states
     end
 
     def use_browsers?
-        Options.browser_cluster.enabled? && Options.scope.dom_depth_limit > 0
+        Options.dom.enabled? && Options.scope.dom_depth_limit > 0
     end
 
     private
 
-    def shutdown_browser_cluster
-        return if !@browser_cluster
+    def shutdown_browser_pool
+        return if !@browser_pool
 
-        @browser_cluster.shutdown( false )
+        @browser_pool.shutdown( false )
 
-        @browser_cluster = nil
+        @browser_pool = nil
         @browser_job     = nil
     end
 
@@ -126,13 +126,13 @@ module Browser
         end
     end
 
-    # Passes the `page` to {BrowserCluster#queue} and then pushes
+    # Passes the `page` to {BrowserPool#queue} and then pushes
     # the resulting pages to {#push_to_page_queue}.
     #
     # @param    [Page]  page
     #   Page to analyze.
     def perform_browser_analysis( page )
-        return if !browser_cluster || !accepts_more_pages? ||
+        return if !browser_pool || !accepts_more_pages? ||
             Options.scope.dom_depth_limit.to_i < page.dom.depth + 1 ||
             !page.has_script?
 
@@ -148,7 +148,7 @@ module Browser
         # needs to have a clean state.
         schedule_dom_metadata_application( page )
 
-        browser_cluster.queue(
+        browser_pool.queue(
             browser_job.forward( resource: page.dom.state ),
             @handle_browser_page_cb
         )
@@ -170,7 +170,7 @@ module Browser
         dom.page = nil # Help out the GC.
 
         @tap ||= Browser.method(:set_job_to_crawl)
-        browser_cluster.with_browser_and_tap @tap, dom, @apply_dom_metadata_cb
+        browser_pool.with_browser_and_tap @tap, dom, @apply_dom_metadata_cb
     end
 
     def apply_dom_metadata( browser, dom )
@@ -191,20 +191,20 @@ module Browser
         # Request timeout or some other failure...
         return if bp.code == 0
 
-        browser_cluster.queue(
-            BrowserCluster::Jobs::SinkTrace.new( args: [bp] ),
+        browser_pool.queue(
+            BrowserPool::Jobs::SinkTrace.new( args: [bp] ),
             @handle_browser_page_cb
         )
     end
 
     def browser_job
         # We'll recycle the same job since all of them will have the same
-        # callback. This will force the BrowserCluster to use the same block
+        # callback. This will force the BrowserPool to use the same block
         # for all queued jobs.
         #
         # Also, this job should never end so that all analysis operations
         # share the same state.
-        @browser_job ||= BrowserCluster::Jobs::DOMExploration.new(
+        @browser_job ||= BrowserPool::Jobs::DOMExploration.new(
             parse_profile: SCNR::Engine::Browser::ParseProfile.except(
                 :execution_flow_sinks, :data_flow_sinks
             ),

@@ -43,11 +43,11 @@ class PluginFormatters::Metrics < SCNR::Engine::Plugin::Formatter
         print_line
 
         print_ok 'Browser cluster'
-        browser_cluster = results['browser_cluster']
-        print_info "Job count:       #{browser_cluster['job_count']}"
-        print_info "Timed-out jobs:  #{browser_cluster['job_time_outs']}"
-        print_info "Seconds per job: #{browser_cluster['seconds_per_job'].round( 4 )}"
-        print_info "Total job time:  #{browser_cluster['total_job_time']} seconds"
+        browser_pool = results['browser_pool']
+        print_info "Job count:       #{browser_pool['job_count']}"
+        print_info "Timed-out jobs:  #{browser_pool['job_time_outs']}"
+        print_info "Seconds per job: #{browser_pool['seconds_per_job'].round( 4 )}"
+        print_info "Total job time:  #{browser_pool['total_job_time']} seconds"
         print_line
 
         print_ok 'Resources'

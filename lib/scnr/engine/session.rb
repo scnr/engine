@@ -324,7 +324,7 @@ class Session
     end
 
     def has_browser?
-        Options.browser_cluster.enabled? && Options.scope.dom_depth_limit > 0
+        Options.dom.enabled? && Options.scope.dom_depth_limit > 0
     end
 
     private

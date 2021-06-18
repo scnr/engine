@@ -245,9 +245,9 @@ describe SCNR::Engine::Browser::Parts::Navigation do
             end
         end
 
-        context "with #{SCNR::Engine::OptionGroups::BrowserCluster}#local_storage" do
+        context "with #{SCNR::Engine::OptionGroups::DOM}#local_storage" do
             before do
-                SCNR::Engine::Options.browser_cluster.local_storage = {
+                SCNR::Engine::Options.dom.local_storage = {
                     'name' => 'value'
                 }
             end
@@ -258,9 +258,9 @@ describe SCNR::Engine::Browser::Parts::Navigation do
             end
         end
 
-        context "with #{SCNR::Engine::OptionGroups::BrowserCluster}#session_storage" do
+        context "with #{SCNR::Engine::OptionGroups::DOM}#session_storage" do
             before do
-                SCNR::Engine::Options.browser_cluster.session_storage = {
+                SCNR::Engine::Options.dom.session_storage = {
                     'name2' => 'value2'
                 }
             end
@@ -271,10 +271,10 @@ describe SCNR::Engine::Browser::Parts::Navigation do
             end
         end
 
-        context "with #{SCNR::Engine::OptionGroups::BrowserCluster}#wait_for_elements" do
+        context "with #{SCNR::Engine::OptionGroups::DOM}#wait_for_elements" do
             context 'when the URL matches a pattern' do
                 it 'waits for the element matching the CSS to appear' do
-                    SCNR::Engine::Options.browser_cluster.wait_for_elements = {
+                    SCNR::Engine::Options.dom.wait_for_elements = {
                         'stuff' => '#matchThis'
                     }
 
@@ -288,11 +288,11 @@ describe SCNR::Engine::Browser::Parts::Navigation do
                     expect(subject.watir.element( css: '#matchThis' ).tag_name).to eq('button')
                 end
 
-                it "waits a maximum of #{SCNR::Engine::OptionGroups::BrowserCluster}#job_timeout" do
-                    SCNR::Engine::Options.browser_cluster.wait_for_elements = {
+                it "waits a maximum of #{SCNR::Engine::OptionGroups::DOM}#job_timeout" do
+                    SCNR::Engine::Options.dom.wait_for_elements = {
                         'never' => '#never_appears'
                     }
-                    SCNR::Engine::Options.browser_cluster.job_timeout = 2
+                    SCNR::Engine::Options.dom.job_timeout = 2
 
                     t = Time.now
                     subject.goto( url + '/wait_for_elements#never/appears' )
@@ -306,7 +306,7 @@ describe SCNR::Engine::Browser::Parts::Navigation do
 
             context 'when the URL does not match any patterns' do
                 it 'does not wait' do
-                    SCNR::Engine::Options.browser_cluster.wait_for_elements = {
+                    SCNR::Engine::Options.dom.wait_for_elements = {
                         'stuff' => '#matchThis'
                     }
 

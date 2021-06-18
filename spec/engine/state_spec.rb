@@ -49,14 +49,14 @@ describe SCNR::Engine::State do
         end
     end
 
-    describe '#browser_cluster' do
-        it "returns an instance of #{described_class::BrowserCluster}" do
-            expect(subject.browser_cluster).to be_kind_of described_class::BrowserCluster
+    describe '#browser_pool' do
+        it "returns an instance of #{described_class::BrowserPool}" do
+            expect(subject.browser_pool).to be_kind_of described_class::BrowserPool
         end
     end
 
     describe '#statistics' do
-        %w(options audit element_filter framework http plugins trainer browser_cluster).each do |name|
+        %w(options audit element_filter framework http plugins trainer browser_pool).each do |name|
             it "includes :#{name} statistics" do
                 expect(subject.statistics[name.to_sym]).to eq(subject.send(name).statistics)
             end
@@ -64,7 +64,7 @@ describe SCNR::Engine::State do
     end
 
     describe '.dump' do
-        %w(options audit element_filter framework http plugins trainer browser_cluster).each do |name|
+        %w(options audit element_filter framework http plugins trainer browser_pool).each do |name|
             it "stores ##{name} to disk" do
                 previous_instance = subject.send(name)
 
@@ -79,7 +79,7 @@ describe SCNR::Engine::State do
     end
 
     describe '#clear' do
-        %w(options audit element_filter framework http plugins trainer  browser_cluster).each do |method|
+        %w(options audit element_filter framework http plugins trainer  browser_pool).each do |method|
             it "clears ##{method}" do
                 expect(subject.send(method)).to receive(:clear).at_least(:once)
                 subject.clear

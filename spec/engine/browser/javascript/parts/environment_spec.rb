@@ -38,9 +38,9 @@ describe SCNR::Engine::Browser::Javascript::Parts::Environment do
     describe '#wait_till_ready' do
         it 'waits until the JS environment is #ready?'
 
-        context 'when it exceeds Options.browser_cluster.job_timeout' do
+        context 'when it exceeds Options.dom.job_timeout' do
             it 'returns' do
-                SCNR::Engine::Options.browser_cluster.job_timeout = 5
+                SCNR::Engine::Options.dom.job_timeout = 5
                 browser.load "#{taint_tracer_url}/debug"
 
                 allow(subject).to receive(:ready?) { false }

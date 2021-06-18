@@ -41,8 +41,8 @@ class SCNR::Engine::Plugins::LoginScript < SCNR::Engine::Plugin::Base
             if browser
                 watir = browser.watir
                 watir.window.resize_to(
-                    SCNR::Engine::Options.browser_cluster.window_width,
-                    SCNR::Engine::Options.browser_cluster.window_height
+                    SCNR::Engine::Options.dom.window_width,
+                    SCNR::Engine::Options.dom.window_height
                 )
                 @script.call watir
                 browser.wait_till_ready

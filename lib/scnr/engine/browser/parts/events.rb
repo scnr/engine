@@ -123,7 +123,7 @@ module Events
         self
     end
 
-    # @note Only used when running as part of {BrowserCluster} to distribute
+    # @note Only used when running as part of {BrowserPool} to distribute
     #   page analysis across a pool of browsers.
     #
     # Distributes the triggering of `event` on the element at `element_index`

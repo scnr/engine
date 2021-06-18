@@ -10,7 +10,7 @@
 # tainted responses to look for proof of vulnerability.
 #
 # If this rudimentary check fails, tainted responses are forwarded to the
-# {BrowserCluster} for evaluation and {#trace_taint taint-tracing}.
+# {BrowserPool} for evaluation and {#trace_taint taint-tracing}.
 #
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 #
@@ -116,10 +116,10 @@ class SCNR::Engine::Checks::Xss < SCNR::Engine::Check::Base
         # No idea what was returned, but we can't work with it.
         return :checked if !response.to_page.has_script?
 
-        with_browser_cluster do |cluster|
+        with_browser_pool do |cluster|
             print_info 'Progressing to deferred browser evaluation of response.'
 
-            # Pass the response to the BrowserCluster for evaluation and see if the
+            # Pass the response to the BrowserPool for evaluation and see if the
             # element appears in the doc tree now.
             cluster.trace_taint(
                 response,

@@ -15,7 +15,7 @@ shared_examples_for 'with_locator' do
                 called = true
             end
 
-            subject.auditor.browser_cluster.wait
+            subject.auditor.browser_pool.wait
             expect(called).to be_truthy
         end
     end

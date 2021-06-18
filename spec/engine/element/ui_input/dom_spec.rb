@@ -15,7 +15,7 @@ describe SCNR::Engine::Element::UIInput::DOM do
     it_should_behave_like 'auditable_dom'
 
     def run
-        auditor.browser_cluster.wait
+        auditor.browser_pool.wait
     end
 
     def auditable_extract_parameters( page )
@@ -34,7 +34,7 @@ describe SCNR::Engine::Element::UIInput::DOM do
     end
 
     before(:each) do
-        enable_browser_cluster
+        enable_dom
         SCNR::Engine::Framework.unsafe.reset
     end
 
@@ -124,7 +124,7 @@ describe SCNR::Engine::Element::UIInput::DOM do
                 called = true
             end
 
-            subject.auditor.browser_cluster.wait
+            subject.auditor.browser_pool.wait
             expect(called).to be_truthy
         end
 
@@ -145,7 +145,7 @@ describe SCNR::Engine::Element::UIInput::DOM do
                 called = true
             end
 
-            subject.auditor.browser_cluster.wait
+            subject.auditor.browser_pool.wait
             expect(called).to be_truthy
 
             called = false
@@ -160,7 +160,7 @@ describe SCNR::Engine::Element::UIInput::DOM do
                 expect(auditable_extract_parameters( browser.to_page )).to eq(new_inputs)
                 called = true
             end
-            auditor.browser_cluster.wait
+            auditor.browser_pool.wait
             expect(called).to be_truthy
         end
     end

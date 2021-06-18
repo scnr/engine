@@ -8,13 +8,13 @@
 
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 # @version 0.1
-class SCNR::Engine::Plugins::BrowserClusterJobMonitor < SCNR::Engine::Plugin::Base
+class SCNR::Engine::Plugins::BrowserPoolJobMonitor < SCNR::Engine::Plugin::Base
 
     def run
         while framework.running?
 
             s = ''
-            browser_cluster.workers.each.with_index do |worker, i|
+            browser_pool.workers.each.with_index do |worker, i|
                 s << "[#{i+1}] #{worker.job || '-'}\n"
                 s << "#{'-'  * 100}\n"
 
@@ -39,19 +39,19 @@ class SCNR::Engine::Plugins::BrowserClusterJobMonitor < SCNR::Engine::Plugin::Ba
 
     def self.info
         {
-            name:        'BrowserClusterJobMonitor',
+            name:        'BrowserPoolJobMonitor',
             description: %q{
 
 Monitor with:
 
-    watch -n1 cat /tmp/browser_cluster_job_monitor.log
+    watch -n1 cat /tmp/browser_pool_job_monitor.log
                          },
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
             version:     '0.1',
             options:     [
                 Options::String.new( :logfile,
                     description: 'Executable to be called prior to the scan.',
-                    default: '/tmp/browser_cluster_job_monitor.log'
+                    default: '/tmp/browser_pool_job_monitor.log'
                 )
             ]
         }

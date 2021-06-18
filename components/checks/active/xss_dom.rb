@@ -71,7 +71,7 @@ class SCNR::Engine::Checks::XssDom < SCNR::Engine::Check::Base
     end
 
     def run
-        return if !browser_cluster
+        return if !browser_pool
 
         each_candidate_dom_element do |element|
             element.audit( self.class.payloads, self.class.options )

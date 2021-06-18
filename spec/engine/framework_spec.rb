@@ -60,7 +60,7 @@ describe SCNR::Engine::Framework do
         end
 
         it 'handles pages with JavaScript code' do
-            enable_browser_cluster
+            enable_dom
 
             SCNR::Engine::Framework.safe do |f|
                 SCNR::Engine::Options.url = url + '/with_javascript'
@@ -78,7 +78,7 @@ describe SCNR::Engine::Framework do
         end
 
         it 'handles AJAX' do
-            enable_browser_cluster
+            enable_dom
 
             SCNR::Engine::Framework.safe do |f|
                 SCNR::Engine::Options.url = url + '/with_ajax'
@@ -110,7 +110,7 @@ describe SCNR::Engine::Framework do
 
         context 'when it has log-in capabilities and gets logged out' do
             it 'logs-in again before continuing with the audit' do
-                enable_browser_cluster
+                enable_dom
 
                 SCNR::Engine::Framework.safe do |f|
                     url = web_server_url_for( :framework ) + '/'
@@ -145,7 +145,7 @@ describe SCNR::Engine::Framework do
         end
 
         it 'includes browser cluster statistics' do
-            expect(statistics[:browser_cluster]).to eq(SCNR::Engine::BrowserCluster.statistics)
+            expect(statistics[:browser_pool]).to eq(SCNR::Engine::BrowserPool.statistics)
         end
 
         [:found_pages, :audited_pages, :current_page].each  do |k|

@@ -16,7 +16,7 @@ module WithAuditor
 module Output
     extend ::Forwardable
 
-    def_delegator :auditor, :with_browser_cluster
+    def_delegator :auditor, :with_browser_pool
 
     [ :debug?, :print_error, :print_status, :print_verbose, :print_info,
       :print_line, :print_ok, :print_bad, :print_debug, :print_debug_backtrace,

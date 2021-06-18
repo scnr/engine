@@ -62,7 +62,7 @@ describe SCNR::Engine::Check::Auditor do
     ]
 
     before :each do
-        enable_browser_cluster
+        enable_dom
 
         framework.reset
 
@@ -559,17 +559,17 @@ describe SCNR::Engine::Check::Auditor do
         end
     end
 
-    describe '#with_browser_cluster' do
+    describe '#with_browser_pool' do
         context 'when a browser cluster is' do
             context 'available' do
                 it 'passes it to the given block' do
                     worker = nil
 
-                    expect(auditor.with_browser_cluster do |cluster|
+                    expect(auditor.with_browser_pool do |cluster|
                         worker = cluster
                     end).to be_truthy
 
-                    expect(worker).to eq(framework.browser_cluster)
+                    expect(worker).to eq(framework.browser_pool)
                 end
             end
         end
@@ -578,15 +578,15 @@ describe SCNR::Engine::Check::Auditor do
     describe '#with_browser' do
         context 'when a browser cluster is' do
             context 'available' do
-                it 'passes a BrowserCluster::Worker to the given block' do
+                it 'passes a BrowserPool::Worker to the given block' do
                     worker = nil
 
                     expect(auditor.with_browser (proc_to_method do |browser|
                         worker = browser
                     end)).to be_truthy
-                    framework.browser_cluster.wait
+                    framework.browser_pool.wait
 
-                    expect(worker).to be_kind_of SCNR::Engine::BrowserCluster::Worker
+                    expect(worker).to be_kind_of SCNR::Engine::BrowserPool::Worker
                 end
             end
         end
@@ -1127,9 +1127,9 @@ describe SCNR::Engine::Check::Auditor do
                             pages << result.page
                             false
                         end))
-                        auditor.browser_cluster.wait
+                        auditor.browser_pool.wait
 
-                        browser_cluster_job_taint_tracer_data_flow_check_pages  pages
+                        browser_pool_job_taint_tracer_data_flow_check_pages  pages
                     end
                 end
 
@@ -1142,9 +1142,9 @@ describe SCNR::Engine::Check::Auditor do
                             pages << result.page
                             false
                         end))
-                        auditor.browser_cluster.wait
+                        auditor.browser_pool.wait
 
-                        browser_cluster_job_taint_tracer_data_flow_check_pages  pages
+                        browser_pool_job_taint_tracer_data_flow_check_pages  pages
                     end
                 end
 
@@ -1157,9 +1157,9 @@ describe SCNR::Engine::Check::Auditor do
                             pages << result.page
                             false
                         end))
-                        auditor.browser_cluster.wait
+                        auditor.browser_pool.wait
 
-                        browser_cluster_job_taint_tracer_data_flow_check_pages  pages
+                        browser_pool_job_taint_tracer_data_flow_check_pages  pages
                     end
                 end
             end
@@ -1181,9 +1181,9 @@ describe SCNR::Engine::Check::Auditor do
                                 pages << result.page
                                 false
                             end))
-                            auditor.browser_cluster.wait
+                            auditor.browser_pool.wait
 
-                            browser_cluster_job_taint_tracer_data_flow_with_injector_check_pages  pages
+                            browser_pool_job_taint_tracer_data_flow_with_injector_check_pages  pages
                         end
                     end
 
@@ -1196,9 +1196,9 @@ describe SCNR::Engine::Check::Auditor do
                                 pages << result.page
                                 false
                             end))
-                            auditor.browser_cluster.wait
+                            auditor.browser_pool.wait
 
-                            browser_cluster_job_taint_tracer_data_flow_with_injector_check_pages  pages
+                            browser_pool_job_taint_tracer_data_flow_with_injector_check_pages  pages
                         end
                     end
 
@@ -1211,9 +1211,9 @@ describe SCNR::Engine::Check::Auditor do
                                 pages << result.page
                                 false
                             end))
-                            auditor.browser_cluster.wait
+                            auditor.browser_pool.wait
 
-                            browser_cluster_job_taint_tracer_data_flow_with_injector_check_pages  pages
+                            browser_pool_job_taint_tracer_data_flow_with_injector_check_pages  pages
                         end
                     end
                 end
@@ -1225,7 +1225,7 @@ describe SCNR::Engine::Check::Auditor do
                 SCNR::Engine::Utilities.normalize_url( web_server_url_for( :taint_tracer ) )
             end
             let(:stub_url) do
-                "#{url}debug?input=#{auditor.browser_cluster.javascript_token}TaintTracer.log_execution_flow_sink()"
+                "#{url}debug?input=#{auditor.browser_pool.javascript_token}TaintTracer.log_execution_flow_sink()"
             end
 
             context 'and the resource is a' do
@@ -1236,9 +1236,9 @@ describe SCNR::Engine::Check::Auditor do
                             pages << result.page
                             false
                         end))
-                        auditor.browser_cluster.wait
+                        auditor.browser_pool.wait
 
-                        browser_cluster_job_taint_tracer_execution_flow_check_pages pages
+                        browser_pool_job_taint_tracer_execution_flow_check_pages pages
                     end
                 end
 
@@ -1249,9 +1249,9 @@ describe SCNR::Engine::Check::Auditor do
                             pages << result.page
                             false
                         end))
-                        auditor.browser_cluster.wait
+                        auditor.browser_pool.wait
 
-                        browser_cluster_job_taint_tracer_execution_flow_check_pages pages
+                        browser_pool_job_taint_tracer_execution_flow_check_pages pages
                     end
                 end
 
@@ -1262,9 +1262,9 @@ describe SCNR::Engine::Check::Auditor do
                             pages << result.page
                             false
                         end))
-                        auditor.browser_cluster.wait
+                        auditor.browser_pool.wait
 
-                        browser_cluster_job_taint_tracer_execution_flow_check_pages pages
+                        browser_pool_job_taint_tracer_execution_flow_check_pages pages
                     end
                 end
             end
@@ -1275,7 +1275,7 @@ describe SCNR::Engine::Check::Auditor do
                 SCNR::Engine::Utilities.normalize_url( web_server_url_for( :taint_tracer ) )
             end
             let(:stub_url) do
-                "#{url}debug?input=#{auditor.browser_cluster.javascript_token}TaintTracer.log_execution_flow_sink()"
+                "#{url}debug?input=#{auditor.browser_pool.javascript_token}TaintTracer.log_execution_flow_sink()"
             end
 
             context 'true' do
@@ -1287,7 +1287,7 @@ describe SCNR::Engine::Check::Auditor do
                         calls += 1
                         true
                     end))
-                    auditor.browser_cluster.wait
+                    auditor.browser_pool.wait
                     expect(calls).to eq(1)
                 end
             end
@@ -1300,7 +1300,7 @@ describe SCNR::Engine::Check::Auditor do
                         calls += 1
                         false
                     end))
-                    auditor.browser_cluster.wait
+                    auditor.browser_pool.wait
                     expect(calls).to be > 0
                 end
             end

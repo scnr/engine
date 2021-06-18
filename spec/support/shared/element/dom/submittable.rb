@@ -1,7 +1,7 @@
 shared_examples_for 'submittable_dom' do
     it_should_behave_like 'submittable'
 
-    before(:each) { enable_browser_cluster }
+    before(:each) { enable_dom }
 
     describe '#submit' do
         it 'submits the element' do
@@ -14,7 +14,7 @@ shared_examples_for 'submittable_dom' do
                 called = true
             end
 
-            auditor.browser_cluster.wait
+            auditor.browser_pool.wait
             expect(called).to be_truthy
         end
 
@@ -25,18 +25,18 @@ shared_examples_for 'submittable_dom' do
                 called = true
             end
 
-            auditor.browser_cluster.wait
+            auditor.browser_pool.wait
             expect(called).to be_truthy
         end
 
         it 'sets the #browser on the #performer' do
             called = false
             subject.submit do |page|
-                expect(page.performer.browser).to be_kind_of SCNR::Engine::BrowserCluster::Worker
+                expect(page.performer.browser).to be_kind_of SCNR::Engine::BrowserPool::Worker
                 called = true
             end
 
-            auditor.browser_cluster.wait
+            auditor.browser_pool.wait
             expect(called).to be_truthy
         end
 
@@ -47,13 +47,13 @@ shared_examples_for 'submittable_dom' do
                 browser.load subject.page
                 transitions = subject.trigger
             end
-            auditor.browser_cluster.wait
+            auditor.browser_pool.wait
 
             submitted_page = nil
             subject.dup.submit do |page|
                 submitted_page = page
             end
-            auditor.browser_cluster.wait
+            auditor.browser_pool.wait
 
             transitions.each do |transition|
                 expect(subject.page.dom.transitions).not_to include transition
@@ -69,7 +69,7 @@ shared_examples_for 'submittable_dom' do
         #         subject.submit do
         #             called = true
         #         end
-        #         auditor.browser_cluster.wait
+        #         auditor.browser_pool.wait
         #         expect(called).to be_falsey
         #     end
         # end
@@ -85,7 +85,7 @@ shared_examples_for 'submittable_dom' do
                         called = true
                     end
 
-                    auditor.browser_cluster.wait
+                    auditor.browser_pool.wait
                     expect(called).to be_truthy
                 end
             end
@@ -99,7 +99,7 @@ shared_examples_for 'submittable_dom' do
                         set_taint = page.performer.browser.javascript.taint
                     end
 
-                    auditor.browser_cluster.wait
+                    auditor.browser_pool.wait
                     expect(set_taint).to eq(taint)
                 end
             end
@@ -113,7 +113,7 @@ shared_examples_for 'submittable_dom' do
                         profile = page.performer.browser.parse_profile
                     end
 
-                    auditor.browser_cluster.wait
+                    auditor.browser_pool.wait
                     expect(profile).to eq(pp)
                 end
             end

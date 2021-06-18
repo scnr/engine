@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace::DOMSinkTracer do
+describe SCNR::Engine::BrowserPool::Jobs::SinkTrace::DOMSinkTracer do
 
     before do
         SCNR::Engine::Element::DOM::Capabilities::WithSinks::Sinks.enable_all
@@ -14,7 +14,7 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace::DOMSinkTracer do
     end
 
     let(:browser) { SCNR::Engine::Browser.new }
-    let(:browser_cluster) { SCNR::Engine::BrowserCluster.new }
+    let(:browser_pool) { SCNR::Engine::BrowserPool.new }
 
     let(:page) do
         browser.load url
@@ -37,7 +37,7 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace::DOMSinkTracer do
         context 'or is being traced by another thread' do
             it 'traces its sinks' do
                 forwarded = false
-                browser_cluster.queue( subject, (proc_to_method do |result|
+                browser_pool.queue( subject, (proc_to_method do |result|
                     e = result.page.ui_inputs.first.dom
 
                     expect(e.sinks).to be_traced
@@ -48,7 +48,7 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace::DOMSinkTracer do
 
                     forwarded = true
                 end))
-                browser_cluster.wait
+                browser_pool.wait
 
                 expect(forwarded).to be_truthy
             end
@@ -60,10 +60,10 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace::DOMSinkTracer do
                 parent.dom.sinks.class.claim parent.dom
 
                 forwarded = false
-                browser_cluster.queue( subject, (proc_to_method do
+                browser_pool.queue( subject, (proc_to_method do
                     forwarded = true
                 end))
-                browser_cluster.wait
+                browser_pool.wait
 
                 expect(forwarded).to be_falsey
             end
@@ -77,10 +77,10 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace::DOMSinkTracer do
             e.sinks.traced!
 
             forwarded = false
-            browser_cluster.queue( subject, (proc_to_method do
+            browser_pool.queue( subject, (proc_to_method do
                 forwarded = true
             end))
-            browser_cluster.wait
+            browser_pool.wait
 
             expect(forwarded).to be_falsey
         end

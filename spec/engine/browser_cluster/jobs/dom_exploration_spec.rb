@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration do
+describe SCNR::Engine::BrowserPool::Jobs::DOMExploration do
     before do
         SCNR::Engine::Element::DOM::Capabilities::WithSinks::Sinks.add_to_max_cost 9999
     end
 
-    let(:browser_cluster) { SCNR::Engine::BrowserCluster.new }
+    let(:browser_pool) { SCNR::Engine::BrowserPool.new }
     let(:url) do
         SCNR::Engine::Utilities.normalize_url( web_server_url_for( :browser ) ) + 'explore'
     end
@@ -17,7 +17,7 @@ describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration do
         pages = []
         has_event_triggers = false
 
-        browser_cluster.queue( job, (proc_to_method do  |result|
+        browser_pool.queue( job, (proc_to_method do  |result|
             expect(result).to be_kind_of described_class::Result
 
             if result.job.is_a? described_class::EventTrigger
@@ -26,7 +26,7 @@ describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration do
 
             pages << result.page
         end))
-        browser_cluster.wait
+        browser_pool.wait
 
         expect(has_event_triggers).to be_truthy
         browser_explore_check_pages pages
@@ -38,11 +38,11 @@ describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration do
                 SCNR::Engine::Element::DOM::Capabilities::WithSinks::Sinks.enable_all
             end
 
-            it "forwards pages to a #{SCNR::Engine::BrowserCluster::Jobs::SinkTrace}" do
+            it "forwards pages to a #{SCNR::Engine::BrowserPool::Jobs::SinkTrace}" do
                 SCNR::Engine::Options.audit.elements :ui_inputs
 
                 forwarded = false
-                browser_cluster.queue( described_class.new( resource: sink_trace_url ), (proc_to_method do |result|
+                browser_pool.queue( described_class.new( resource: sink_trace_url ), (proc_to_method do |result|
                     next if !result.page.element_sink_trace_hash
 
                     e = result.page.ui_inputs.first.dom
@@ -55,14 +55,14 @@ describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration do
 
                     forwarded = true
                 end))
-                browser_cluster.wait
+                browser_pool.wait
 
                 expect(forwarded).to be_truthy
             end
         end
 
         context 'have not been enabled' do
-            it "does not forward pages to a #{SCNR::Engine::BrowserCluster::Jobs::SinkTrace}"
+            it "does not forward pages to a #{SCNR::Engine::BrowserPool::Jobs::SinkTrace}"
         end
     end
 

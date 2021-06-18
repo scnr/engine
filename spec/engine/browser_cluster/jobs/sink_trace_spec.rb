@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace do
+describe SCNR::Engine::BrowserPool::Jobs::SinkTrace do
 
     before do
         SCNR::Engine::Element::DOM::Capabilities::WithSinks::Sinks.enable_all
@@ -10,7 +10,7 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace do
     end
     
     let(:browser) { SCNR::Engine::Browser.new }
-    let(:browser_cluster) { SCNR::Engine::BrowserCluster.new }
+    let(:browser_pool) { SCNR::Engine::BrowserPool.new }
 
     let(:url) do
         SCNR::Engine::Utilities.normalize_url( web_server_url_for( :ui_input_dom ) )
@@ -33,9 +33,9 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace do
         context 'and has an active DOM' do
             context 'and has not been traced' do
                 context 'or is being traced by another thread' do
-                    it "forwards elements to #{SCNR::Engine::BrowserCluster::Jobs::SinkTrace::DOMSinkTracer}" do
+                    it "forwards elements to #{SCNR::Engine::BrowserPool::Jobs::SinkTrace::DOMSinkTracer}" do
                         forwarded = false
-                        browser_cluster.queue( subject, (proc_to_method do |result|
+                        browser_pool.queue( subject, (proc_to_method do |result|
                             e = result.page.ui_inputs.first.dom
 
                             expect(e.sinks).to be_traced
@@ -46,7 +46,7 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace do
 
                             forwarded = true
                         end))
-                        browser_cluster.wait
+                        browser_pool.wait
 
                         expect(forwarded).to be_truthy
                     end
@@ -58,10 +58,10 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace do
                         parent.dom.sinks.class.claim parent.dom
 
                         forwarded = false
-                        browser_cluster.queue( subject, (proc_to_method do
+                        browser_pool.queue( subject, (proc_to_method do
                             forwarded = true
                         end))
-                        browser_cluster.wait
+                        browser_pool.wait
 
                         expect(forwarded).to be_falsey
                     end
@@ -75,10 +75,10 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace do
                     e.sinks.traced!
 
                     forwarded = false
-                    browser_cluster.queue( subject, (proc_to_method do
+                    browser_pool.queue( subject, (proc_to_method do
                         forwarded = true
                     end))
-                    browser_cluster.wait
+                    browser_pool.wait
 
                     expect(forwarded).to be_falsey
                 end
@@ -90,10 +90,10 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace do
                 page.ui_inputs.first.skip_dom = true
 
                 forwarded = false
-                browser_cluster.queue( subject, (proc_to_method do
+                browser_pool.queue( subject, (proc_to_method do
                     forwarded = true
                 end))
-                browser_cluster.wait
+                browser_pool.wait
 
                 expect(forwarded).to be_falsey
             end
@@ -105,10 +105,10 @@ describe SCNR::Engine::BrowserCluster::Jobs::SinkTrace do
             SCNR::Engine::Options.audit.skip_elements :ui_inputs
 
             forwarded = false
-            browser_cluster.queue( subject, (proc_to_method do
+            browser_pool.queue( subject, (proc_to_method do
                 forwarded = true
             end))
-            browser_cluster.wait
+            browser_pool.wait
 
             expect(forwarded).to be_falsey
         end

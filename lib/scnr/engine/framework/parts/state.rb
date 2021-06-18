@@ -101,8 +101,8 @@ module State
         state.status = :cleanup
 
         if shutdown_browsers
-            state.set_status_message :browser_cluster_shutdown
-            shutdown_browser_cluster
+            state.set_status_message :browser_pool_shutdown
+            shutdown_browser_pool
         end
 
         state.set_status_message :clearing_queues
@@ -139,7 +139,7 @@ module State
         @browser_job     = nil
         @start_datetime  = nil
         @finish_datetime = nil
-        @browser_cluster = nil
+        @browser_pool = nil
 
         @failures.clear
         @retries.clear
@@ -423,9 +423,9 @@ module State
         options.timeout.duration = nil
         options.timeout.suspend  = nil
 
-        if @browser_cluster
-            state.set_status_message :waiting_for_browser_cluster_jobs, @browser_cluster.workers.size
-            @browser_cluster.shutdown_for_suspend
+        if @browser_pool
+            state.set_status_message :waiting_for_browser_pool_jobs, @browser_pool.workers.size
+            @browser_pool.shutdown_for_suspend
         end
 
         # Make sure the component options are up to date with what's actually
@@ -435,8 +435,8 @@ module State
             inject({}) { |h, name| h[name.to_s] =
                 options.plugins[name.to_s] || {}; h }
 
-        if browser_cluster_job_skip_states
-            state.browser_skip_states.merge browser_cluster_job_skip_states
+        if browser_pool_job_skip_states
+            state.browser_skip_states.merge browser_pool_job_skip_states
         end
 
         state.set_status_message :suspending_plugins

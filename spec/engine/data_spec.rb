@@ -31,14 +31,14 @@ describe SCNR::Engine::Data do
         end
     end
 
-    describe '#browser_cluster' do
-        it "returns an instance of #{described_class::BrowserCluster}" do
-            expect(subject.browser_cluster).to be_kind_of described_class::BrowserCluster
+    describe '#browser_pool' do
+        it "returns an instance of #{described_class::BrowserPool}" do
+            expect(subject.browser_pool).to be_kind_of described_class::BrowserPool
         end
     end
 
     describe '#statistics' do
-        %w(framework issues plugins browser_cluster session).each do |name|
+        %w(framework issues plugins browser_pool session).each do |name|
             it "includes :#{name} statistics" do
                 expect(subject.statistics[name.to_sym]).to eq(subject.send(name).statistics)
             end
@@ -46,7 +46,7 @@ describe SCNR::Engine::Data do
     end
 
     describe '.dump' do
-        %w(framework issues plugins session browser_cluster).each do |name|
+        %w(framework issues plugins session browser_pool).each do |name|
             it "stores ##{name} to disk" do
                 previous_instance = subject.send(name)
 
@@ -61,7 +61,7 @@ describe SCNR::Engine::Data do
     end
 
     describe '#clear' do
-        %w(framework issues plugins session browser_cluster).each do |method|
+        %w(framework issues plugins session browser_pool).each do |method|
             it "clears ##{method}" do
                 expect(subject.send(method)).to receive(:clear).at_least(:once)
                 subject.clear

@@ -273,7 +273,7 @@ class HTTP < SCNR::Engine::OptionGroup
     #
     # @raise    Error::InvalidProxyType
     def proxy_type=( type )
-        if !PROXY_TYPES.include?( type.to_s )
+        if type && !PROXY_TYPES.include?( type.to_s )
             fail Error::InvalidProxyType,
                  "Invalid proxy type: #{type} (supported: #{PROXY_TYPES.join(', ')})"
         end
@@ -286,7 +286,7 @@ class HTTP < SCNR::Engine::OptionGroup
     #
     # @raise    Error::InvalidSSLCertificateType
     def ssl_certificate_type=( type )
-        if !SSL_CERTIFICATE_TYPES.include?( type.to_s )
+        if type && !SSL_CERTIFICATE_TYPES.include?( type.to_s )
             fail Error::InvalidSSLCertificateType,
                  "Invalid SSL certificate type: #{type} (supported: #{SSL_CERTIFICATE_TYPES.join(', ')})"
         end
@@ -299,7 +299,7 @@ class HTTP < SCNR::Engine::OptionGroup
     #
     # @raise    Error::InvalidSSLKeyType
     def ssl_key_type=( type )
-        if !SSL_KEY_TYPES.include?( type.to_s )
+        if type && !SSL_KEY_TYPES.include?( type.to_s )
             fail Error::InvalidSSLKeyType,
                  "Invalid SSL key type: #{type} (supported: #{SSL_KEY_TYPES.join(', ')})"
         end
@@ -312,7 +312,7 @@ class HTTP < SCNR::Engine::OptionGroup
     #
     # @raise    Error::InvalidSSLVersion
     def ssl_version=( version )
-        if !SSL_VERSIONS.include?( version.to_s )
+        if version && !SSL_VERSIONS.include?( version.to_s )
             fail Error::InvalidSSLVersion,
                  "Invalid SSL version: #{version} (supported: #{SSL_VERSIONS.join(', ')})"
         end

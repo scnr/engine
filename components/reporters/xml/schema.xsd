@@ -54,7 +54,7 @@
             <xs:element name="general" type="plugin_metrics_results_general"/>
             <xs:element name="scan" type="plugin_metrics_results_scan"/>
             <xs:element name="http" type="plugin_metrics_results_http"/>
-            <xs:element name="browser_cluster" minOccurs="0" type="plugin_metrics_results_browser_cluster"/>
+            <xs:element name="browser_pool" minOccurs="0" type="plugin_metrics_results_browser_pool"/>
             <xs:element name="resource" type="plugin_metrics_results_resource"/>
             <xs:element name="element" type="plugin_metrics_results_element"/>
             <xs:element name="dom" type="plugin_metrics_results_dom"/>
@@ -78,7 +78,7 @@
         </xs:all>
     </xs:complexType>
 
-    <xs:complexType name="plugin_metrics_results_browser_cluster">
+    <xs:complexType name="plugin_metrics_results_browser_pool">
         <xs:all>
             <xs:element name="seconds_per_job" type="xs:float"/>
             <xs:element name="total_job_time" type="xs:float"/>

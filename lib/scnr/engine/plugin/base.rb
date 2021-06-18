@@ -151,12 +151,12 @@ class Base < Component::Base
         framework.http
     end
 
-    def browser_cluster
-        framework.browser_cluster
+    def browser_pool
+        framework.browser_pool
     end
 
     def with_browser( &block )
-        browser_cluster.with_browser( &block )
+        browser_pool.with_browser( &block )
     end
 
     # Registers the plugin's results to {Data::Plugins}.

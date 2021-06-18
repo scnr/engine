@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SCNR::Engine::BrowserCluster::Job::Result do
+describe SCNR::Engine::BrowserPool::Job::Result do
     let(:job) { Factory[:custom_job] }
     subject { described_class.new }
     it { is_expected.to respond_to :job }
