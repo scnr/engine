@@ -1,6 +1,4 @@
 child :logging, :Logging do
-    define :on
-
     def_on :error do |&block|
         SCNR::Engine::UI::Output.on_error( &block )
     end

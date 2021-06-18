@@ -1,8 +1,6 @@
 child :fingerprinters, :Fingerprinters do
     UnsafeFramework = SCNR::Engine::Framework.unsafe
 
-    define :as
-
     def_as do |shortname, &block|
         shortname = shortname.to_s
 

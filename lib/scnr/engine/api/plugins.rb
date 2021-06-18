@@ -1,8 +1,6 @@
 child :plugins, :Plugins do
     UnsafeFramework = SCNR::Engine::Framework.unsafe
 
-    define :as
-
     def_as do |shortname, info = {}, &block|
         shortname = shortname.to_s
 

@@ -8,7 +8,6 @@ child :scan, :Scan do
         UnsafeFramework.reset
     end
 
-    define :run!
     def_run! do |&block|
         SCNR::Engine::Framework.safe do |framework|
             framework.checks.load SCNR::Engine::Options.checks
@@ -21,7 +20,6 @@ child :scan, :Scan do
         end
     end
 
-    define :run
     def_run do
         UnsafeFramework.checks.load SCNR::Engine::Options.checks
 
@@ -33,7 +31,6 @@ child :scan, :Scan do
         [UnsafeFramework.report, UnsafeFramework.statistics]
     end
 
-    define :progress
     def_progress do
         {
           running:          running?,
@@ -45,24 +42,20 @@ child :scan, :Scan do
         }
     end
 
-    define :sitemap
     def_sitemap do |index = 0|
         return {} if UnsafeFramework.sitemap.size <= index + 1
         Hash[UnsafeFramework.sitemap.to_a[index..-1] || {}]
     end
 
-    define :status
     def_status do
         s = UnsafeFramework.state.status
         s.nil? ? :nil : s
     end
 
-    define :errors
     def_errors do |index = 0|
         []
     end
 
-    define :issues
     def_issues do |without = []|
         without = Set.new( without )
         SCNR::Engine::Data.issues.sort.
@@ -79,17 +72,14 @@ child :scan, :Scan do
         abort!
         suspend! suspending? suspended?
     ).each do |m|
-        define m
         send( "def_#{m}", &proc { UnsafeFramework.send( m ) } )
     end
 
-    define :restore!
     def_restore! do |snapshot|
         UnsafeFramework.restore! snapshot
         nil
     end
 
-    define :generate_report
     def_generate_report do
         UnsafeFramework.report
     end
