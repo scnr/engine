@@ -43,8 +43,8 @@ EOSCRIPT
                 it 'sets the appropriate resolution' do
                     run
 
-                    expect(framework.options.datastore.window_width).to eq SCNR::Engine::Options.browser_cluster.window_width
-                    expect(framework.options.datastore.window_height).to eq SCNR::Engine::Options.browser_cluster.window_height
+                    expect(framework.options.datastore.window_width).to eq SCNR::Engine::Options.dom.window_width
+                    expect(framework.options.datastore.window_height).to eq SCNR::Engine::Options.dom.window_height
                 end
             end
 
@@ -69,9 +69,9 @@ EOSCRIPT
                     run
 
                     expect(framework.http.cookies.
-                        find { |c| c.name == 'width' }.value).to eq SCNR::Engine::Options.browser_cluster.window_width.to_s
+                        find { |c| c.name == 'width' }.value).to eq SCNR::Engine::Options.dom.window_width.to_s
                     expect(framework.http.cookies.
-                        find { |c| c.name == 'height' }.value).to eq SCNR::Engine::Options.browser_cluster.window_height.to_s
+                        find { |c| c.name == 'height' }.value).to eq SCNR::Engine::Options.dom.window_height.to_s
                 end
             end
         end

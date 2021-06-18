@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-class MockBrowserCluster
+class MockBrowserPool
     attr_reader :result
 
     def handle_job_result( result )
@@ -10,11 +10,11 @@ end
 
 class MockWorker
     def master
-        @master ||= MockBrowserCluster.new
+        @master ||= MockBrowserPool.new
     end
 end
 
-class JobTest < SCNR::Engine::BrowserCluster::Job
+class JobTest < SCNR::Engine::BrowserPool::Job
     include RSpec::Matchers
 
     def ran?
@@ -35,7 +35,7 @@ class JobConfigureAndRunTest < JobTest
 end
 
 class JobSaveResultTest < JobTest
-    class Result < SCNR::Engine::BrowserCluster::Job::Result
+    class Result < SCNR::Engine::BrowserPool::Job::Result
         attr_accessor :my_data
     end
 
@@ -80,8 +80,8 @@ end
 class JobForwardAsTest < JobForwardTest
 end
 
-describe SCNR::Engine::BrowserCluster::Job do
-    let(:browser_cluster) { MockBrowserCluster.new }
+describe SCNR::Engine::BrowserPool::Job do
+    let(:browser_pool) { MockBrowserPool.new }
     let(:worker) { MockWorker.new }
     let(:args) { [1, 2] }
 
@@ -159,7 +159,7 @@ describe SCNR::Engine::BrowserCluster::Job do
     describe '#save_result' do
         subject { JobSaveResultTest.new }
 
-        it 'forwards the result to the BrowserCluster' do
+        it 'forwards the result to the BrowserPool' do
             expect(subject.ran?).to be_falsey
             subject.configure_and_run( worker )
             expect(subject.ran?).to be_truthy

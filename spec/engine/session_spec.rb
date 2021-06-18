@@ -47,9 +47,9 @@ describe SCNR::Engine::Session do
             end
         end
 
-        context "when not #{SCNR::Engine::OptionGroups::BrowserCluster}.enabled?" do
+        context "when not #{SCNR::Engine::OptionGroups::DOM}.enabled?" do
             it 'returns false' do
-                allow(SCNR::Engine::Options.browser_cluster).to receive(:enabled?) { false }
+                allow(SCNR::Engine::Options.dom).to receive(:enabled?) { false }
                 expect(subject.has_browser?).to be_falsey
             end
         end
@@ -98,7 +98,7 @@ describe SCNR::Engine::Session do
     describe '#login' do
         context 'when given a login sequence' do
             context 'when a browser is available' do
-                before(:each) { enable_browser_cluster }
+                before(:each) { enable_dom }
 
                 it 'passes a browser instance' do
                     b = nil
@@ -156,7 +156,7 @@ describe SCNR::Engine::Session do
             end
 
             context 'when a browser is available' do
-                before(:each) { enable_browser_cluster }
+                before(:each) { enable_dom }
 
                 it 'can handle Javascript forms' do
                     subject.configure(

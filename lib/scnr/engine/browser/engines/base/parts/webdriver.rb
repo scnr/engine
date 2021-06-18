@@ -37,8 +37,8 @@ module WebDriver
         # Windows, so use the default Net::HTTP-based client.
         if SCNR::Engine.windows?
             client = Selenium::WebDriver::Remote::Http::Default.new
-            client.read_timeout = Options.browser_cluster.job_timeout
-            client.open_timeout = Options.browser_cluster.job_timeout
+            client.read_timeout = Options.dom.job_timeout
+            client.open_timeout = Options.dom.job_timeout
 
         # However, using the default client results in Threads being used
         # because Net::HTTP uses them for timeouts, and Threads are resource
@@ -47,7 +47,7 @@ module WebDriver
         # So, if we're not on Windows, use Typhoeus.
         else
             client = Selenium::WebDriver::Remote::Http::Typhoeus.new
-            client.timeout = Options.browser_cluster.job_timeout
+            client.timeout = Options.dom.job_timeout
         end
 
         10.times do |i|

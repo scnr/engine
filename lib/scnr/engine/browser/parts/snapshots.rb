@@ -495,7 +495,7 @@ module Snapshots
 
             el.each { |e| skip_state e.id }
         # This could be an orphaned HTTP request, without a job, if running in
-        # BrowserCluster::Worker.
+        # BrowserPool::Worker.
         rescue NoMethodError
         end
 

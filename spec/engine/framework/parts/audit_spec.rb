@@ -212,7 +212,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
         context 'when the page contains JavaScript code' do
             it 'analyzes the DOM and pushes new pages to the page queue' do
-                enable_browser_cluster
+                enable_dom
 
                 SCNR::Engine::Framework.safe do |f|
                     SCNR::Engine::Options.audit.elements :links, :forms, :cookies
@@ -222,14 +222,14 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
                     f.audit_page( SCNR::Engine::Page.from_url( url + '/with_javascript' ) )
 
-                    sleep 0.1 while f.wait_for_browser_cluster?
+                    sleep 0.1 while f.wait_for_browser_pool?
 
                     expect(f.page_queue_total_size).to be > 0
                 end
             end
 
             it 'analyzes the DOM and pushes new paths to the url queue' do
-                enable_browser_cluster
+                enable_dom
 
                 SCNR::Engine::Framework.safe do |f|
                     SCNR::Engine::Options.url = url
@@ -368,7 +368,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
 
         context 'when a check fails with an exception' do
             it 'moves to the next one' do
-                enable_browser_cluster
+                enable_dom
 
                 SCNR::Engine::Framework.safe do |f|
                     f.checks.lib = fixtures_path + '/checks/'

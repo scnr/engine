@@ -1,6 +1,6 @@
 Factory.define :custom_job do
-    class CustomJob < SCNR::Engine::BrowserCluster::Job
-        class Result < SCNR::Engine::BrowserCluster::Job::Result
+    class CustomJob < SCNR::Engine::BrowserPool::Job
+        class Result < SCNR::Engine::BrowserPool::Job::Result
             attr_accessor :my_data
         end
 
@@ -14,8 +14,8 @@ Factory.define :custom_job do
 end
 
 Factory.define :sleep_job do
-    class CustomJob < SCNR::Engine::BrowserCluster::Job
-        class Result < SCNR::Engine::BrowserCluster::Job::Result
+    class CustomJob < SCNR::Engine::BrowserPool::Job
+        class Result < SCNR::Engine::BrowserPool::Job::Result
             attr_accessor :my_data
         end
 

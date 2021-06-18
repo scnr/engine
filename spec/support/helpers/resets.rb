@@ -11,7 +11,7 @@ require 'cuboid/processes/helpers'
 # Order is important.
 INSTANCES = [
     SCNR::Engine::Framework,
-    SCNR::Engine::BrowserCluster,
+    SCNR::Engine::BrowserPool,
     SCNR::Engine::Session,
     SCNR::Engine::Browser,
     SCNR::Engine::Browser::Engines::Base,
@@ -31,13 +31,13 @@ def reset_options
     options.paths.snapshots      = spec_path     + 'support/snapshots/'
     options.snapshot.path        = options.paths.snapshots
 
-    options.browser_cluster.disable!
+    options.dom.disable!
 
     options
 end
 
-def enable_browser_cluster
-    SCNR::Engine::Options.browser_cluster.pool_size = 1
+def enable_dom
+    SCNR::Engine::Options.dom.size = 1
 end
 
 def cleanup_instances

@@ -2,12 +2,12 @@ shared_examples_for 'element_dom' do
     it_should_behave_like 'element'
 
     before(:each) do
-        enable_browser_cluster
+        enable_dom
         auditor.framework.reset
     end
 
     def run
-        auditor.browser_cluster.wait
+        auditor.browser_pool.wait
     end
 
     it "supports #{SCNR::Engine::RPC::Serializer}" do
@@ -72,7 +72,7 @@ shared_examples_for 'element_dom' do
 
                 called = true
             end
-            subject.auditor.browser_cluster.wait
+            subject.auditor.browser_pool.wait
             expect(called).to be_truthy
         end
     end
@@ -90,7 +90,7 @@ shared_examples_for 'element_dom' do
                 page = browser.to_page
             end
 
-            subject.auditor.browser_cluster.wait
+            subject.auditor.browser_pool.wait
             expect(page.dom.transitions).to eq(pre_transitions)
         end
     end

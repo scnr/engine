@@ -29,7 +29,7 @@ class State
     require_relative 'state/trainer'
     require_relative 'state/http'
     require_relative 'state/sink_tracer'
-    require_relative 'state/browser_cluster'
+    require_relative 'state/browser_pool'
 
 class <<self
 
@@ -57,8 +57,8 @@ class <<self
     # @return     [SinkTracer]
     attr_accessor :sink_tracer
 
-    # @return     [BrowserCluster]
-    attr_accessor :browser_cluster
+    # @return     [BrowserPool]
+    attr_accessor :browser_pool
 
     def reset
         @http           = HTTP.new
@@ -69,7 +69,7 @@ class <<self
         @trainer        = Trainer.new
         @framework      = Framework.new
         @sink_tracer    = SinkTracer.new
-        @browser_cluster = BrowserCluster.new
+        @browser_pool = BrowserPool.new
     end
 
     def statistics

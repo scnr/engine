@@ -25,7 +25,7 @@ class Data
     require_relative 'data/session'
     require_relative 'data/issues'
     require_relative 'data/plugins'
-    require_relative 'data/browser_cluster'
+    require_relative 'data/browser_pool'
 
 class <<self
 
@@ -41,15 +41,15 @@ class <<self
     # @return     [Plugins]
     attr_accessor :plugins
 
-    # @return     [BrowserCluster]
-    attr_accessor :browser_cluster
+    # @return     [BrowserPool]
+    attr_accessor :browser_pool
 
     def reset
         @framework = Framework.new
         @session   = Session.new
         @issues    = Issues.new
         @plugins   = Plugins.new
-        @browser_cluster = BrowserCluster.new
+        @browser_pool = BrowserPool.new
     end
 
     def statistics

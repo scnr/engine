@@ -28,7 +28,7 @@ module Engine
     def initialize
         super()
 
-        e = @options[:engine] || Options.browser_cluster.engine
+        e = @options[:engine] || Options.dom.engine
 
         klass = Engines.supported[e.to_sym]
         fail Error::UnknownEngine, "Unknown engine: #{e}" if !klass

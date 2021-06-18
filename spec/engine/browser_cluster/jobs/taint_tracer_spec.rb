@@ -1,40 +1,40 @@
 require 'spec_helper'
 
-describe SCNR::Engine::BrowserCluster::Jobs::TaintTrace do
+describe SCNR::Engine::BrowserPool::Jobs::TaintTrace do
 
-    let(:browser_cluster) { SCNR::Engine::BrowserCluster.new }
+    let(:browser_pool) { SCNR::Engine::BrowserPool.new }
 
     def test_execution_flow( job )
         pages = []
 
-        browser_cluster.queue( job, (proc_to_method do |result|
+        browser_pool.queue( job, (proc_to_method do |result|
             pages << result.page
         end))
-        browser_cluster.wait
+        browser_pool.wait
 
-        browser_cluster_job_taint_tracer_execution_flow_check_pages pages
+        browser_pool_job_taint_tracer_execution_flow_check_pages pages
     end
 
     def test_data_flow( job )
         pages = []
 
-        browser_cluster.queue( job, (proc_to_method do |result|
+        browser_pool.queue( job, (proc_to_method do |result|
             pages << result.page
         end))
-        browser_cluster.wait
+        browser_pool.wait
 
-        browser_cluster_job_taint_tracer_data_flow_check_pages pages
+        browser_pool_job_taint_tracer_data_flow_check_pages pages
     end
 
     def test_data_flow_with_injector( job )
         pages = []
 
-        browser_cluster.queue( job, (proc_to_method do |result|
+        browser_pool.queue( job, (proc_to_method do |result|
             pages << result.page
         end))
-        browser_cluster.wait
+        browser_pool.wait
 
-        browser_cluster_job_taint_tracer_data_flow_with_injector_check_pages pages
+        browser_pool_job_taint_tracer_data_flow_with_injector_check_pages pages
     end
 
     context 'when tracing the data-flow' do
@@ -117,7 +117,7 @@ describe SCNR::Engine::BrowserCluster::Jobs::TaintTrace do
     context 'when tracing the execution-flow' do
         let(:url) do
             SCNR::Engine::Utilities.normalize_url( web_server_url_for( :taint_tracer ) ) +
-                "debug?input=#{browser_cluster.javascript_token}TaintTracer.log_execution_flow_sink()"
+                "debug?input=#{browser_pool.javascript_token}TaintTracer.log_execution_flow_sink()"
         end
 
         context 'and the resource is a' do

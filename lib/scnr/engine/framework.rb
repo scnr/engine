@@ -37,7 +37,7 @@ require lib + 'report'
 require lib + 'reporter'
 require lib + 'session'
 require lib + 'trainer'
-require lib + 'browser_cluster'
+require lib + 'browser_pool'
 
 # The Framework class ties together all the subsystems.
 #
@@ -113,7 +113,7 @@ class Framework
     #   Framework statistics:
     #
     #   *  `:http`          -- {HTTP::Client#statistics}
-    #   * `browser_cluster` -- {BrowserCluster.statistics}
+    #   * `browser_pool` -- {BrowserPool.statistics}
     #   *  `:runtime`       -- Scan runtime in seconds.
     #   *  `:found_pages`   -- Number of discovered pages.
     #   *  `:audited_pages` -- Number of audited pages.
@@ -123,7 +123,7 @@ class Framework
     def statistics
         {
             http:            http.statistics,
-            browser_cluster: BrowserCluster.statistics,
+            browser_pool: BrowserPool.statistics,
             runtime:         @start_datetime ? (@finish_datetime || Time.now) - @start_datetime : 0,
             found_pages:     sitemap.size,
             audited_pages:   state.audited_page_count,

@@ -166,12 +166,12 @@ module Navigation
 
             wait_till_ready
 
-            Options.browser_cluster.css_to_wait_for( url ).each do |css|
+            Options.dom.css_to_wait_for( url ).each do |css|
                 print_info "Waiting for #{css.inspect} to appear for: #{url}"
 
                 begin
                     Selenium::WebDriver::Wait.new(
-                        timeout: Options.browser_cluster.job_timeout
+                        timeout: Options.dom.job_timeout
                     ).until do
                         @javascript.dom_monitor.is_visible_selector( css )
                     end

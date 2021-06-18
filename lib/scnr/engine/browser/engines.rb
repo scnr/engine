@@ -34,8 +34,8 @@ class Engines
         require engine
     end
 
-    if Options.browser_cluster.class::ENGINES.sort != supported.keys.sort
-        fail "#{Options.browser_cluster.class}::ENGINES doesn't match #{self}."
+    if Options.dom.class::ENGINES.sort != supported.keys.sort
+        fail "#{Options.dom.class}::ENGINES doesn't match #{self}."
     end
 
 end

@@ -60,7 +60,7 @@ module Audit
     # @note It will audit just the given `page` and not any subsequent pages
     #   discovered by the {Trainer} -- i.e. ignore any new elements that might
     #   appear as a result.
-    # @note It will pass the `page` to the {BrowserCluster} for analysis if the
+    # @note It will pass the `page` to the {BrowserPool} for analysis if the
     #   {Page::Scope#dom_depth_limit_reached? DOM depth limit} has
     #   not been reached and push resulting pages to {Data#push_to_page_queue}
     #   but will not audit those pages either.
@@ -78,8 +78,8 @@ module Audit
 
         session.ensure_logged_in if session
 
-        # Initialize the BrowserCluster.
-        browser_cluster
+        # Initialize the BrowserPool.
+        browser_pool
 
         @current_url = page.dom.url.to_s
 
@@ -126,7 +126,7 @@ module Audit
 
         http.update_cookies( page.cookie_jar )
 
-        # Pass the page to the BrowserCluster to explore its DOM and feed
+        # Pass the page to the BrowserPool to explore its DOM and feed
         # resulting pages back to the framework.
         perform_browser_analysis( page )
 
@@ -189,14 +189,14 @@ module Audit
         Options.scope.extend_paths.each { |url| push_to_url_queue( url ) }
         Options.scope.restrict_paths.each { |url| push_to_url_queue( url, true ) }
 
-        # Initialize the BrowserCluster.
-        browser_cluster
+        # Initialize the BrowserPool.
+        browser_pool
 
         # Keep auditing until there are no more resources in the queues and the
         # browsers have stopped spinning.
         loop do
             show_workload_msg = true
-            while !has_audit_workload? && (wait_for_browser_cluster? || wait_for_trainer?)
+            while !has_audit_workload? && (wait_for_browser_pool? || wait_for_trainer?)
                 if show_workload_msg
                     print_line
                     print_status 'Workload exhausted, waiting for new pages...'
@@ -204,13 +204,13 @@ module Audit
                 show_workload_msg = false
 
                 last_pending_jobs ||= 0
-                pending_jobs = browser_cluster.pending_job_counter
+                pending_jobs = browser_pool.pending_job_counter
                 if pending_jobs != last_pending_jobs
-                    browser_cluster.print_info "Pending jobs: #{pending_jobs}"
+                    browser_pool.print_info "Pending jobs: #{pending_jobs}"
 
-                    browser_cluster.print_debug 'Current jobs:'
-                    browser_cluster.workers.each do |worker|
-                        browser_cluster.print_debug worker.job.to_s
+                    browser_pool.print_debug 'Current jobs:'
+                    browser_pool.workers.each do |worker|
+                        browser_pool.print_debug worker.job.to_s
                     end
                 end
                 last_pending_jobs = pending_jobs
@@ -220,7 +220,7 @@ module Audit
 
             audit_queues
 
-            next sleep( 0.1 ) if wait_for_browser_cluster? || wait_for_trainer?
+            next sleep( 0.1 ) if wait_for_browser_pool? || wait_for_trainer?
             break if page_limit_reached?
             break if !has_audit_workload?
         end

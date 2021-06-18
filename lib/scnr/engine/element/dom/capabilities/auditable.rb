@@ -61,8 +61,8 @@ module Auditable
         auditor.with_browser( *args, &block )
     end
 
-    def with_browser_cluster( &block )
-        auditor.with_browser_cluster( &block )
+    def with_browser_pool( &block )
+        auditor.with_browser_pool( &block )
     end
 
 end

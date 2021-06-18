@@ -3,15 +3,15 @@ require 'spec_helper'
 describe SCNR::Engine::Framework::Parts::Browser do
     include_examples 'framework'
 
-    describe '#browser_cluster' do
+    describe '#browser_pool' do
         context 'when #use_browsers? is' do
             context 'true' do
                 before do
                     allow(subject).to receive(:use_browsers?) { true }
                 end
 
-                it "returns #{SCNR::Engine::BrowserCluster}" do
-                    expect(subject.browser_cluster).to be_kind_of SCNR::Engine::BrowserCluster
+                it "returns #{SCNR::Engine::BrowserPool}" do
+                    expect(subject.browser_pool).to be_kind_of SCNR::Engine::BrowserPool
                 end
             end
 
@@ -21,7 +21,7 @@ describe SCNR::Engine::Framework::Parts::Browser do
                 end
 
                 it 'returns nil' do
-                    expect(subject.browser_cluster).to be_nil
+                    expect(subject.browser_pool).to be_nil
                 end
             end
         end
@@ -38,13 +38,13 @@ describe SCNR::Engine::Framework::Parts::Browser do
     describe '#use_browsers?' do
         before :each do
             SCNR::Engine::Options.scope.dom_depth_limit     = 1
-            SCNR::Engine::Options.browser_cluster.pool_size = 1
+            SCNR::Engine::Options.dom.size = 1
         end
 
-        context "when #{SCNR::Engine::OptionGroups::BrowserCluster}#enabled? is" do
+        context "when #{SCNR::Engine::OptionGroups::DOM}#enabled? is" do
             context 'false' do
                 before do
-                    SCNR::Engine::Options.browser_cluster.pool_size = 0
+                    SCNR::Engine::Options.dom.size = 0
                 end
 
                 it 'returns false' do
@@ -54,7 +54,7 @@ describe SCNR::Engine::Framework::Parts::Browser do
 
             context 'true' do
                 before do
-                    SCNR::Engine::Options.browser_cluster.pool_size = 1
+                    SCNR::Engine::Options.dom.size = 1
                 end
 
                 it 'returns true' do

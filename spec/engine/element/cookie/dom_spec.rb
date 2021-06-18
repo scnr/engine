@@ -16,11 +16,11 @@ describe SCNR::Engine::Element::Cookie::DOM do
     end
 
     def run
-        auditor.browser_cluster.wait
+        auditor.browser_pool.wait
     end
 
     before(:each) do
-        enable_browser_cluster
+        enable_dom
         SCNR::Engine::Framework.unsafe.reset
     end
 

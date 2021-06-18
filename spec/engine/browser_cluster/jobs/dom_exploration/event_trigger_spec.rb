@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration::EventTrigger do
+describe SCNR::Engine::BrowserPool::Jobs::DOMExploration::EventTrigger do
     before :each do
         SCNR::Engine::Element::DOM::Capabilities::WithSinks::Sinks.enable_all
         SCNR::Engine::Element::DOM::Capabilities::WithSinks::Sinks.add_to_max_cost 9999
     end
 
     let(:browser) { SCNR::Engine::Browser.new }
-    let(:browser_cluster) { SCNR::Engine::BrowserCluster.new }
+    let(:browser_pool) { SCNR::Engine::BrowserPool.new }
     
     let(:url) do
         SCNR::Engine::Utilities.normalize_url( web_server_url_for( :event_trigger ) )
@@ -40,11 +40,11 @@ describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration::EventTrigger do
     def test( job )
         pages = []
 
-        browser_cluster.queue( job, (proc_to_method do |result|
+        browser_pool.queue( job, (proc_to_method do |result|
             expect(result).to be_kind_of described_class::Result
             pages << result.page
         end))
-        browser_cluster.wait
+        browser_pool.wait
 
         expect(pages.size).to eq(1)
 
@@ -59,11 +59,11 @@ describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration::EventTrigger do
         )
     end
 
-    it "forwards pages to a #{SCNR::Engine::BrowserCluster::Jobs::SinkTrace}" do
+    it "forwards pages to a #{SCNR::Engine::BrowserPool::Jobs::SinkTrace}" do
         SCNR::Engine::Options.audit.elements :ui_inputs
 
         forwarded = false
-        browser_cluster.queue(
+        browser_pool.queue(
             described_class.new(
                 element:  sink_trace_element,
                 event:    sink_trace_event,
@@ -81,7 +81,7 @@ describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration::EventTrigger do
 
             forwarded = true
         end))
-        browser_cluster.wait
+        browser_pool.wait
 
         expect(forwarded).to be_truthy
     end

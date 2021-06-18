@@ -40,15 +40,15 @@ class SCNR::Engine::Checks::XssDomScriptContext < SCNR::Engine::Check::Base
 
     def taints
         @taints ||= self.class.payloads.
-            map { |taint| taint % browser_cluster.javascript_token }
+            map { |taint| taint % browser_pool.javascript_token }
     end
 
     def seed
-        self.class.seed % browser_cluster.javascript_token
+        self.class.seed % browser_pool.javascript_token
     end
 
     def run
-        return if !browser_cluster
+        return if !browser_pool
 
         each_candidate_dom_element do |element|
             options = self.class.options.dup

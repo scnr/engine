@@ -342,9 +342,9 @@ module Auditor
         framework.session
     end
 
-    # @return   [SCNR::Engine::BrowserCluster]
-    def browser_cluster
-        framework.browser_cluster
+    # @return   [SCNR::Engine::BrowserPool]
+    def browser_pool
+        framework.browser_pool
     end
 
     # @note Ignores custom 404 responses.
@@ -703,28 +703,28 @@ module Auditor
     #   Resource to load and whose environment to trace, if given a `String` it
     #   will be treated it as a URL and will be loaded.
     # @param    [Hash]  options
-    #   See {BrowserCluster::Jobs::TaintTrace} accessors.
+    #   See {BrowserPool::Jobs::TaintTrace} accessors.
     # @param    [Method] cb
     #   Class method to handle each job result
     def trace_taint( resource, options = {}, cb )
-        with_browser_cluster do |cluster|
+        with_browser_pool do |cluster|
             cluster.trace_taint( resource, options, cb )
         end
     end
 
     # @param    [Block] block
-    #   Block to passed a {BrowserCluster}, if one is available.
-    def with_browser_cluster( &block )
-        return if !browser_cluster
-        block.call browser_cluster
+    #   Block to passed a {BrowserPool}, if one is available.
+    def with_browser_pool( &block )
+        return if !browser_pool
+        block.call browser_pool
         true
     end
 
     # @note Operates in non-blocking mode.
     #
-    # @see BrowserCluster::Worker#with_browser
+    # @see BrowserPool::Worker#with_browser
     def with_browser( *args )
-        with_browser_cluster { |cluster| cluster.with_browser( *args ) }
+        with_browser_pool { |cluster| cluster.with_browser( *args ) }
         true
     end
 

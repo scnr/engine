@@ -189,7 +189,7 @@ describe SCNR::Engine::Framework::Parts::State do
             end
         end
 
-        it 'waits for the BrowserCluster jobs to finish'
+        it 'waits for the BrowserPool jobs to finish'
 
         context "when #{SCNR::Engine::OptionGroups::Paths}#snapshots" do
             context 'is a directory' do
@@ -329,8 +329,8 @@ describe SCNR::Engine::Framework::Parts::State do
             end
         end
 
-        it 'restores BrowserCluster skip states' do
-            enable_browser_cluster
+        it 'restores BrowserPool skip states' do
+            enable_dom
 
             snapshot = nil
             SCNR::Engine::Framework.safe do |f|
@@ -341,14 +341,14 @@ describe SCNR::Engine::Framework::Parts::State do
 
                 t = Thread.new { f.run }
 
-                sleep 0.1 while f.browser_cluster.done?
+                sleep 0.1 while f.browser_pool.done?
                 snapshot = f.suspend!
 
                 t.join
             end
 
             SCNR::Engine::Framework.restore!( snapshot ) do |f|
-                expect(f.browser_cluster_job_skip_states).to be_any
+                expect(f.browser_pool_job_skip_states).to be_any
             end
         end
 
@@ -482,13 +482,13 @@ describe SCNR::Engine::Framework::Parts::State do
     end
 
     describe '#clean_up' do
-        it 'shuts down the #browser_cluster' do
-            enable_browser_cluster
+        it 'shuts down the #browser_pool' do
+            enable_dom
 
             SCNR::Engine::Framework.safe do |f|
                 SCNR::Engine::Options.url = url + '/elem_combo'
 
-                expect(f.browser_cluster).to receive(:shutdown).at_least(:once)
+                expect(f.browser_pool).to receive(:shutdown).at_least(:once)
                 f.clean_up
             end
         end

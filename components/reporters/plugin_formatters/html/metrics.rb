@@ -182,28 +182,28 @@ class PluginFormatters::Metrics  < SCNR::Engine::Plugin::Formatter
                         Job count
                     </dt>
                     <dd>
-                        <%= results['browser_cluster']['job_count'] %>
+                        <%= results['browser_pool']['job_count'] %>
                     </dd>
 
                     <dt>
                         Timed-out jobs
                     </dt>
                     <dd>
-                        <%= results['browser_cluster']['job_time_outs'] %>
+                        <%= results['browser_pool']['job_time_outs'] %>
                     </dd>
 
                     <dt>
                         Seconds per job
                     </dt>
                     <dd>
-                        <%= results['browser_cluster']['seconds_per_job'].round(4) %>
+                        <%= results['browser_pool']['seconds_per_job'].round(4) %>
                     </dd>
 
                     <dt>
                         Total job time
                     </dt>
                     <dd>
-                        <%= results['browser_cluster']['total_job_time'] %>s
+                        <%= results['browser_pool']['total_job_time'] %>s
                     </dd>
                 </dl>
 

@@ -44,7 +44,7 @@ module HTTP
 
             # If the browser sends incomplete data the connection will remain
             # open indefinitely.
-            next if Time.now - t < Options.browser_cluster.job_timeout
+            next if Time.now - t < Options.dom.job_timeout
 
             connections.each(&:close)
             break

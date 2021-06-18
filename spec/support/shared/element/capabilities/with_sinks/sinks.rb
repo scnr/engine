@@ -1,7 +1,7 @@
 shared_examples_for 'sinks' do |options = {}|
 
     before(:each) do
-        enable_browser_cluster
+        enable_dom
         SCNR::Engine::Framework.unsafe.reset
     end
 

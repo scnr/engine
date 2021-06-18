@@ -37,7 +37,7 @@ class SCNR::Engine::Plugins::Metrics < SCNR::Engine::Plugin::Base
                 'response_size_max'     => 0,
                 'response_size_average' => 0
             },
-            'browser_cluster' => {
+            'browser_pool' => {
                 'seconds_per_job' => 0.0,
                 'total_job_time'  => 0.0,
                 'job_time_outs'   => 0.0,
@@ -171,7 +171,7 @@ class SCNR::Engine::Plugins::Metrics < SCNR::Engine::Plugin::Base
             end
 
             if SCNR::Engine::Options.scope.dom_depth_limit.to_i < page.dom.depth + 1 &&
-                browser_cluster && page.has_script?
+                browser_pool && page.has_script?
 
                 with_browser do |browser|
                     browser.load( page ).each_element_with_events do |locator, event_data|
@@ -189,17 +189,17 @@ class SCNR::Engine::Plugins::Metrics < SCNR::Engine::Plugin::Base
 
         statistics = framework.statistics
 
-        metrics['browser_cluster']['job_time_outs'] =
-            statistics[:browser_cluster][:time_out_count]
+        metrics['browser_pool']['job_time_outs'] =
+            statistics[:browser_pool][:time_out_count]
 
-        metrics['browser_cluster']['seconds_per_job'] =
-            statistics[:browser_cluster][:seconds_per_job]
+        metrics['browser_pool']['seconds_per_job'] =
+            statistics[:browser_pool][:seconds_per_job]
 
-        metrics['browser_cluster']['total_job_time'] =
-            statistics[:browser_cluster][:total_job_time]
+        metrics['browser_pool']['total_job_time'] =
+            statistics[:browser_pool][:total_job_time]
 
-        metrics['browser_cluster']['job_count'] =
-            statistics[:browser_cluster][:queued_job_count]
+        metrics['browser_pool']['job_count'] =
+            statistics[:browser_pool][:queued_job_count]
 
         metrics['http']['requests'] = statistics[:http][:response_count]
 

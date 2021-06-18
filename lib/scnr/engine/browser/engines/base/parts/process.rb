@@ -151,7 +151,7 @@ module Process
         # Something went really bad, the browser couldn't be started even after
         # our valiant efforts.
         #
-        # Bail out for now and count on the BrowserCluster to retry to boot
+        # Bail out for now and count on the BrowserPool to retry to boot
         # another process ass needed.
         if !@lifeline_pid
             log_error 'Could not start engine process.'

@@ -92,17 +92,17 @@ module Cookies
         end
 
         return if set_cookies.empty? &&
-            Options.browser_cluster.local_storage.empty? &&
-            Options.browser_cluster.session_storage.empty?
+            Options.dom.local_storage.empty? &&
+            Options.dom.session_storage.empty?
 
         set_cookie = set_cookies.values.map(&:to_set_cookie)
         print_debug_level_2 "Setting cookies: #{set_cookie}"
 
         body = ''
-        if Options.browser_cluster.local_storage.any?
+        if Options.dom.local_storage.any?
             body << <<EOJS
                 <script>
-                    var data = #{Options.browser_cluster.local_storage.to_json};
+                    var data = #{Options.dom.local_storage.to_json};
 
                     for( prop in data ) {
                         localStorage.setItem( prop, data[prop] );
@@ -111,10 +111,10 @@ module Cookies
 EOJS
         end
 
-        if Options.browser_cluster.session_storage.any?
+        if Options.dom.session_storage.any?
             body << <<EOJS
                 <script>
-                    var data = #{Options.browser_cluster.session_storage.to_json};
+                    var data = #{Options.dom.session_storage.to_json};
 
                     for( prop in data ) {
                         sessionStorage.setItem( prop, data[prop] );

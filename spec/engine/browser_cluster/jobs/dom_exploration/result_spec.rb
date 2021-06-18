@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SCNR::Engine::BrowserCluster::Jobs::DOMExploration::Result do
+describe SCNR::Engine::BrowserPool::Jobs::DOMExploration::Result do
     subject { described_class.new }
     it { is_expected.to respond_to :page }
     it { is_expected.to respond_to :page= }
