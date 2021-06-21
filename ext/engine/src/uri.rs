@@ -149,7 +149,14 @@ impl URI {
             if uri.is_err() {
                 self.path = None;
             } else {
-                self.path = Some( uri.unwrap().join( path ).unwrap().path().to_string() )
+                // println!( "{:?}", uri.clone().unwrap().join( path ) );
+
+                let join = uri.clone().unwrap().join( path );
+                if join.is_err() {
+                    self.path = None;
+                } else {
+                    self.path = Some( join.unwrap().path().to_string())
+                }
             }
 
         // That's an easy one, just use the reference path.
