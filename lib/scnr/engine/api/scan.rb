@@ -36,10 +36,36 @@ child :scan, :Scan do
           running:          running?,
           status:           status,
           status_messages:  status_messages,
+          errors:           errors,
           sitemap:          sitemap,
           issues:           issues,
           statistics:       statistics
         }
+    end
+
+    def_session_progress do |session_id = nil|
+        @session ||= {}
+        @session[session_id] ||= {
+          seen_issues:    Set.new,
+          sitemap_offset: 0,
+          error_offset:   0
+        }
+
+        progress = {
+          running:          running?,
+          status:           status,
+          status_messages:  status_messages,
+          errors:           errors( @session[session_id][:error_offset] ),
+          sitemap:          sitemap( @session[session_id][:sitemap_offset] ),
+          issues:           issues( @session[session_id][:seen_issues] ),
+          statistics:       statistics
+        }
+
+        @session[session_id][:error_offset]   += progress[:errors].size
+        @session[session_id][:sitemap_offset] += progress[:sitemap].size
+        @session[session_id][:seen_issues]    |= progress[:issues].map(&:digest)
+
+        progress
     end
 
     def_sitemap do |index = 0|
