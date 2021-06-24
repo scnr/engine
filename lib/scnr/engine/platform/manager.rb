@@ -90,7 +90,8 @@ class Manager
         :tomcat,
         :iis,
         :jetty,
-        :gunicorn
+        :gunicorn,
+        :nodejs
     ]
 
     LANGUAGES = [
@@ -100,7 +101,8 @@ class Manager
         :ruby,
         :asp,
         :aspx,
-        :perl
+        :perl,
+        :javascript
     ]
 
     # WebApp frameworks.
@@ -113,7 +115,8 @@ class Manager
         :django,
         :aspx_mvc,
         :jsf,
-        :cherrypy
+        :cherrypy,
+        :express
     ]
 
     PLATFORM_NAMES = {
@@ -153,6 +156,7 @@ class Manager
         iis:        'IIS',
         jetty:      'Jetty',
         gunicorn:   'Gunicorn',
+        nodejs:     'NodeJS',
 
         # Programming languages
         php:    'PHP',
@@ -162,6 +166,7 @@ class Manager
         asp:    'ASP',
         aspx:   'ASP.NET',
         perl:   'Perl',
+        javascript: 'JavaScript',
 
         # Web frameworks
         rack:     'Rack',
@@ -172,7 +177,8 @@ class Manager
         rails:    'Ruby on Rails',
         aspx_mvc: 'ASP.NET MVC',
         jsf:      'JavaServer Faces',
-        cherrypy: 'CherryPy'
+        cherrypy: 'CherryPy',
+        express:  'ExpressJS'
     }
 
     PLATFORM_CACHE_SIZE = 2_000
