@@ -29,7 +29,7 @@ shared_examples_for 'check' do
         options.audit.with_raw_payloads    = true
         options.audit.with_extra_parameter = true
         options.device.user_agent          = 'scnr_engine_user'
-        options.browser_pool.update( options.browser_pool.defaults )
+        options.dom.update( options.dom .defaults )
 
         framework.reset
 
