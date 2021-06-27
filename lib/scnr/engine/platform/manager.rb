@@ -90,8 +90,7 @@ class Manager
         :tomcat,
         :iis,
         :jetty,
-        :gunicorn,
-        :nodejs
+        :gunicorn
     ]
 
     LANGUAGES = [
@@ -116,6 +115,7 @@ class Manager
         :aspx_mvc,
         :jsf,
         :cherrypy,
+        :nodejs,
         :express
     ]
 
@@ -156,7 +156,6 @@ class Manager
         iis:        'IIS',
         jetty:      'Jetty',
         gunicorn:   'Gunicorn',
-        nodejs:     'NodeJS',
 
         # Programming languages
         php:    'PHP',
@@ -178,6 +177,7 @@ class Manager
         aspx_mvc: 'ASP.NET MVC',
         jsf:      'JavaServer Faces',
         cherrypy: 'CherryPy',
+        nodejs:    'NodeJS',
         express:  'ExpressJS'
     }
 
