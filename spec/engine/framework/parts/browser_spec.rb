@@ -37,14 +37,14 @@ describe SCNR::Engine::Framework::Parts::Browser do
 
     describe '#use_browsers?' do
         before :each do
-            SCNR::Engine::Options.scope.dom_depth_limit     = 1
-            SCNR::Engine::Options.dom.size = 1
+            SCNR::Engine::Options.scope.dom_depth_limit = 1
+            SCNR::Engine::Options.dom.pool_size         = 1
         end
 
         context "when #{SCNR::Engine::OptionGroups::DOM}#enabled? is" do
             context 'false' do
                 before do
-                    SCNR::Engine::Options.dom.size = 0
+                    SCNR::Engine::Options.dom.pool_size = 0
                 end
 
                 it 'returns false' do
@@ -54,7 +54,7 @@ describe SCNR::Engine::Framework::Parts::Browser do
 
             context 'true' do
                 before do
-                    SCNR::Engine::Options.dom.size = 1
+                    SCNR::Engine::Options.dom.pool_size = 1
                 end
 
                 it 'returns true' do

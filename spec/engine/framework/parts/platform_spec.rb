@@ -50,7 +50,8 @@ describe SCNR::Engine::Framework::Parts::Platform do
                     perl:   'Perl',
                     php:    'PHP',
                     python: 'Python',
-                    ruby:   'Ruby'
+                    ruby:   'Ruby',
+                    javascript: 'JavaScript'
                 },
                 'Frameworks' => {
                     rack:     'Rack',
@@ -61,7 +62,9 @@ describe SCNR::Engine::Framework::Parts::Platform do
                     cherrypy: 'CherryPy',
                     cakephp:  'CakePHP',
                     symfony:  'Symfony',
-                    nette:    'Nette'
+                    nette:    'Nette',
+                    nodejs:   'NodeJS',
+                    express:  'ExpressJS'
                 }
             })
         end
