@@ -37,7 +37,7 @@ def reset_options
 end
 
 def enable_dom
-    SCNR::Engine::Options.dom.size = 1
+    SCNR::Engine::Options.dom.pool_size = 1
 end
 
 def cleanup_instances
