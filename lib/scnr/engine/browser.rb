@@ -59,6 +59,8 @@ class Browser
     def initialize( options = {} )
         @options = options.dup
 
+        @window_responses = {}
+
         super()
 
         @javascript = Javascript.new( self )
