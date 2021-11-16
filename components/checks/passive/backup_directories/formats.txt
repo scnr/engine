@@ -3,7 +3,6 @@
 [name] (3rd copy)/
 [name] (third copy)/
 [name] (4th copy)/
-[name]~/
 Copy of [name]/
 Copy (2) of [name]/
 Copy of Copy of [name]/
@@ -49,8 +48,3 @@ Copy of Copy of [name]/
 old_[name]/
 bak_[name]/
 backup_[name]/
-[name]1/
-[name]2/
-[name]3/
-[name]4/
-[name]5/
