@@ -47,7 +47,7 @@ def cleanup_instances
 end
 
 def reset_framework
-    SCNR::Engine::UI::OutputInterface.initialize
+    SCNR::Engine::UI::OutputInterface.init
     # SCNR::Engine::UI::Output.debug_on( 999999 )
     # SCNR::Engine::UI::Output.verbose_on
     # SCNR::Engine::UI::Output.mute
