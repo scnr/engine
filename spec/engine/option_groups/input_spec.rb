@@ -63,7 +63,7 @@ describe SCNR::Engine::OptionGroups::Input do
         it 'updates #values from the given file' do
             subject.update_values_from_file( file )
             expect(subject.values).to eq({
-                /test/        => 'blah',
+                /test/i        => 'blah',
                 /other-test/i => 'blah2'
             })
         end
