@@ -95,20 +95,16 @@ class Base
         end
     end
 
-    def serialize( obj )
-        compress(
-            @options[:dumper].respond_to?( :dump ) ?
-                @options[:dumper].dump( obj ) :
-                @options[:dumper].call( obj )
-        )
+    def serialize( obj, io )
+        @options[:dumper].respond_to?( :dump ) ?
+            @options[:dumper].dump( obj, io ) :
+            @options[:dumper].call( obj, io )
     end
 
-    def unserialize( data )
-        data = decompress( data )
-
+    def unserialize( source )
         @options[:loader].respond_to?( :load ) ?
-            @options[:loader].load( data ) :
-            @options[:loader].call( data )
+            @options[:loader].load( source ) :
+            @options[:loader].call( source )
     end
 
     private
@@ -122,15 +118,14 @@ class Base
     #
     # @return   [String]
     #   Filepath
-    def dump( obj, &block )
+    def dump( obj )
+        p = nil
         File.open( get_unique_filename, 'wb' ) do |f|
-            serialized = serialize( obj )
-            self.class.increment_disk_space f.write( serialized )
-
-            block.call( serialized ) if block_given?
-
-            f.path
+            serialize( obj, f )
+            p = f.path
         end
+        self.class.increment_disk_space File.size( p )
+        p
     end
 
     # Loads the object stored in filepath.
@@ -139,7 +134,9 @@ class Base
     #
     # @return   [Object]
     def load( filepath )
-        unserialize( IO.binread( filepath ) )
+        File.open( filepath, 'rb' ) do |f|
+            unserialize( f )
+        end
     end
 
     # Deletes a file.
@@ -161,14 +158,6 @@ class Base
         obj = load( filepath )
         delete_file( filepath )
         obj
-    end
-
-    def compress( string )
-        Zlib::Deflate.deflate string
-    end
-
-    def decompress( string )
-        Zlib::Inflate.inflate string
     end
 
     def get_unique_filename

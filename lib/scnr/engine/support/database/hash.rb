@@ -264,22 +264,6 @@ class Hash < Base
         @h.clear
     end
 
-    # @note If the given hash is not of the same type as self it will be coerced
-    #   to a Ruby Hash by calling 'to_hash' on it.
-    #
-    # @return  [Bool]
-    #   `true` if self and the given hash contain the same key-pair values.
-    def ==( h )
-        if !h.is_a?( self.class )
-            eql = {}
-            h.to_hash.each { |k, v| eql[k] = eql_hash( serialize( v ) ) }
-            @eql_h == eql
-        else
-            @eql_h == h._eql_h
-        end
-    end
-    alias :eql? :==
-
     # It will return a Ruby Hash with the same values as self but
     # with filepaths as values (pointing to the files that store them).
     #

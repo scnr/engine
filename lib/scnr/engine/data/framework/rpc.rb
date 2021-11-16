@@ -35,10 +35,10 @@ class RPC
         FileUtils.mkdir_p( page_queue_directory )
 
         distributed_page_queue.buffer.each do |page|
-            IO.binwrite(
-                "#{page_queue_directory}/#{page.persistent_hash}",
-                distributed_page_queue.serialize( page )
-            )
+            File.open(
+                "#{page_queue_directory}/#{page.persistent_hash}", 'wb' ) do |f|
+                distributed_page_queue.serialize( page, f )
+            end
         end
 
         distributed_page_queue.disk.each do |filepath|

@@ -45,7 +45,9 @@ class BrowserPool
             end
 
             data[:buffer].each.with_index do |job, i|
-                IO.binwrite( "#{category_filepath}#{i}", job_queue.serialize( job ) )
+                File.open( "#{category_filepath}#{i}", 'wb' ) do |f|
+                    job_queue.serialize( job, f )
+                end
             end
         end
     end

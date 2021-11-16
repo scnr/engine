@@ -130,10 +130,12 @@ class Framework
         FileUtils.mkdir_p( page_queue_directory )
 
         page_queue.buffer.each do |page|
-            IO.binwrite(
+            File.open(
                 "#{page_queue_directory}/#{page.persistent_hash}",
-                page_queue.serialize( page )
-            )
+                'wb'
+            ) do |f|
+                page_queue.serialize( page, f )
+            end
         end
 
         page_queue.disk.each do |filepath|
