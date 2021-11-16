@@ -107,7 +107,7 @@ class Base
 
         if @proxy
             print_debug_level_2 'Shutting down proxy...'
-            @proxy.shutdown rescue Arachni::Reactor::Error::NotRunning
+            @proxy.shutdown
             print_debug_level_2 '...done.'
         end
 
