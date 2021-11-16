@@ -66,7 +66,6 @@ module Snapshots
         @skip_states = Support::Filter::Set.new(hasher: :persistent_hash )
 
         @transitions = []
-        @request_transitions = []
         @add_request_transitions = true
     end
 

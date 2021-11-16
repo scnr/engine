@@ -51,7 +51,8 @@ module HTTP
         @ignore_scope = @options[:ignore_scope]
 
         # Captures HTTP::Response objects per URL for open windows.
-        @window_responses = {}
+        @window_responses    = {}
+        @request_transitions = []
     end
 
     def response
