@@ -120,7 +120,7 @@ class Response < Message
     alias :redirection? :redirect?
 
     def headers_string=( string )
-        @headers_string = string.to_s.recode.freeze
+        @headers_string = string.recode_and_freeze if string
     end
 
     # @note Depends on the response code.
@@ -182,7 +182,7 @@ class Response < Message
     end
 
     def body=( body )
-        @body = body || ""
+        @body = body || ''
 
         text_check = text?
         @body.recode! if text_check.nil? || text_check
