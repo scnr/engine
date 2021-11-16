@@ -14,8 +14,8 @@ class Firefox < Base
 
     REQUIREMENTS = {
         'firefox'     => {
-            min: 87,
-            max: 89
+            min: 94,
+            max: 94
         },
         'geckodriver' => {
             min: 0.29,
