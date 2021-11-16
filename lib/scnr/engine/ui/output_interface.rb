@@ -32,9 +32,9 @@ module OutputInterface
     include Personalization
 
     # Must be called after the entire {SCNR::Engine} environment has been loaded.
-    def self.initialize
-        Controls.initialize
-        ErrorLogging.initialize
+    def self.init
+        Controls.init
+        ErrorLogging.init
     end
 
     extend self

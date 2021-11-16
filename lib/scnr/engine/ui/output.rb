@@ -11,7 +11,7 @@ module UI
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 module Output
     include OutputInterface
-    initialize
+    OutputInterface.init
 
     def print_error( message = '' )
         msg = "#{caller_location} #{message}"

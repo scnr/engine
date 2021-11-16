@@ -5,7 +5,7 @@ module OutputInterface
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 module ErrorLogging
 
-    def self.initialize
+    def self.init
         @@error_log_written_env = false
 
         @@error_fd ||= nil

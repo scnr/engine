@@ -5,7 +5,7 @@ module OutputInterface
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 module Controls
 
-    def self.initialize
+    def self.init
         @@verbose = false
         @@debug   = 0
     end

@@ -46,7 +46,7 @@ module Engine
         # Generally called after analysis operations that generate a lot of
         # new temporary objects.
         def collect_young_objects
-            # GC.start( full_mark: false )
+            GC.start( full_mark: false )
         end
 
         def null_device
@@ -145,6 +145,7 @@ SCNR::Engine::RPC       = Cuboid::RPC
 SCNR::Engine::Processes = Cuboid::Processes
 
 require_relative 'engine/ui/output_interface'
+require_relative 'engine/options'
 
 # If there's no UI driving us then there's no output interface.
 # Chances are that someone is using Engine as a Ruby lib so there's no
@@ -160,5 +161,5 @@ SCNR::Engine.load_extension
 require_relative 'engine/framework'
 require_relative 'engine/ext/setup'
 
-SCNR::Engine::UI::OutputInterface.initialize
+SCNR::Engine::UI::OutputInterface.init
 
