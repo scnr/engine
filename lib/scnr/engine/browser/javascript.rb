@@ -24,7 +24,7 @@ class Javascript
 
     include Support::Mixins::Parts
 
-    EACH_DOM_ELEMENT_WITH_EVENTS_BATCH_SIZE = 300
+    EACH_DOM_ELEMENT_WITH_EVENTS_BATCH_SIZE = 50
 
     EVENTS = Set.new([
         :onclick,
