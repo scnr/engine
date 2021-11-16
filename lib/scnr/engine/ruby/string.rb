@@ -188,13 +188,26 @@ class String
     end
 
     def recode!
+        return if @recoded
+        @recoded = true
+
         force_encoding( 'utf-8' )
         encode!( 'utf-8', invalid: :replace, undef: :replace )
-        self
+        nil
+    end
+
+    def recode_and_freeze
+        return self if @recoded_and_freeze
+        @recoded_and_freeze = true
+
+        recode!
+        freeze
     end
 
     def recode
-        dup.recode!
+        s = dup
+        s.recode!
+        s
     end
 
     def binary?
