@@ -49,7 +49,7 @@ module Events
         current_url = self.url
 
         javascript.each_dom_element_with_events whitelist do |element|
-            tag_name   = element['tag_name']
+            tag_name   = element['tag_name'].freeze
             attributes = element['attributes']
             events     = element['events']
 
