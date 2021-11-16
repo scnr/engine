@@ -14,6 +14,11 @@ class Connection < Arachni::Reactor::Connection
     include SCNR::Engine::UI::Output
     personalize_output!
 
+    class<<self
+        include SCNR::Engine::UI::Output
+        personalize_output!
+    end
+
     SKIP_HEADERS = %w(transfer-encoding connection proxy-connection keep-alive
         content-encoding te trailers accept-encoding accept-ranges vary
         authorization upgrade http2-settings)
@@ -120,24 +125,8 @@ class Connection < Arachni::Reactor::Connection
             if @options[:request_handler].call( request, response )
                 print_debug_level_3 '-- Handler approves, running...'
 
-                # Even though it's a blocking request, force it to go through
-                # the HTTP::Client in order to handle cookie update and
-                # fingerprinting handlers.
-                HTTP::Client.queue( request )
-
                 @parent.thread_pool.post do
-                    response = request.run
-
-                    if closed?
-                        print_debug_level_3 '-- Connection closed, will not respond.'
-                        return
-                    end
-
-                    reactor.schedule do
-                        handle_response( response )
-                        print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
-                        print_debug_level_3 'Processed request.'
-                    end
+                    self.class.bridge( self, reactor, request )
                 end
             else
                 print_debug_level_3 '-- Handler did not approve, will not run.'
@@ -156,22 +145,24 @@ class Connection < Arachni::Reactor::Connection
         else
             print_debug_level_3 '-- Running...'
 
-            HTTP::Client.queue( request )
-
             @parent.thread_pool.post do
-                response = request.run
-
-                if closed?
-                    print_debug_level_3 '-- Connection closed, will not respond.'
-                    return
-                end
-
-                reactor.schedule do
-                    handle_response( response )
-                    print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
-                    print_debug_level_3 'Processed request.'
-                end
+                self.class.bridge( self, reactor, request )
             end
+        end
+    end
+
+    def self.bridge( connection, reactor, request )
+        response = request.run
+
+        if connection.closed?
+            print_debug_level_3 '-- Connection closed, will not respond.'
+            return
+        end
+
+        reactor.schedule do
+            connection.handle_response( response )
+            print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
+            print_debug_level_3 'Processed request.'
         end
     end
 
