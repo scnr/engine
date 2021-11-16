@@ -56,7 +56,7 @@ class DOM < SCNR::Engine::OptionGroup
         # timeout for Selenium communication HTTP requests.
         # Name hijacked for compatibility, but should probably change in the
         # future.
-        job_timeout:         10,
+        job_timeout:         120,
         worker_time_to_live: 1000
     )
 
