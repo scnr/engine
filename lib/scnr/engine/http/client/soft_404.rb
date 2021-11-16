@@ -20,6 +20,11 @@ class Soft404
 
     prepend Support::Mixins::SpecInstances
 
+    class <<self
+        include UI::Output
+        personalize_output!
+    end
+
     personalize_output!
 
     # Maximum size of the cache that holds 404 handler profiles.
@@ -38,21 +43,25 @@ class Soft404
 
         # We need to jump out of the callbacks to prevent stack depth errors.
         @handler_runner_thread = Thread.new do
-            while (handler = @handler_runner_queue.pop)
-                @handlers_done.clear
+            self.class.consume( self, @handlers_done, @handler_runner_queue )
+        end
+    end
 
-                begin
-                    synchronize do
-                        handler.check do
-                            corrupted!( handler.url ) if handler.corrupted?
-                            hard!( handler.url )      if handler.hard?
-                        end
+    def self.consume( sof_404, handlers_done, handler_runner_queue )
+        while (handler = handler_runner_queue.pop)
+            handlers_done.clear
+
+            begin
+                sof_404.synchronize do
+                    handler.check do
+                        sof_404.corrupted!( handler.url ) if handler.corrupted?
+                        sof_404.hard!( handler.url )      if handler.hard?
                     end
-                rescue => e
-                    print_exception e
-                ensure
-                    @handlers_done << nil
                 end
+            rescue => e
+                print_exception e
+            ensure
+                handlers_done << nil
             end
         end
     end
@@ -147,8 +156,6 @@ class Soft404
         @handler_runner_queue << url
     end
 
-    private
-
     def corrupted!( url )
         @corrupted << url
     end
@@ -156,6 +163,8 @@ class Soft404
     def hard!( url )
         @hard << url
     end
+
+    private
 
     def handler_for( url )
         @handlers[handler_url_for( url ).hash] ||= Handler.for( self, url )
