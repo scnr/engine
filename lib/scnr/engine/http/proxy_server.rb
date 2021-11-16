@@ -47,7 +47,12 @@ class ProxyServer
     end
 
     def thread_pool
-        @thread_pool ||= Concurrent::CachedThreadPool.new
+        @thread_pool ||= Concurrent::ThreadPoolExecutor.new(
+            min_threads:     0,
+            max_threads:     10,
+            max_queue:       10,
+            fallback_policy: :caller_runs
+        )
     end
 
     # Starts the server without blocking, it'll only block until the server is
@@ -76,8 +81,11 @@ class ProxyServer
         @thread_pool.kill if @thread_pool
         @thread_pool = nil
 
-        @reactor.stop
-        @reactor.wait
+        begin
+            @reactor.stop
+            @reactor.wait
+        rescue Arachni::Reactor::Error::NotRunning
+        end
 
         print_debug_level_2 '...shutdown.'
     end
