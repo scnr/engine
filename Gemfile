@@ -2,9 +2,11 @@ source 'https://rubygems.org'
 
 # gem 'bootsnap', require: false
 
+gem 'nokogiri', github: 'sparklemotion/nokogiri'
+
 gem 'rake', '11.3.0'
-gem 'cuboid', path: '../../qadron/cuboid/'
-gem 'dsel', path: '../../qadron/dsel/'
+gem 'cuboid', path: '../../../qadron/cuboid/'
+gem 'dsel', path: '../../../qadron/dsel/'
 # gem 'pry'
 
 # gem 'ethon', github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'

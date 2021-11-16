@@ -108,12 +108,13 @@ Gem::Specification.new do |s|
     s.add_dependency 'pony',                '1.11'
 
     # Markup parsing, for reports and Element::XML.
-    s.add_dependency 'nokogiri',            '1.11.3'
+    s.add_dependency 'nokogiri'
     # Really fast and lightweight markup parsing, for pages.
     s.add_dependency 'ox',                  '2.8.2'
 
     # Browser support for DOM/JS/AJAX analysis stuff.
     s.add_dependency 'watir',               '6.19.1'
+    s.add_dependency 'selenium-webdriver',  '3.142.7'
 
     s.add_dependency 'vmstat',              '2.3.0'
     s.add_dependency 'sys-proctable',       '1.1.5'
