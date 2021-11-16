@@ -636,10 +636,9 @@ class Client
     end
 
     def client_initialize
-        @hydra = Typhoeus::Hydra.new(
-            # TODO: Enable multiplexing
-            # pipelining: 2
-        )
+        Typhoeus::Config.memoize = false
+
+        @hydra = Typhoeus::Hydra.new( pipelining: 1 )
     end
 
     def client_run
@@ -647,12 +646,12 @@ class Client
             # Can get Ethon select errors.
             exception_jail( false ) { @hydra.run }
         end
-
-        SCNR::Engine.collect_young_objects if queue_size > 0
     end
 
     def client_abort
-        @hydra.abort
+        synchronize do
+            @hydra.abort
+        end
     end
 
     def client_queue( request )
