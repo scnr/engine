@@ -14,7 +14,10 @@ module Nodes
 module WithCData
 
     def initialize( cdata )
-        @cdata = cdata.to_s.recode.strip.freeze
+        @cdata = cdata
+        @cdata.recode!
+        @cdata.strip!
+        @cdata.freeze
     end
 
     def text
