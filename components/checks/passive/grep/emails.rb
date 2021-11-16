@@ -17,7 +17,7 @@ class SCNR::Engine::Checks::Emails < SCNR::Engine::Check::Base
         /[A-Z0-9._%+-]+(?:@|\s*\[at\]\s*)[A-Z0-9.-]+(?:\.|\s*\[dot\]\s*)[A-Z]{2,4}/i
 
     MIN_THREADS = 0
-    MAX_THREADS = 10
+    MAX_THREADS = 5
 
     # @return   [Hash<String, Bool>]
     #   Cached results for domain resolutions through the entire scan.
