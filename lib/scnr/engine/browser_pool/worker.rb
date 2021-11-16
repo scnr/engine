@@ -20,6 +20,11 @@ class BrowserPool
 class Worker < SCNR::Engine::Browser
     personalize_output!
 
+    class <<self
+        include UI::Output
+        personalize_output!
+    end
+
     # How many times to retry timed-out jobs.
     TRIES = 6
 
@@ -247,13 +252,17 @@ class Worker < SCNR::Engine::Browser
     def start
         @consumer ||= Thread.new do
             while !@shutdown
-                run_job master.pop
+                self.class.consume( self, master )
             end
 
             print_debug 'Got shutdown signal...'
             @done_signal << nil
             print_debug '...and acknowledged it.'
         end
+    end
+
+    def self.consume( worker, master )
+        worker.run_job master.pop
     end
 
     def engine_reboot_if_necessary
