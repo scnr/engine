@@ -78,8 +78,8 @@ class Cookie < Base
         super( options )
 
         if options[:name] && options[:value]
-            options[:name]  = options[:name].to_s.recode
-            options[:value] = options[:value].to_s.recode
+            options[:name]  = options[:name].dup.recode_and_freeze
+            options[:value] = options[:value].dup.recode_and_freeze
 
             self.inputs = { options[:name] => options[:value] }
             @data.merge!( options )

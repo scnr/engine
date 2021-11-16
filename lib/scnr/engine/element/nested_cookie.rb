@@ -47,8 +47,8 @@ class NestedCookie < Base
         super( options )
 
         if options[:name] && options[:value]
-            options[:name]  = options[:name].to_s.recode
-            options[:value] = options[:value].to_s.recode
+            options[:name]  = options[:name].dup.recode_and_freeze
+            options[:value] = options[:value].dup.recode_and_freeze
 
             self.inputs = self.class.parse_inputs( options[:value] )
             @data.merge!( options )
