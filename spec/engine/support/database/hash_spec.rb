@@ -188,12 +188,6 @@ describe SCNR::Engine::Support::Database::Hash do
         expect(subject.size).to eq(seeds.size)
     end
 
-    # http://www.ruby-doc.org/core-1.9.3/Hash.html#method-i-3D-3D
-    it 'implements #== (and #eql?)' do
-        expect(subject == subject.merge( {} )).to eq(true)
-        expect(subject == seeds).to eq(true)
-    end
-
     # http://www.ruby-doc.org/core-1.9.3/Hash.html#method-i-clear
     it 'implements #clear' do
         subject.clear

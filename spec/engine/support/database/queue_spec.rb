@@ -57,7 +57,7 @@ describe SCNR::Engine::Support::Database::Queue do
 
             context 'it responds to :dump' do
                 it 'gets called to serialize the object' do
-                    class Dumper; def self.dump(o) o.to_s << '-' end ;end
+                    class Dumper; def self.dump(o, io ) io << o.to_s + '-' end ;end
 
                     d = described_class.new(
                         max_buffer_size: 0,
@@ -65,7 +65,7 @@ describe SCNR::Engine::Support::Database::Queue do
                     )
                     d << 1
 
-                    expect(Zlib::Inflate.inflate IO.binread(d.disk.first)).to eq '1-'
+                    expect(IO.binread(d.disk.first)).to eq '1-'
                 end
             end
 
@@ -73,13 +73,13 @@ describe SCNR::Engine::Support::Database::Queue do
                 it 'gets called to serialize the object' do
                     d = described_class.new(
                         max_buffer_size: 0,
-                        dumper: proc do |o|
-                            o.to_s << '-'
+                        dumper: proc do |o, io|
+                            io << o.to_s << '-'
                         end
                     )
                     d << 1
 
-                    expect(Zlib::Inflate.inflate IO.binread(d.disk.first)).to eq '1-'
+                    expect(IO.binread(d.disk.first)).to eq '1-'
                 end
             end
         end
@@ -87,7 +87,7 @@ describe SCNR::Engine::Support::Database::Queue do
         describe ':load' do
             context 'it responds to :load' do
                 it 'gets called to unserialize the object' do
-                    class Loader; def self.load(o) o + '-' end ;end
+                    class Loader; def self.load(source) source.gets + '-' end; end
 
                     d = described_class.new(
                         max_buffer_size: 0,
@@ -100,11 +100,11 @@ describe SCNR::Engine::Support::Database::Queue do
             end
 
             context 'it responds to :call' do
-                it 'gets called to serialize the object' do
+                it 'gets called to unserialize the object' do
                     d = described_class.new(
                         max_buffer_size: 0,
-                        loader: proc do |o|
-                            o + '-'
+                        loader: proc do |o, io|
+                            o.gets + '-'
                         end
                     )
                     d << 1
