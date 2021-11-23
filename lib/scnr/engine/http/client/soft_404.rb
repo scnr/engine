@@ -28,7 +28,7 @@ class Soft404
     personalize_output!
 
     # Maximum size of the cache that holds 404 handler profiles.
-    CACHE_SIZE = 500
+    CACHE_SIZE = 0
 
     def initialize
         super
@@ -70,6 +70,8 @@ class Soft404
     #   Checks whether or not the provided response means 'not found'.
     # @param  [Block]   block
     #   To be passed `true` or `false` depending on the result of the analysis.
+    #
+    # TODO: Cache #match? based on `response.url`.
     def match?( response, &block )
         # This matters, the request URL may differ from the response one due to
         # redirections and we need to test the original.
@@ -122,12 +124,19 @@ class Soft404
     def prune
         return if @handlers.size <= CACHE_SIZE
 
+        if CACHE_SIZE == 0
+            @handlers.clear
+            return
+        end
+
         @handlers.keys.each do |k|
             # We've done enough...
             return if @handlers.size <= CACHE_SIZE
 
             @handlers.delete( k )
         end
+
+        nil
     end
 
     # @private
