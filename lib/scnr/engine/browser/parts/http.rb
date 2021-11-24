@@ -47,12 +47,7 @@ module HTTP
 
     def initialize
         super
-
         @ignore_scope = @options[:ignore_scope]
-
-        # Captures HTTP::Response objects per URL for open windows.
-        @window_responses    = {}
-        @request_transitions = []
     end
 
     def response

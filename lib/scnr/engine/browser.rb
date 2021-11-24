@@ -59,7 +59,8 @@ class Browser
     def initialize( options = {} )
         @options = options.dup
 
-        @window_responses = {}
+        @request_transitions = []
+        @window_responses    = {}
 
         super()
 
