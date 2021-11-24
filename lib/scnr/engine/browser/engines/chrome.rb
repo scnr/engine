@@ -14,12 +14,12 @@ class Chrome < Base
 
     REQUIREMENTS = {
         'chrome'       => {
-            min: 84,
-            max: 91
+            min: 96,
+            max: 96
         },
         'chromedriver' => {
-            min: 84,
-            max: 91
+            min: 96,
+            max: 96
         }
     }
 
@@ -30,11 +30,15 @@ class Chrome < Base
         '--allow-running-insecure-content',
         '--disable-web-security',
         '--reduce-security-for-testing',
+        '--ignore-certificate-errors',
 
         # Disables the GPU process, keeps memory low.
         '--disable-gpu',
         '--disable-software-rasterizer'
     ]
+
+    REQUEST_BLACKLIST = []
+
 
     def self.requirements
         synchronize do
@@ -109,12 +113,8 @@ class Chrome < Base
         DRIVER
     end
 
-    def capabilities
-        Selenium::WebDriver::Remote::Capabilities.chrome(
-            default_capabilities.merge(
-                binary: self.class.requirements['chrome'][:binary],
-            )
-        )
+    def request_blacklist
+        REQUEST_BLACKLIST
     end
 
     def options
@@ -127,6 +127,7 @@ class Chrome < Base
 
         Selenium::WebDriver::Chrome::Options.new(
           args: args,
+          binary: self.class.requirements['chrome'][:binary],
           emulation: {
             userAgent:     @options[:user_agent],
             deviceMetrics: {

@@ -7,6 +7,11 @@
 =end
 
 require 'watir'
+
+# Prevent this intermitent exception:
+#   constant Selenium::WebDriver::Remote::COMMANDS not defined
+require 'selenium/webdriver/remote/commands'
+
 require_relative '../../../../selenium/webdriver/remote/typhoeus'
 
 module SCNR::Engine
@@ -37,8 +42,6 @@ module WebDriver
         # Windows, so use the default Net::HTTP-based client.
         if SCNR::Engine.windows?
             client = Selenium::WebDriver::Remote::Http::Default.new
-            client.read_timeout = Options.dom.job_timeout
-            client.open_timeout = Options.dom.job_timeout
 
         # However, using the default client results in Threads being used
         # because Net::HTTP uses them for timeouts, and Threads are resource
@@ -47,7 +50,6 @@ module WebDriver
         # So, if we're not on Windows, use Typhoeus.
         else
             client = Selenium::WebDriver::Remote::Http::Typhoeus.new
-            client.timeout = Options.dom.job_timeout
         end
 
         10.times do |i|
@@ -55,10 +57,9 @@ module WebDriver
                 @selenium = webdriver.new(
                     # We need to start our own process because Selenium's way
                     # sometimes gives us zombies.
-                    url:                  spawn,
-                    desired_capabilities: capabilities,
-                    options:              options,
-                    http_client:          client
+                    url:          spawn,
+                    capabilities: [options],
+                    http_client:  client
                 )
 
                 selenium_setup
@@ -66,10 +67,6 @@ module WebDriver
                 return @selenium
             rescue Selenium::WebDriver::Error::WebDriverError,
                 Errno::ECONNREFUSED, Timeout::Error => e
-
-                # ap e
-                # ap e.backtrace
-                # ::Process.kill 'KILL', ::Process.pid
 
                 shutdown
                 print_debug_exception e
@@ -107,18 +104,6 @@ module WebDriver
 
     # @abstract
     def selenium_setup
-    end
-
-    def default_capabilities
-        {
-            # Selenium tries to be helpful by including screenshots for errors
-            # in the JSON response. That's not gonna fly here as parsing lots of
-            # massive JSON responses at the same time will have a significant
-            # impact on performance.
-            takes_screenshot:      false,
-            accept_ssl_certs:      true,
-            accept_insecure_certs: true
-        }
     end
 
     def start_webdriver

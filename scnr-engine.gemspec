@@ -114,7 +114,7 @@ Gem::Specification.new do |s|
 
     # Browser support for DOM/JS/AJAX analysis stuff.
     s.add_dependency 'watir',               '6.19.1'
-    s.add_dependency 'selenium-webdriver',  '3.142.7'
+    s.add_dependency 'selenium-webdriver',  '4.1.0'
 
     s.add_dependency 'vmstat',              '2.3.0'
     s.add_dependency 'sys-proctable',       '1.1.5'

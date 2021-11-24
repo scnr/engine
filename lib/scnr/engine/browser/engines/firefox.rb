@@ -111,7 +111,7 @@ class Firefox < Base
     private
 
     def webdriver
-        Selenium::WebDriver::Firefox::Marionette::Driver
+        Selenium::WebDriver::Firefox::Driver
     end
 
     def driver
@@ -122,14 +122,6 @@ class Firefox < Base
         REQUEST_BLACKLIST
     end
 
-    def capabilities
-        Selenium::WebDriver::Remote::Capabilities.firefox(
-            default_capabilities.merge(
-                binary: self.class.requirements['firefox'][:binary],
-            )
-        )
-    end
-
     def options
         proxy_uri = URI( proxy.url )
 
@@ -137,7 +129,9 @@ class Firefox < Base
         args << '--headless' if !@options[:visible]
 
         Selenium::WebDriver::Firefox::Options.new(
+          binary: self.class.requirements['firefox'][:binary],
           args:   args,
+          accept_insecure_certs: true,
           prefs: BROWSER_PREFERENCES.merge(
               'general.useragent.override'   => @options[:user_agent],
               'dom.w3c_touch_events.enabled' => @options[:touch] ? 1 : 0,
