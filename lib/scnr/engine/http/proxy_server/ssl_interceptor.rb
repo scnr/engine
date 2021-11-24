@@ -16,6 +16,7 @@ class SSLInterceptor < Connection
 
     include TLS
 
+    CA_PASSPHRASE = 'interceptor'
     CA_CERTIFICATE = File.dirname( __FILE__ ) + '/ssl-interceptor-cacert.pem'
     CA_KEY         = File.dirname( __FILE__ ) + '/ssl-interceptor-cakey.pem'
 
@@ -25,11 +26,11 @@ class SSLInterceptor < Connection
         end
 
         def ca_key
-            @ca_key ||= OpenSSL::PKey::RSA.new( File.read( CA_KEY ) )
+            @ca_key ||= OpenSSL::PKey::RSA.new( File.read( CA_KEY ), CA_PASSPHRASE )
         end
 
         def keypair
-            @keypair ||= OpenSSL::PKey::RSA.new( 1024 )
+            @keypair ||= OpenSSL::PKey::RSA.new( 2048 )
         end
 
         def certificate_for( host )
@@ -50,7 +51,7 @@ class SSLInterceptor < Connection
                     "CN=#{host}/subjectAltName=#{host}/O=SCNR::Engine/OU=Proxy/L=Athens/ST=Attika/C=GR"
                 )
                 req.public_key = keypair.public_key
-                req.sign( keypair, OpenSSL::Digest::SHA1.new )
+                req.sign( keypair, OpenSSL::Digest::SHA512.new )
 
                 cert            = OpenSSL::X509::Certificate.new
                 cert.version    = 2
@@ -75,7 +76,7 @@ class SSLInterceptor < Connection
                                          true
                     )
                 ]
-                cert.sign( self.ca_key, OpenSSL::Digest::SHA1.new )
+                cert.sign( self.ca_key, OpenSSL::Digest::SHA512.new )
                 cert
             end
         end
