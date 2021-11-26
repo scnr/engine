@@ -30,11 +30,7 @@ class Chrome < Base
         '--allow-running-insecure-content',
         '--disable-web-security',
         '--reduce-security-for-testing',
-        '--ignore-certificate-errors',
-
-        # Disables the GPU process, keeps memory low.
-        '--disable-gpu',
-        '--disable-software-rasterizer'
+        '--ignore-certificate-errors'
     ]
 
     REQUEST_BLACKLIST = []
