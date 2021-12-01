@@ -247,58 +247,60 @@ describe SCNR::Engine::HTTP::Client::Soft404 do
             end
         end
 
-        context 'when checking for an already checked URL' do
-            it 'returns the cached result' do
-                res = nil
-                client.get( url + 'static/crap' ) { |c_res| res = c_res }
-                client.run
+        if described_class::CACHE_SIZE > 0
+            context 'when checking for an already checked URL' do
+                it 'returns the cached result' do
+                    res = nil
+                    client.get( url + 'static/crap' ) { |c_res| res = c_res }
+                    client.run
 
-                bool = nil
-                subject.match?( res ) { |c_bool| bool = c_bool }
-                client.run
-                expect(bool).to be_truthy
+                    bool = nil
+                    subject.match?( res ) { |c_bool| bool = c_bool }
+                    client.run
+                    expect(bool).to be_truthy
 
-                fingerprints = 0
-                client.on_complete do
-                    fingerprints += 1
+                    fingerprints = 0
+                    client.on_complete do
+                        fingerprints += 1
+                    end
+
+                    res = nil
+                    client.get( url + 'static/crap' ) { |c_res| res = c_res }
+                    client.run
+                    expect(fingerprints).to be > 0
+
+                    overhead = 0
+                    client.on_complete do
+                        overhead += 1
+                    end
+
+                    bool = nil
+                    subject.match?( res ) { |c_bool| bool = c_bool }
+                    client.run
+                    expect(bool).to be_truthy
+
+                    expect(overhead).to eq(0)
                 end
-
-                res = nil
-                client.get( url + 'static/crap' ) { |c_res| res = c_res }
-                client.run
-                expect(fingerprints).to be > 0
-
-                overhead = 0
-                client.on_complete do
-                    overhead += 1
-                end
-
-                bool = nil
-                subject.match?( res ) { |c_bool| bool = c_bool }
-                client.run
-                expect(bool).to be_truthy
-
-                expect(overhead).to eq(0)
             end
-        end
 
-        context "when the handler cache exceeds #{described_class::CACHE_SIZE} entries" do
-            it 'it is pruned as soon as possible' do
-                expect(subject.handlers).to be_empty
+            context "when the handler cache exceeds #{described_class::CACHE_SIZE} entries" do
+                it 'it is pruned as soon as possible' do
+                    expect(subject.handlers).to be_empty
 
-                client.get( url + 'combo/test' ) do |response|
-                    subject.match?(  response ) {}
+                    client.get( url + 'combo/test' ) do |response|
+                        subject.match?(  response ) {}
+                    end
+                    client.run
+                    expect(subject.handlers).to be_any
+
+                    (2 * described_class::CACHE_SIZE).times do |i|
+                        url, data = subject.handlers.to_a.first
+                        subject.handlers["#{url}/#{i}".hash] = data
+                    end
+                    client.run
+
+                    expect(subject.handlers.size).to eq(described_class::CACHE_SIZE)
                 end
-                client.run
-                expect(subject.handlers).to be_any
-
-                (2 * described_class::CACHE_SIZE).times do |i|
-                    url, data = subject.handlers.to_a.first
-                    subject.handlers["#{url}/#{i}".hash] = data
-                end
-                client.run
-
-                expect(subject.handlers.size).to eq(described_class::CACHE_SIZE)
             end
         end
     end
