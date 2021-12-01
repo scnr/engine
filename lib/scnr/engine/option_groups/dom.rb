@@ -52,12 +52,13 @@ class DOM < SCNR::Engine::OptionGroup
         session_storage:     {},
         wait_for_elements:   {},
         pool_size:           4,
-        # TODO: Not actually a timeout for the job anymore, sets a
-        # timeout for Selenium communication HTTP requests.
-        # Name hijacked for compatibility, but should probably change in the
-        # future.
-        job_timeout:         120,
-        worker_time_to_live: 1000
+
+
+        # Each event may have effects, like a page loading one.
+        # Few transitions of clicks and such and we're there.
+        job_timeout:         60,
+
+        worker_time_to_live: 250
     )
 
     def engine=( e )

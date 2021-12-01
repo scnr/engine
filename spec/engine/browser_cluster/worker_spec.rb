@@ -16,6 +16,7 @@ describe SCNR::Engine::BrowserPool::Worker do
         )
     end
     let(:custom_job) { Factory[:custom_job] }
+    let(:another_job) { Factory[:custom_job] }
     let(:sleep_job) { Factory[:sleep_job] }
     let(:options) { {} }
     let(:subject) { browser_pool.workers.first }
@@ -108,22 +109,6 @@ describe SCNR::Engine::BrowserPool::Worker do
             it 'ignores it' do
                 allow(custom_job).to receive(:configure_and_run){ raise 'stuff' }
                 expect(subject.run_job( custom_job )).to be_truthy
-            end
-
-            context 'Selenium::WebDriver::Error::WebDriverError' do
-                it 'respawns' do
-                    expect(custom_job).to receive(:configure_and_run).at_least(:once) do
-                        raise Selenium::WebDriver::Error::WebDriverError
-                    end
-
-                    watir = subject.watir
-                    pid   = subject.engine.pid
-
-                    subject.run_job( custom_job )
-
-                    expect(watir).not_to eq(subject.watir)
-                    expect(pid).not_to eq(subject.engine.pid)
-                end
             end
         end
 
@@ -233,6 +218,7 @@ describe SCNR::Engine::BrowserPool::Worker do
                     pid   = subject.engine.pid
 
                     browser_pool.queue( custom_job, (proc_to_method {}))
+                    browser_pool.queue( another_job, (proc_to_method {}))
                     browser_pool.wait
 
                     expect(watir).not_to eq(subject.watir)
@@ -241,41 +227,32 @@ describe SCNR::Engine::BrowserPool::Worker do
             end
         end
 
-        context 'when a Selenium request takes more than OptionGroup::BrowserPool#job_timeout' do
+        context 'when a Timeout::Error occurs' do
             before do
                 allow(job).to receive(:configure_and_run) { raise Timeout::Error }
             end
 
-            it "retries #{described_class::TRIES} times" do
-                expect(job).to receive(:configure_and_run).at_least(described_class::TRIES).times
+            it 'sets Job#time' do
+                browser_pool.queue( job, (proc_to_method {}))
+                browser_pool.wait
+
+                expect(job.time).to be > 0
+            end
+
+            it 'sets Job#timed_out?' do
+                browser_pool.queue( job, (proc_to_method {}))
+                browser_pool.wait
+
+                expect(job).to be_timed_out
+            end
+
+            it 'increments the BrowserPool timeout count' do
+                time_out_count = SCNR::Engine::BrowserPool.statistics[:time_out_count]
 
                 browser_pool.queue( job, (proc_to_method {}))
                 browser_pool.wait
-            end
 
-            context "after #{described_class::TRIES} tries" do
-                it 'sets Job#time' do
-                    browser_pool.queue( job, (proc_to_method {}))
-                    browser_pool.wait
-
-                    expect(job.time).to be > 0
-                end
-
-                it 'sets Job#timed_out?' do
-                    browser_pool.queue( job, (proc_to_method {}))
-                    browser_pool.wait
-
-                    expect(job).to be_timed_out
-                end
-
-                it 'increments the BrowserPool timeout count' do
-                    time_out_count = SCNR::Engine::BrowserPool.statistics[:time_out_count]
-
-                    browser_pool.queue( job, (proc_to_method {}))
-                    browser_pool.wait
-
-                    expect(SCNR::Engine::BrowserPool.statistics[:time_out_count]).to eq time_out_count+1
-                end
+                expect(SCNR::Engine::BrowserPool.statistics[:time_out_count]).to eq time_out_count+1
             end
         end
     end

@@ -69,73 +69,52 @@ class Worker < SCNR::Engine::Browser
     #
     # @see SCNR::Engine::Browser#trigger_events
     def run_job( job )
-        @job = job
-        self.parse_profile = @job.parse_profile
-
-        print_debug "Started: #{@job}"
-
         # Browser may have crashed (it happens sometimes) so make sure that
         # we've got a live one before running the job.
         # If we can't respawn, then bail out.
         return if engine_reboot_if_necessary.nil?
 
-        tries = 0
+        @job = job
+        self.parse_profile = @job.parse_profile
+
+        print_debug "Started: #{@job}"
+
+        time = Time.now
         begin
 
-            time = Time.now
-
-            @job.configure_and_run( self )
+            Timeout.timeout Options.dom.job_timeout do
+                @job.configure_and_run( self )
+            end
 
             @job.time = Time.now - time
 
         rescue Selenium::WebDriver::Error::WebDriverError,
             Watir::Exception::Error => e
 
-            tries += 1
-            if !@shutdown && tries <= TRIES
-                print_info "Retrying (#{tries}/#{TRIES}) due to error, job: #{@job}"
-                print_debug e
-                print_debug_exception e
-
-                retry
-            end
-
-            # Could have left us with a broken browser.
-            engine_reboot
+            print_debug "Job error: #{@job}"
+            print_debug_exception e
 
         # This can be thrown by a Selenium call somewhere down the line,
         # catch it here and retry the entire job.
         rescue Timeout::Error => e
 
-            tries += 1
-            if !@shutdown && tries <= TRIES
-                print_info "Retrying (#{tries}/#{TRIES}) due to time out: #{@job}"
-                print_debug_exception e
-
-                retry
-            end
-
             @job.timed_out!( Time.now - time )
 
-            print_bad "Job timed-out #{TRIES} times: #{@job}"
-            master.increment_time_out_count
+            print_debug "Job timed-out: #{@job}"
+            print_debug_exception e
 
-            # Could have left us with a broken browser.
-            engine_reboot
+            master.increment_time_out_count
         end
 
         decrease_time_to_live
-        engine_reboot_if_necessary
-
-    # Something went horribly wrong, cleanup.
     rescue => e
         print_error "Error while processing job: #{@job}"
         print_exception e
-
-        engine_reboot
     ensure
         print_debug "Finished: #{@job}"
+
         @job = nil
+        self.parse_profile = nil
 
         reset
         master.job_done job
