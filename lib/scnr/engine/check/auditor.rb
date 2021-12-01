@@ -171,7 +171,7 @@ module Auditor
               issue.page.response.scope.out?
 
             vector = issue.vector
-            msg = "In #{vector.type}"
+            msg = "#{issue.name} in #{vector.type}"
 
             active = vector.respond_to?( :affected_input_name ) &&
               vector.affected_input_name
@@ -530,7 +530,9 @@ module Auditor
             # are no issues logged to begin with.
             next if klass.issue_counter == 0
 
-            if Data.issues.include?( klass.create_issue( vector: element ) )
+            if Data.issues.include?(
+              klass.create_issue( vector: element, referring_page: page )
+            )
                 return true
             end
         end
