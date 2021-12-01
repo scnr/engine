@@ -149,10 +149,10 @@ module Events
         transition = fire_event( element, event )
 
         if !transition
-            print_info "Could not trigger '#{event}' on: #{element}"
+            print_debug "Could not trigger '#{event}' on: #{element}"
 
             if restore
-                print_info 'Restoring page.'
+                print_debug 'Restoring page.'
                 restore( resource )
             end
 
