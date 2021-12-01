@@ -38,20 +38,6 @@ module WebDriver
     def selenium
         return @selenium if @selenium
 
-        # Using Typhoeus for Selenium results in memory violation errors on
-        # Windows, so use the default Net::HTTP-based client.
-        if SCNR::Engine.windows?
-            client = Selenium::WebDriver::Remote::Http::Default.new
-
-        # However, using the default client results in Threads being used
-        # because Net::HTTP uses them for timeouts, and Threads are resource
-        # intensive (around 1MB per Thread).
-        #
-        # So, if we're not on Windows, use Typhoeus.
-        else
-            client = Selenium::WebDriver::Remote::Http::Typhoeus.new
-        end
-
         10.times do |i|
             begin
                 @selenium = webdriver.new(
@@ -59,7 +45,7 @@ module WebDriver
                     # sometimes gives us zombies.
                     url:          spawn,
                     capabilities: [options],
-                    http_client:  client
+                    http_client:  Selenium::WebDriver::Remote::Http::Typhoeus.new
                 )
 
                 selenium_setup
@@ -68,8 +54,8 @@ module WebDriver
             rescue Selenium::WebDriver::Error::WebDriverError,
                 Errno::ECONNREFUSED, Timeout::Error => e
 
-                shutdown
                 print_debug_exception e
+                shutdown
             end
         end
 

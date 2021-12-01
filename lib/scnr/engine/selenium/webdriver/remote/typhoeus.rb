@@ -24,20 +24,16 @@ class Typhoeus < Common
             maxredirs:      MAX_REDIRECTS,
             followlocation: true,
 
+            timeout:        SCNR::Engine::Options.dom.job_timeout,
+
             # We're working inside Threads and we need to set this to prevent
             # segfaults.
             nosignal:       true,
-
-            # This is required, PhantomJS 2.1.1 does something weird with
-            # reused connections and causes delays and timeouts.
-            forbid_reuse:   true,
 
             # Small trick to cancel out http_proxy env variables which would
             # otherwise be honoured by libcurl and hinder browser communications.
             proxy:          ''
         }
-
-        options[:timeout] = @timeout if @timeout
 
         case verb
             when :post, :put
