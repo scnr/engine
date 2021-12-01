@@ -177,7 +177,7 @@ module Navigation
                     end
 
                     print_info "#{css.inspect} appeared for: #{url}"
-                rescue Selenium::WebDriver::Error::TimeOutError
+                rescue Selenium::WebDriver::Error::TimeoutError
                     print_bad "#{css.inspect} did not appear for: #{url}"
                 end
 
