@@ -466,7 +466,7 @@ class BrowserPool
 
                 synchronize do
                     @workers << worker
-                    print_status "Spawned ##{i+1} with PID #{worker.engine.pid} " <<
+                    print_status "Spawned with PID #{worker.engine.pid} " <<
                                    "[lifeline at PID #{worker.engine.lifeline_pid}]."
                 end
             end
