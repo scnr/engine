@@ -111,18 +111,10 @@ module Browser
     end
 
     def handle_browser_page( result, * )
-        page = result.is_a?( Page ) ? result : result.page
-
         synchronize do
-            return if !push_to_page_queue page
-
-            print_status "Got new page from the browser-cluster: #{page.dom.url}"
-            print_info "DOM depth: #{page.dom.depth} (Limit: #{Options.scope.dom_depth_limit})"
-
-            if page.dom.transitions.any?
-                print_info '  Transitions:'
-                page.dom.print_transitions( method(:print_info), '    ' )
-            end
+            push_to_page_queue(
+              result.is_a?( Page ) ? result : result.page
+            )
         end
     end
 

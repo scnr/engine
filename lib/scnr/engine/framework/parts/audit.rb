@@ -114,7 +114,7 @@ module Audit
 
             if page.dom.transitions.any?
                 print_info '  Transitions:'
-                page.dom.print_transitions( method(:print_info), '    ' )
+                page.dom.print_transitions( self, '    ' )
             end
         end
 

@@ -172,7 +172,7 @@ class SCNR::Engine::Reporters::Stdout < SCNR::Engine::Reporter::Base
         print_info "Referring page: #{issue.referring_page.dom.url}"
         if issue.referring_page.dom.transitions.any?
             print_info 'DOM transitions:'
-            issue.referring_page.dom.print_transitions( method(:print_info), '    ' )
+            issue.referring_page.dom.print_transitions( self, '    ' )
         end
 
         print_line
@@ -184,7 +184,7 @@ class SCNR::Engine::Reporters::Stdout < SCNR::Engine::Reporter::Base
 
         if issue.page.dom.transitions.any?
             print_info 'DOM transitions:'
-            issue.page.dom.print_transitions( method(:print_info), '    ' )
+            issue.page.dom.print_transitions( self, '    ' )
         end
 
         return if issue.remarks.empty?

@@ -198,7 +198,7 @@ module Auditor
 
             if issue.page.dom.transitions.any?
                 vector.print_verbose 'DOM transitions:'
-                issue.page.dom.print_transitions( method(:print_verbose), '    ' )
+                issue.page.dom.print_transitions( self, '    ' )
             end
 
             if !(request_dump = issue.page.request.to_s).empty?

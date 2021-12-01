@@ -108,26 +108,26 @@ class DOM
             time    = sprintf( '%.4f', t.time.to_f )
 
             if t.event == :request
-                printer.call "#{indent * 2}* [#{time}s] #{t.event}#{' ' * padding} => #{t.element}"
+                printer.print_verbose "#{indent * 2}* [#{time}s] #{t.event}#{' ' * padding} => #{t.element}"
             else
                 url = nil
                 if t.options[:url]
                     url = "(#{t.options[:url]})"
                 end
 
-                printer.call "#{indent}-- [#{time}s] #{t.event}#{' ' * padding} => #{t.element} #{url}"
+                printer.print_info "#{indent}-- [#{time}s] #{t.event}#{' ' * padding} => #{t.element} #{url}"
 
                 if t.options[:cookies] && t.options[:cookies].any?
-                    printer.call "#{indent * 2}-- Cookies:"
+                    printer.print_info "#{indent * 2}-- Cookies:"
 
                     t.options[:cookies].each do |name, value|
-                        printer.call  "#{indent * 3}* #{name}\t=> #{value}\n"
+                        printer.print_info  "#{indent * 3}* #{name}\t=> #{value}\n"
                     end
                 end
 
                 if t.options[:inputs] && t.options[:inputs].any?
                     t.options[:inputs].each do |name, value|
-                        printer.call  "#{indent * 2}* #{name}\t=> #{value}\n"
+                        printer.print_info  "#{indent * 2}* #{name}\t=> #{value}\n"
                     end
                 end
             end

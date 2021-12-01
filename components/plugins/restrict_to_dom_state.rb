@@ -27,7 +27,7 @@ class SCNR::Engine::Plugins::RestrictToDOMState < SCNR::Engine::Plugin::Base
         print_status 'Loading page...'
         page = browser.load( @url ).to_page
         print_info '  Transitions:'
-        page.dom.print_transitions( method(:print_info), '    ' )
+        page.dom.print_transitions( self, '    ' )
 
         framework.push_to_page_queue page, true
         print_status 'Pushed to page queue.'
