@@ -111,7 +111,7 @@ class Javascript
 
     # @note Will not include custom events.
     #
-    # @return   [Array<Hash>]
+    # @yield   [Hash]
     #   Information about all DOM elements, including any registered event listeners.
     def each_dom_element_with_events( whitelist = [] )
         return if !supported?
@@ -147,6 +147,23 @@ class Javascript
 
             start += elements.size
         end
+    end
+
+    def max_timer
+        return if !supported?
+        @dom_monitor.timeouts.compact.map { |t| t[1].to_i }.max
+    end
+
+    def wait_for_timers
+        delay = self.max_timer
+        return if !delay
+
+        delay = delay / 1000.0
+        print_debug_level_2 "Waiting for max timer #{delay}s..."
+
+        sleep delay
+
+        print_debug_level_2 '...done.'
     end
 
     private

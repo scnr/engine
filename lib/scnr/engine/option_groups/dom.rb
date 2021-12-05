@@ -46,6 +46,10 @@ class DOM < SCNR::Engine::OptionGroup
     #   Re-spawn the browser every {#worker_time_to_live} jobs.
     attr_accessor :worker_time_to_live
 
+    # @return   [Bool]
+    #   Shall we wait for the max timer to fire on the page?
+    attr_accessor :wait_for_timers
+
     set_defaults(
         engine:              DEFAULT_ENGINE,
         local_storage:       {},
@@ -58,8 +62,14 @@ class DOM < SCNR::Engine::OptionGroup
         # Few transitions of clicks and such and we're there.
         job_timeout:         60,
 
-        worker_time_to_live: 250
+        worker_time_to_live: 250,
+
+        wait_for_timers:     false
     )
+
+    def wait_for_timers?
+        !!@wait_for_timers
+    end
 
     def engine=( e )
         return @engine = defaults[:engine] if !e

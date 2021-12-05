@@ -96,6 +96,11 @@ module Engine
 
     def wait_till_ready
         @javascript.wait_till_ready
+
+        if Options.dom.wait_for_timers?
+            @javascript.wait_for_timers
+        end
+
         engine.wait_for_pending_requests
     end
 

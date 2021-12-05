@@ -28,6 +28,37 @@ describe SCNR::Engine::Browser::Javascript::DOMMonitor do
         end
     end
 
+    describe '#timeouts' do
+        it 'keeps track of setTimeout() timers' do
+            load '/timeouts'
+            sleep 2
+
+            expect(subject.timeouts).to eq([
+             [
+               "function( name, value ){\n            document.cookie = name + \"=post-\" + value\n        }",
+               1000, 'timeout1', 1000
+             ],
+             [
+               "function( name, value ){\n            document.cookie = name + \"=post-\" + value\n        }",
+               1500, 'timeout2', 1500
+             ],
+             [
+               "function( name, value ){\n            document.cookie = name + \"=post-\" + value\n        }",
+               2000, 'timeout3', 2000
+             ]
+            ])
+
+            expect(javascript.max_timer).to eq(2000)
+            expect(browser.cookies.size).to eq(4)
+            expect(browser.cookies.map { |c| c.to_s }.sort).to eq([
+             'timeout3=post-2000',
+             'timeout2=post-1500',
+             'timeout1=post-1000',
+             'timeout=pre'
+            ].sort)
+        end
+    end
+
     it 'adds _scnr_engine_events property to elements holding the tracked events' do
         load '/elements_with_events/listeners'
 

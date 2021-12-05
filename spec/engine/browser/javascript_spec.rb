@@ -17,6 +17,38 @@ describe SCNR::Engine::Browser::Javascript do
         end
     end
 
+    describe '#max_timer' do
+        it 'returns nil' do
+            browser.load dom_monitor_url
+            expect(subject.max_timer).to be_nil
+        end
+
+        context 'when the page has JS timeouts' do
+            it 'returns the maximum time the browser should wait for the page based on Timeout' do
+                browser.load( "#{dom_monitor_url}timeouts" )
+                expect(subject.max_timer).to eq(2000)
+            end
+        end
+    end
+
+    describe '#wait_for_timers' do
+        it 'returns' do
+            browser.load dom_monitor_url
+            expect(subject.wait_for_timers).to be_nil
+        end
+
+        context 'when the page has JS timeouts' do
+            it 'waits for them to complete' do
+                browser.load( "#{dom_monitor_url}timeouts" )
+                seconds = subject.max_timer / 1000
+
+                time = Time.now
+                subject.wait_for_timers
+                expect(Time.now - time).to be > seconds
+            end
+        end
+    end
+
     describe '#each_dom_element_with_events' do
         it "enforces #{SCNR::Engine::OptionGroups}#dom_event_limit" do
             browser.load dom_monitor_url + 'elements_with_events/whitelist'

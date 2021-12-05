@@ -429,6 +429,7 @@ describe SCNR::Engine::Browser::Parts::Events do
             let(:url) { "#{root_url}/trigger_events/with_new_timers/3000" }
 
             it 'executes them' do
+                pending
                 subject.fire_event selenium_to_locator( subject.selenium.find_element( id: 'my-div' ) ), :click
                 pages_should_have_form_with_input [subject.to_page], 'by-ajax'
             end

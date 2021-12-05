@@ -209,15 +209,38 @@ describe SCNR::Engine::Browser::Parts::Navigation do
         end
 
         context 'when the page has JS timers' do
-            it 'executes them' do
-                expect( subject.cookies ).to be_empty
-                subject.goto "#{url}load_delay"
+            context "and #{SCNR::Engine::OptionGroups::DOM}#wait_for_timers is" do
+                context 'true' do
+                    before do
+                        SCNR::Engine::Options.dom.wait_for_timers = true
+                    end
 
-                expect( subject.cookies.map(&:to_s).sort ).to eq([
-                                                                     'timeout2=post-2-2000',
-                                                                     'timeout1=post-1-1000'
-                                                                 ].sort)
+                    it 'executes them' do
+                        expect( subject.cookies ).to be_empty
+                        subject.goto "#{url}load_delay"
+
+                        expect( subject.cookies.map(&:to_s).sort ).to eq([
+                           'interval=post-1500',
+                           'timeout2=post-2-2000',
+                           'timeout1=post-1-1000'
+                         ].sort)
+                    end
+                end
+
+                context 'false' do
+                    before do
+                        SCNR::Engine::Options.dom.wait_for_timers = false
+                    end
+
+                    it 'does not execute them' do
+                        expect( subject.cookies ).to be_empty
+                        subject.goto "#{url}load_delay"
+
+                        expect( subject.cookies.map(&:to_s) ).to be_empty
+                    end
+                end
             end
+
         end
 
         context 'when there are outstanding HTTP requests' do

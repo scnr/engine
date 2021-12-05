@@ -222,6 +222,10 @@ module Events
                 # Maybe we switched to a different page, wait until the custom
                 # JS env has been put in place.
                 javascript.wait_till_ready
+
+                # TODO: Identify **new** timers.
+                # javascript.wait_for_timers if Options.dom.wait_for_timers?
+
                 javascript.set_element_ids
 
                 update_cookies
