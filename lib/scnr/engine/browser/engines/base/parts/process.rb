@@ -144,7 +144,7 @@ module Process
                 print_debug_level_2 output
             end
 
-            print_debug 'Engine is ready.'
+            print_debug '...engine is ready.'
             break
         end
 
