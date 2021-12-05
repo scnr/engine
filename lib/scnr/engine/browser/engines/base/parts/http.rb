@@ -61,9 +61,7 @@ module HTTP
     def proxy
         return @proxy if @proxy
 
-        print_debug 'Booting up proxy...'
-
-        print_debug_level_2 'Starting proxy...'
+        print_debug 'Starting proxy...'
         @proxy = SCNR::Engine::HTTP::ProxyServer.new(
             concurrency:      @options[:concurrency],
             address:          '127.0.0.1',
@@ -73,7 +71,7 @@ module HTTP
             response_handler: @options[:response_handler]
         )
         @proxy.start_async
-        print_debug_level_2 "... started proxy at: #{@proxy.url}"
+        print_debug "... started proxy at: #{@proxy.url}"
 
         @proxy
     end
