@@ -30,7 +30,11 @@ class Chrome < Base
         '--allow-running-insecure-content',
         '--disable-web-security',
         '--reduce-security-for-testing',
-        '--ignore-certificate-errors'
+        '--ignore-certificate-errors',
+
+        '--disable-plugins',
+
+        '--process-per-site'
     ]
 
     REQUEST_BLACKLIST = []
