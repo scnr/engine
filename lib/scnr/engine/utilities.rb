@@ -17,6 +17,8 @@ module SCNR::Engine
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 module Utilities
 
+    PORTS = (1024..65535).to_a
+
     # @return   [String]
     #   Filename (without extension) of the caller.
     def caller_name
@@ -343,38 +345,8 @@ module Utilities
 
     # @return   [Fixnum]
     #   Random available port number.
-    def available_port( range = nil )
-        available_port_mutex.synchronize do
-            @used_ports ||= Set.new
-
-            loop do
-                port = self.rand_port( range )
-
-                if port_available?( port ) && !@used_ports.include?( port )
-                    @used_ports << port
-                    return port
-                end
-            end
-        end
-    end
-
-    def self.available_port_mutex
-        @available_port_mutex ||= Mutex.new
-    end
-    available_port_mutex
-
-    # @return   [Integer]
-    #   Random port within the user specified range.
-    def rand_port( range = nil )
-        range ||= [1025, 65535]
-        first, last = range
-        range = (first..last).to_a
-
-        range[ rand( range.last - range.first ) ]
-    end
-
-    def generate_token
-        SecureRandom.hex
+    def available_port
+        Selenium::WebDriver::PortProber.above PORTS.sample
     end
 
     # Checks whether the port number is available.
@@ -383,14 +355,11 @@ module Utilities
     #
     # @return   [Bool]
     def port_available?( port )
-        begin
-            socket = ::Socket.new( :INET, :STREAM, 0 )
-            socket.bind( ::Socket.sockaddr_in( port, '127.0.0.1' ) )
-            socket.close
-            true
-        rescue Errno::EADDRINUSE, Errno::EACCES
-            false
-        end
+        Selenium::WebDriver::PortProber.free? port
+    end
+
+    def generate_token
+        SecureRandom.hex
     end
 
     # @param    [String, Float, Integer]    seconds
