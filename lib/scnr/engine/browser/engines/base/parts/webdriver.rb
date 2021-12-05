@@ -44,7 +44,7 @@ module WebDriver
                     # We need to start our own process because Selenium's way
                     # sometimes gives us zombies.
                     url:          spawn,
-                    capabilities: [options],
+                    capabilities: options,
                     http_client:  Selenium::WebDriver::Remote::Http::Typhoeus.new
                 )
 
