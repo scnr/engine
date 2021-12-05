@@ -23,12 +23,28 @@ module HTTP
         /src\s*=\s*['"]?(.*?)?['"]?[\s>]/i,
     ]
 
+    AD_HOSTS = Support::Filter::Set.new
+    File.open( Options.paths.root + 'config/adservers.txt' ) do |f|
+        f.each_line do |entry|
+            next if entry.start_with?( '#' )
+            AD_HOSTS << entry.split( ' ' ).last
+        end
+    end
+
     def self.included( base )
         base.extend( ClassMethods )
         base.asset_domains
     end
 
     module ClassMethods
+
+        def request_for_asset?( request )
+            ASSET_EXTENSIONS.include?( request.parsed_url.resource_extension.to_s.downcase )
+        end
+
+        def request_for_ad?( request )
+            AD_HOSTS.include?( request.parsed_url.domain )
+        end
 
         def asset_domains
             @asset_domains ||= Set.new
@@ -111,7 +127,7 @@ module HTTP
             return
         end
 
-        if request_for_ad?( request )
+        if self.class.request_for_ad?( request )
             print_debug_level_2 "Ignoring, ad host: #{request.url}"
             return
         end
@@ -210,7 +226,7 @@ module HTTP
         end
 
         # Don't store assets, the browsers will cache them accordingly.
-        if request_for_asset?( request ) || !response.text?
+        if self.class.request_for_asset?( request ) || !response.text?
             print_debug_level_2 'Asset detected, will not store.'
             return
         end
@@ -242,7 +258,7 @@ module HTTP
             return
         end
 
-        if request_for_asset?( request )
+        if self.class.request_for_asset?( request )
             print_debug_level_2 'Allow: Asset detected.'
             return false
         end
@@ -288,25 +304,6 @@ module HTTP
         end
 
         false
-    end
-
-    def request_for_asset?( request )
-        ASSET_EXTENSIONS.include?( request.parsed_url.resource_extension.to_s.downcase )
-    end
-
-    def request_for_ad?( request )
-        @ad_hosts ||= Support::Filter::Set.new
-
-        if @ad_hosts.empty?
-            File.open( Options.paths.root + 'config/adservers.txt' ) do |f|
-                f.each_line do |entry|
-                    next if entry.start_with?( '#' )
-                    @ad_hosts << entry.split( ' ' ).last
-                end
-            end
-        end
-
-        @ad_hosts.include?( request.parsed_url.domain )
     end
 
     def whitelist_asset_domains( response )
