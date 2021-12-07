@@ -235,7 +235,11 @@ class Response < Message
     # @return   [Request]
     def self.from_rpc_data( data )
         data['request']     = Request.from_rpc_data( data['request'] )
-        data['return_code'] = data['return_code'].to_sym if data['return_code']
+
+        if data['return_code'].is_a? String
+            data['return_code'] = data['return_code'].to_sym
+        end
+
         new data
     end
 
