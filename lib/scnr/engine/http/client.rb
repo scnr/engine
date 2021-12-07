@@ -638,7 +638,7 @@ class Client
     def client_initialize
         Typhoeus::Config.memoize = false
 
-        @hydra = Typhoeus::Hydra.new( pipelining: 1 )
+        @hydra = Typhoeus::Hydra.new
     end
 
     def client_run
