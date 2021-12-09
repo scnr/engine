@@ -110,10 +110,6 @@ class Firefox < Base
 
     private
 
-    def webdriver
-        Selenium::WebDriver::Firefox::Driver
-    end
-
     def driver
         DRIVER
     end

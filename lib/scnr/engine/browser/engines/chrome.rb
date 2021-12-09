@@ -105,10 +105,6 @@ class Chrome < Base
 
     private
 
-    def webdriver
-        Selenium::WebDriver::Chrome::Driver
-    end
-
     def driver
         DRIVER
     end

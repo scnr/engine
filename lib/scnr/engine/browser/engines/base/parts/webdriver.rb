@@ -40,7 +40,9 @@ module WebDriver
 
         10.times do |i|
             begin
-                @selenium = webdriver.new(
+                @selenium = Selenium::WebDriver.for(
+                    :remote,
+
                     # We need to start our own process because Selenium's way
                     # sometimes gives us zombies.
                     url:          spawn,
@@ -79,12 +81,7 @@ module WebDriver
     private
 
     # @abstract
-    def webdriver
-        raise 'Missing implementation'
-    end
-
-    # @abstract
-    def capabilities
+    def options
         raise 'Missing implementation'
     end
 
