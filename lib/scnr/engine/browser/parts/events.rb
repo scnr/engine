@@ -234,6 +234,7 @@ module Events
             print_debug_level_2 "[done in #{transition.time}s]: #{event} (#{options}) #{locator}"
 
             Events.notify_after_event transition, locator, event, options, self
+
             transition
         rescue Selenium::WebDriver::Error::WebDriverError => e
 

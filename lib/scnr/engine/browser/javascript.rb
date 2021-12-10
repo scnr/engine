@@ -151,7 +151,9 @@ class Javascript
 
     def max_timer
         return if !supported?
-        @dom_monitor.timeouts.compact.map { |t| t[1].to_i }.max
+
+        (@dom_monitor.intervals | @dom_monitor.timeouts).compact.
+          map { |t| t[1].to_i }.max
     end
 
     def wait_for_timers

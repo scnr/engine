@@ -123,26 +123,27 @@ module Environment
         <<EOJS
 // Can be included multiple times via AJAX injection etc.
 // It's not a problem, just don't continue.
-if( #{js_initializer} ) throw( 'Already initialized.' );
+if( !#{js_initializer} ) {
 
-#{env_script}
-
-// For (without query): #{url}
-
-// Initializers
-#{dom_monitor_initializer}
-#{taint_tracer_initializer( url )}
-
-function #{env_update_function} {
-    #{@taint_tracer.stub.function( :update )};
-    #{@dom_monitor.stub.function( :update )};
+    #{env_script}
+    
+    // For (without query): #{url}
+    
+    // Initializers
+    #{dom_monitor_initializer}
+    #{taint_tracer_initializer( url )}
+    
+    function #{env_update_function} {
+        #{@taint_tracer.stub.function( :update )};
+        #{@dom_monitor.stub.function( :update )};
+    }
+    
+    // Custom code
+    #{custom_code}
+    
+    // The env has been loaded!
+    #{js_initialization_signal}
 }
-
-// Custom code
-#{custom_code}
-
-// The env has been loaded!
-#{js_initialization_signal}
 EOJS
     end
 
