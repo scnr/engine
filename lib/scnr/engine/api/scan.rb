@@ -8,6 +8,18 @@ child :scan, :Scan do
         UnsafeFramework.reset
     end
 
+    def_before :page do |&block|
+        UnsafeFramework.before_page_audit( &block )
+    end
+
+    def_on :page do |&block|
+        UnsafeFramework.on_page_audit( &block )
+    end
+
+    def_after :page do |&block|
+        UnsafeFramework.after_page_audit( &block )
+    end
+
     def_run! do |&block|
         SCNR::Engine::Framework.safe do |framework|
             framework.checks.load SCNR::Engine::Options.checks

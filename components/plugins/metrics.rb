@@ -141,7 +141,7 @@ class SCNR::Engine::Plugins::Metrics < SCNR::Engine::Plugin::Base
             http_response_time_total += response.time
         end
 
-        framework.on_page_audit do |page|
+        framework.before_page_audit do |page|
             %w(links forms cookies headers jsons xmls).each do |type|
                 page.send( type ).each do |e|
                     next if e.inputs.empty?

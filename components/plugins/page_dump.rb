@@ -14,7 +14,7 @@ class SCNR::Engine::Plugins::PageDump < SCNR::Engine::Plugin::Base
         cnt  = 0
         seen = Support::Filter::HashSet.new
 
-        framework.on_page_audit do |page|
+        framework.before_page_audit do |page|
             data = {
                 url:         page.dom.url,
                 response:    page.response.to_s,

@@ -11,7 +11,7 @@ class TrainerMockFramework
     def initialize( page = nil )
         @page        = page
         @pages       = []
-        @on_effective_page_audit = []
+        @on_page_audit = []
 
         http.reset
         @trainer = SCNR::Engine::Trainer.new
@@ -30,7 +30,7 @@ class TrainerMockFramework
     end
 
     def run
-        @on_effective_page_audit.each do |b|
+        @on_page_audit.each do |b|
             b.call @page
         end
 
@@ -41,8 +41,8 @@ class TrainerMockFramework
         SCNR::Engine::HTTP::Client
     end
 
-    def on_effective_page_audit( &block )
-        @on_effective_page_audit << block
+    def on_page_audit( &block )
+        @on_page_audit << block
     end
 
     def push_to_page_queue( page )

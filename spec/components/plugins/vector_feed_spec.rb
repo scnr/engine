@@ -161,7 +161,7 @@ describe name_from_filename do
 
     def run_test
         pages = []
-        framework.on_page_audit { |page| pages << page }
+        framework.before_page_audit { |page| pages << page }
         run
 
         check( pages )

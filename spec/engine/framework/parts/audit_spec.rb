@@ -13,7 +13,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
                     SCNR::Engine::Options.audit.elements :links, :forms, :cookies
                     f.checks.load_all
 
-                    f.on_page_audit { |p| audited << p.url }
+                    f.before_page_audit { |p| audited << p.url }
                     f.run
                 end
                 expect(audited.sort).to eq([url + '/binary'].sort)
@@ -25,7 +25,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
                     SCNR::Engine::Options.scope.exclude_binaries = true
                     f.checks.load :signature
 
-                    f.on_page_audit { |p| audited << p.url }
+                    f.before_page_audit { |p| audited << p.url }
                     f.run
                 end
                 expect(audited).to be_empty
@@ -129,12 +129,12 @@ describe SCNR::Engine::Framework::Parts::Audit do
         end
     end
 
-    describe '#on_page_audit' do
+    describe '#before_page_audit' do
         it 'calls the given block before each page is audited' do
             ok = false
             SCNR::Engine::Framework.safe do |f|
                 SCNR::Engine::Options.url = url
-                f.on_page_audit { ok = true }
+                f.before_page_audit { ok = true }
 
                 f.audit_page SCNR::Engine::Page.from_url( url + '/link' )
             end

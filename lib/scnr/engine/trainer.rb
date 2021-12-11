@@ -50,7 +50,7 @@ class Trainer
         return if @setup
         @setup = true
 
-        framework.on_effective_page_audit do |page|
+        framework.on_page_audit do |page|
             process page
         end
 

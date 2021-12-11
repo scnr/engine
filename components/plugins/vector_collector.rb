@@ -23,7 +23,7 @@ class SCNR::Engine::Plugins::VectorCollector < SCNR::Engine::Plugin::Base
     end
 
     def run
-        framework.on_effective_page_audit do |page|
+        framework.on_page_audit do |page|
             current_vectors = @vectors[page.dom.url] ||= {}
 
             page.elements_within_scope.each do |element|

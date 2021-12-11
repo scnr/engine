@@ -17,11 +17,11 @@ module Parts
 module Audit
     include Support::Mixins::Observable
 
+    # @!method before_page_audit( &block )
+    advertise :before_page_audit
+
     # @!method on_page_audit( &block )
     advertise :on_page_audit
-
-    # @!method on_effective_page_audit( &block )
-    advertise :on_effective_page_audit
 
     # @!method after_page_audit( &block )
     advertise :after_page_audit
@@ -122,7 +122,7 @@ module Audit
         # properly setup.
         @trainer.setup
 
-        notify_on_page_audit( page )
+        notify_before_page_audit( page )
 
         http.update_cookies( page.cookie_jar )
 
@@ -138,7 +138,7 @@ module Audit
             # Aside from plugins and whatnot, the Trainer hooks here to update
             # the ElementFilter so that it'll know if new elements appear
             # during the audit, so it's a big deal.
-            notify_on_effective_page_audit( page )
+            notify_on_page_audit( page )
 
             # Run checks that don't benefit from neither platform nor sink info
             # along with the sink-tracer HTTP requests which will also identify
