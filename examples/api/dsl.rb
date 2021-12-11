@@ -57,11 +57,12 @@ Dom {
 # Provides access to checks.
 Checks {
 
+    # Will be called every time a check is run against a page.
     on :run do |check|
         puts "Checking\t- #{check.shortname}"
     end
 
-    # The `as` block will run from the context of SCNR::Engine::Check::Base;
+    # The `as` block will run from the context of SCNR::Engine::Check::Base#run;
     # it basically creates a new check component on the fly.
     #
     # Does something really simple, logs an issue for each 404 page.
@@ -75,9 +76,8 @@ Checks {
         next if response.code != 404
 
         log(
-          proof:    response.status_line,
-          vector:   SCNR::Engine::Element::Server.new( response.url ),
-          response: response
+          proof:  response.status_line,
+          vector: SCNR::Engine::Element::Server.new( response.url ),
         )
     end
 
@@ -86,22 +86,27 @@ Checks {
 # Provides access to plugins.
 Plugins {
 
+    # Called when a plugin gets instantiated.
     on :initialize do |plugin|
         puts "Initialized\t- #{plugin.shortname}"
     end
 
+    # Called when a plugin's #prepare method is run.
     on :prepare do |plugin|
         puts "Preparing\t- #{plugin.shortname}"
     end
 
+    # Called when a plugin's #run method is run.
     on :run do |plugin|
         puts "Running\t\t- #{plugin.shortname}"
     end
 
+    # Called when a plugin's #clean_up method is run.
     on :clean_up do |plugin|
         puts "Cleaning-up\t- #{plugin.shortname}"
     end
 
+    # Called after a plugin's #clean_up method has been ran.
     on :done do |plugin|
         puts "Done\t\t- #{plugin.shortname}"
     end
