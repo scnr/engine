@@ -78,6 +78,7 @@ class Manager < Hash
     include Utilities
     extend  Utilities
 
+    include Support::Mixins::Observable
     include MonitorMixin
 
     WILDCARD = '*'

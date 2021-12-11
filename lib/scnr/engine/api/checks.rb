@@ -1,6 +1,10 @@
 child :checks, :Checks do
     UnsafeFramework = SCNR::Engine::Framework.unsafe
 
+    def_on :run do |&block|
+        UnsafeFramework.checks.on_run &block
+    end
+
     def_as do |shortname, info = {}, &block|
         shortname = shortname.to_s
 

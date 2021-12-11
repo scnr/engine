@@ -57,11 +57,16 @@ Dom {
 # Provides access to checks.
 Checks {
 
+    on :run do |check|
+        puts "Checking\t- #{check.shortname}"
+    end
+
     # The `as` block will run from the context of SCNR::Engine::Check::Base;
     # it basically creates a new check component on the fly.
     #
     # Does something really simple, logs an issue for each 404 page.
     as :not_found,
+       name: 'Page not found',
        issue: {
          name:     'Page not found',
          severity: SCNR::Engine::Issue::Severity::INFORMATIONAL
@@ -80,6 +85,26 @@ Checks {
 
 # Provides access to plugins.
 Plugins {
+
+    on :initialize do |plugin|
+        puts "Initialized\t- #{plugin.shortname}"
+    end
+
+    on :prepare do |plugin|
+        puts "Preparing\t- #{plugin.shortname}"
+    end
+
+    on :run do |plugin|
+        puts "Running\t\t- #{plugin.shortname}"
+    end
+
+    on :clean_up do |plugin|
+        puts "Cleaning-up\t- #{plugin.shortname}"
+    end
+
+    on :done do |plugin|
+        puts "Done\t\t- #{plugin.shortname}"
+    end
 
     # This will run from the context of SCNR::Engine::Plugin::Base; it
     # basically creates a new plugin component on the fly.
@@ -172,19 +197,9 @@ Scan {
 
     }
 
-    # Before each page audit but after some preliminary processing.
-    before :page do |page|
-        puts "Processing\t- [#{page.response.code}] #{page.dom.url}"
-    end
-
     # Before each page audit but after being prepared for checking.
     on :page do |page|
         puts "Scanning\t- [#{page.response.code}] #{page.dom.url}"
-    end
-
-    # After each page has been audited.
-    after :page do |page|
-        puts "Scanned\t\t- [#{page.response.code}] #{page.dom.url}"
     end
 
     # Run the scan, wait for it to finish and get the Report and some

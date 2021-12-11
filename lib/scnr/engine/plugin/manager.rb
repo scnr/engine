@@ -25,6 +25,12 @@ end
 class Manager < SCNR::Engine::Component::Manager
     include MonitorMixin
 
+    advertise :on_initialize
+    advertise :on_prepare
+    advertise :on_run
+    advertise :on_clean_up
+    advertise :on_done
+
     # Namespace under which all plugins reside.
     NAMESPACE = SCNR::Engine::Plugins
 
@@ -61,14 +67,21 @@ class Manager < SCNR::Engine::Component::Manager
         schedule.each do |name, options|
             instance = create( name, options )
 
+            notify_on_initialize instance
+
             exception_jail do
+                notify_on_prepare instance
                 instance.prepare
             end rescue next
 
             @jobs[name] = Thread.new do
                 exception_jail( false ) do
                     Thread.current[:instance] = instance
+
+                    notify_on_run instance
                     Thread.current[:instance].run
+
+                    notify_on_clean_up instance
                     Thread.current[:instance].clean_up
                 end
 

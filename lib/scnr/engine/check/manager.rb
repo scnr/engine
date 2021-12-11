@@ -19,6 +19,8 @@ module Check
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class Manager < SCNR::Engine::Component::Manager
 
+    advertise :on_run
+
     # Namespace under which all checks reside.
     NAMESPACE = ::SCNR::Engine::Checks
 
@@ -180,6 +182,8 @@ class Manager < SCNR::Engine::Component::Manager
         return false if !check.check?( page )
 
         check_new = check.new( page )
+        notify_on_run check_new
+
         check_new.prepare
         check_new.run
         check_new.clean_up

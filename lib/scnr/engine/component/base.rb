@@ -23,6 +23,10 @@ class Base
         self.class.shortname
     end
 
+    def fullname
+        self.class.fullname
+    end
+
     class <<self
         include SCNR::Engine::Component::Output
 
