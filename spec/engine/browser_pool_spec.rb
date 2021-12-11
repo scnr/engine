@@ -16,6 +16,71 @@ describe SCNR::Engine::BrowserPool do
     end
     let(:custom_job) { Factory[:custom_job] }
 
+    describe '.on_pop' do
+        it 'assigns blocks to be passed each poped job' do
+            cj = nil
+
+            described_class.on_pop do |j|
+                cj ||= j
+            end
+            bc = described_class.new( size: 1 )
+
+            bc.queue job, (proc_to_method{})
+            bc.wait
+
+            expect(cj.id).to eq(job.id)
+        end
+    end
+
+    describe '.on_queue' do
+        it 'assigns blocks to be passed each queued job' do
+            cj = nil
+            described_class.on_queue do |j|
+                cj ||= j
+            end
+
+            bc = described_class.new( size: 1 )
+
+            bc.queue job, (proc_to_method{})
+
+            expect(cj.id).to eq(job.id)
+            bc.wait
+        end
+    end
+
+    describe '.on_job_done' do
+        it 'assigns blocks to be passed each finished job' do
+            cj = nil
+
+            described_class.on_job_done do |j|
+                cj ||= j
+            end
+            bc = described_class.new( size: 1 )
+
+            bc.queue job, (proc_to_method{})
+            bc.wait
+
+            expect(cj.id).to eq(job.id)
+        end
+    end
+
+    describe '.on_result' do
+        it 'assigns blocks to be passed each job result' do
+            cj = nil
+
+            described_class.on_result do |result|
+                cj ||= result.job
+            end
+
+            bc = described_class.new( size: 1 )
+
+            bc.queue job, (proc_to_method{})
+            bc.wait
+
+            expect(cj.id).to eq(job.id)
+        end
+    end
+
     describe '#initialize' do
         it "sets window width to #{SCNR::Engine::OptionGroups::Device}#width" do
             SCNR::Engine::Options.device.width = 400
@@ -51,40 +116,6 @@ describe SCNR::Engine::BrowserPool do
                 bc = described_class.new(
                     size: 1,
                     on_pop:    proc do |j|
-                        cj ||= j
-                    end
-                )
-
-                bc.queue job, (proc_to_method{})
-                bc.wait
-
-                expect(cj.id).to eq(job.id)
-            end
-        end
-
-        describe ':on_queue' do
-            it 'assigns blocks to be passed each queued job' do
-                cj = nil
-                bc = described_class.new(
-                    size: 1,
-                    on_queue:  proc do |j|
-                        cj ||= j
-                    end
-                )
-
-                bc.queue job, (proc_to_method{})
-
-                expect(cj.id).to eq(job.id)
-                bc.wait
-            end
-        end
-
-        describe ':on_job_done' do
-            it 'assigns blocks to be passed each finished job' do
-                cj = nil
-                bc = described_class.new(
-                    size:   1,
-                    on_job_done: proc do |j|
                         cj ||= j
                     end
                 )

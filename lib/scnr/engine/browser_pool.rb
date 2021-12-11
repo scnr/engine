@@ -12,7 +12,7 @@ module SCNR::Engine
 class BrowserPool
     include UI::Output
     include Utilities
-
+    include Support::Mixins::Observable
     prepend Support::Mixins::SpecInstances
 
     personalize_output!
@@ -50,6 +50,24 @@ class BrowserPool
     module Jobs
     end
 
+    class <<self
+        include Support::Mixins::Observable
+
+        # @!method on_queue( &block )
+        advertise :on_queue
+
+        # @!method on_pop( &block )
+        advertise :on_pop
+
+        # @!method on_job_done( &block )
+        advertise :on_job_done
+
+        # @!method on_result( &block )
+        advertise :on_result
+
+    end
+    observe!
+
     # Load all job types.
     Dir[lib + 'browser_pool/jobs/*'].each { |j| require j }
 
@@ -60,9 +78,7 @@ class BrowserPool
     #   Amount of browser instances in the pool.
     attr_accessor :size
 
-    attr_accessor :on_queue
     attr_accessor :on_pop
-    attr_accessor :on_job_done
 
     # @return   [Array<Worker>]
     #   Worker pool.
@@ -154,7 +170,7 @@ class BrowserPool
         synchronize do
             print_debug "Queueing: #{job}"
 
-            notify_on_queue job
+            self.class.notify_on_queue job
 
             self.class.increment_queued_job_count
 
@@ -216,7 +232,7 @@ class BrowserPool
             increment_completed_job_count
             add_to_total_job_time( job.time )
 
-            notify_on_job_done job
+            self.class.notify_on_job_done job
 
             if !job.never_ending?
                 @job_callbacks.delete job.id
@@ -254,6 +270,8 @@ class BrowserPool
 
         synchronize do
             print_debug "Got job result: #{result}"
+
+            self.class.notify_on_result result
 
             exception_jail( false ) do
                 @job_callbacks[result.job.id].call( *[
@@ -335,7 +353,11 @@ class BrowserPool
         {} while job_done?( job = @jobs.pop )
         print_debug "...popped: #{job}"
 
-        notify_on_pop job
+        if @on_pop
+            @on_pop.call job
+        end
+
+        self.class.notify_on_pop job
 
         job
     end
@@ -414,23 +436,6 @@ class BrowserPool
         if block_given?
             fail ArgumentError, 'API change, no blocks allowed.'
         end
-    end
-
-    def notify_on_queue( job )
-        return if !@on_queue
-        @on_queue.call job
-    end
-
-    def notify_on_job_done( job )
-        return if !@on_job_done
-
-        @on_job_done.call job
-    end
-
-    def notify_on_pop( job )
-        return if !@on_pop
-
-        @on_pop.call job
     end
 
     def fail_if_shutdown
