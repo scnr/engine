@@ -57,8 +57,8 @@ Dom {
 # Provides access to checks.
 Checks {
 
-    # This will run from the context of SCNR::Engine::Check::Base; it
-    # basically creates a new check component on the fly.
+    # The `as` block will run from the context of SCNR::Engine::Check::Base;
+    # it basically creates a new check component on the fly.
     #
     # Does something really simple, logs an issue for each 404 page.
     as :not_found,
