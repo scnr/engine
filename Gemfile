@@ -7,9 +7,12 @@ gem 'nokogiri', github: 'sparklemotion/nokogiri'
 gem 'rake', '11.3.0'
 gem 'cuboid', path: '../../../qadron/cuboid/'
 gem 'dsel', path: '../../../qadron/dsel/'
-# gem 'pry'
 
+gem 'arachni-reactor',      path: '../../../arachni-reactor'
+gem 'ethon',      path: '../../../ethon'
 # gem 'ethon', github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'
+
+# gem 'pry'
 
 group :docs do
     gem 'yard'
