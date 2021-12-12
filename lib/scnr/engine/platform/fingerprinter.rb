@@ -37,8 +37,7 @@ class Fingerprinter
     end
 
     def html?
-        @is_html ||= page.response.headers['content-type'].to_s.
-            downcase.include?( 'text/html' )
+        @is_html ||= page.response.html?
     end
 
     # @param    [String]    string
@@ -47,7 +46,8 @@ class Fingerprinter
     #   `true` if either {#server} or {#powered_by} include `string`,
     #   `false` otherwise.
     def server_or_powered_by_include?( string )
-        server.include?( string.downcase ) || powered_by.include?( string.downcase )
+        string = string.downcase
+        server.include?( string ) || powered_by.include?( string )
     end
 
     # @return   [SCNR::Engine::URI]
@@ -78,13 +78,13 @@ class Fingerprinter
     # @return   [String. nil]
     #   Downcased value of the `X-Powered-By` header.
     def powered_by
-        headers['x-powered-by'].to_s.downcase
+        @powered_by ||= headers['x-powered-by'].to_s.downcase
     end
 
     # @return   [String. nil]
     #   Downcased value of the `Server` header.
     def server
-        headers['server'].to_s.downcase
+        @server ||= headers['server'].to_s.downcase
     end
 
     # @return   [String]
