@@ -16,7 +16,7 @@ class SSLInterceptor < Connection
 
     include TLS
 
-    CA_PASSPHRASE = 'interceptor'
+    CA_PASSPHRASE  = 'interceptor'
     CA_CERTIFICATE = File.dirname( __FILE__ ) + '/ssl-interceptor-cacert.pem'
     CA_KEY         = File.dirname( __FILE__ ) + '/ssl-interceptor-cakey.pem'
 
@@ -34,7 +34,7 @@ class SSLInterceptor < Connection
         end
 
         def certificate_for( host )
-            synchronize { _certificate_for( host ) }.dup
+            synchronize { _certificate_for( host ) }
         end
 
         private
@@ -86,6 +86,10 @@ class SSLInterceptor < Connection
         end
     end
     synchronize{}
+    certificates
+    ca
+    ca_key
+    keypair
 
     def initialize( options )
         super
