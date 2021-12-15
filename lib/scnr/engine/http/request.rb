@@ -880,7 +880,6 @@ class Request < Message
 
         treq = self.to_typhoeus
 
-        # self.to_typhoeus.run
         hydra = (Thread.current[:client_run_hydra] ||= Typhoeus::Hydra.new)
         hydra.queue treq
         hydra.run
