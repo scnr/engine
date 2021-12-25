@@ -227,11 +227,13 @@ class Connection < Arachni::Reactor::Connection
         if @ssl_interceptor
             @ssl_interceptor.close( reason )
             @ssl_interceptor = nil
+            @ssl_interceptor_reactor.stop
         end
 
         if @tunnel
             @tunnel.close_without_callback
             @tunnel = nil
+            @tunnel_reactor.stop
         end
     end
 
@@ -279,15 +281,21 @@ class Connection < Arachni::Reactor::Connection
 
         print_debug_level_3 "Starting interceptor on port: #{@interceptor_port}"
 
-        @ssl_interceptor = reactor.listen(
-          @options[:address], @interceptor_port, SSLInterceptor,
-          @options.merge( origin_host: origin_host )
-        )
+        @ssl_interceptor_reactor = Arachni::Reactor.new
+        @ssl_interceptor_reactor.run_in_thread do
+            @ssl_interceptor = @ssl_interceptor_reactor.listen(
+              @options[:address], @interceptor_port, SSLInterceptor,
+              @options.merge( origin_host: origin_host )
+            )
+        end
 
-        @tunnel = reactor.connect(
-            @options[:address], @interceptor_port, Tunnel,
-            @options.merge( client: self )
-        )
+        @tunnel_reactor = Arachni::Reactor.new
+        @tunnel_reactor.run_in_thread do
+            @tunnel = @tunnel_reactor.connect(
+              @options[:address], @interceptor_port, Tunnel,
+              @options.merge( client: self )
+            )
+        end
     end
 
     def cleanup_request_headers( headers )
