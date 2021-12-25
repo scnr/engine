@@ -99,7 +99,12 @@ class SSLInterceptor < Connection
 
     def on_connect
         print_debug_level_3 'Connected, starting SSL handshake.'
-        start_tls
+
+        start_tls(
+          ca:          CA_CERTIFICATE,
+          certificate: self.class.certificate_for( @origin_host ),
+          key:         self.class.keypair
+        )
     end
 
     def on_close( reason = nil )
@@ -107,29 +112,6 @@ class SSLInterceptor < Connection
         @parent.mark_connection_inactive self
     end
 
-    def start_tls
-        if @socket.is_a? OpenSSL::SSL::SSLSocket
-            @ssl_context = @socket.context
-            return
-        end
-
-        if @role == :server
-            @ssl_context      = OpenSSL::SSL::SSLContext.new
-            @ssl_context.cert = self.class.certificate_for( @origin_host )
-            @ssl_context.key  = self.class.keypair
-
-            @socket = OpenSSL::SSL::SSLServer.new( @socket, @ssl_context )
-        else
-            @socket = OpenSSL::SSL::SSLSocket.new( @socket, @ssl_context )
-            @socket.sync_close = true
-
-            # We've switched to SSL, a connection needs to be re-established
-            # via the SSL handshake.
-            @connected         = false
-        end
-
-        @socket
-    end
 end
 
 end
