@@ -227,7 +227,6 @@ class Connection < Arachni::Reactor::Connection
         if @ssl_interceptor
             @ssl_interceptor.close( reason )
             @ssl_interceptor = nil
-            @ssl_interceptor_reactor.stop
         end
 
         if @tunnel
@@ -280,13 +279,10 @@ class Connection < Arachni::Reactor::Connection
 
         print_debug_level_3 "Starting interceptor on port: #{@interceptor_port}"
 
-        @ssl_interceptor_reactor = Arachni::Reactor.new
-        @ssl_interceptor_reactor.run_in_thread do
-            @ssl_interceptor = @ssl_interceptor_reactor.listen(
-              @options[:address], @interceptor_port, SSLInterceptor,
-              @options.merge( origin_host: origin_host )
-            )
-        end
+        @ssl_interceptor = reactor.listen(
+          @options[:address], @interceptor_port, SSLInterceptor,
+          @options.merge( origin_host: origin_host )
+        )
 
         @tunnel = reactor.connect(
             @options[:address], @interceptor_port, Tunnel,
