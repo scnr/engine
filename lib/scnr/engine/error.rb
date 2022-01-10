@@ -6,7 +6,8 @@
     web site for more information on licensing and terms of use.
 =end
 
-module SCNR::Engine
+module SCNR
+module Engine
 
 # It provides a namespace for all system errors.
 #
@@ -38,4 +39,5 @@ class Error < StandardError
 
 end
 
+end
 end
