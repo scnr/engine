@@ -1,18 +1,13 @@
 source 'https://rubygems.org'
 
 # gem 'bootsnap', require: false
+gem 'rake', '11.3.0'
 
 gem 'nokogiri', github: 'sparklemotion/nokogiri'
+gem 'ethon',    github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'
 
-gem 'rake', '11.3.0'
-gem 'cuboid', path: '../../../qadron/cuboid/'
-gem 'dsel', path: '../../../qadron/dsel/'
-
-gem 'arachni-reactor',      path: '../../../arachni-reactor'
-gem 'ethon',      path: '../../../ethon'
-# gem 'ethon', github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'
-
-# gem 'pry'
+gem 'cuboid',   github: 'qadron/cuboid'
+gem 'dsel',     github: 'qadron/dsel'
 
 group :docs do
     gem 'yard'
@@ -31,10 +26,6 @@ group :spec do
 end
 
 group :prof do
-
-    # if File.exist? '../monitor'
-    #     gem 'scnr-monitor', path: '../monitor'
-    # end
 
     gem 'benchmark-ips'
     gem 'memory_profiler'
