@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
     s.authors           = [ 'Tasos Laskos' ]
     s.licenses          = ['All rights reserved.']
 
-    s.extensions       += %w(ext/Rakefile ext/engine/Cargo.lock ext/engine/Cargo.toml ext/engine/README.md)
+    s.extensions       += %w(ext/Rakefile ext/engine/Cargo.toml ext/engine/README.md)
     s.extensions       += Dir.glob( 'ext/engine/src/**/**' )
 
     s.files            += Dir.glob( 'ext/engine/target/release/*.so' )
