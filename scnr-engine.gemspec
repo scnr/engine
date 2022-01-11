@@ -24,9 +24,9 @@ Gem::Specification.new do |s|
     s.authors           = [ 'Tasos Laskos' ]
     s.licenses          = ['All rights reserved.']
 
-    s.extensions       += Dir.glob( 'ext/target/release/libscnr_engine.*' )
+    s.extensions       += Dir.glob( 'ext/**/**' )
 
-    s.files            += Dir.glob( 'ext/target/release/libscnr_engine.*' )
+    s.files            += Dir.glob( 'ext/engine/target/release/*.so' )
     s.files            += Dir.glob( 'config/**/**' )
     s.files            += Dir.glob( 'gfx/**/**' )
     s.files            += Dir.glob( 'lib/**/**' )
