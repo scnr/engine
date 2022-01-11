@@ -9,8 +9,7 @@
 module SCNR
 module Engine
 
-    # the universal system version
-    VERSION = IO.read( File.dirname( __FILE__ ) + '/../version' ).strip
+    VERSION = IO.read( File.dirname( __FILE__ ) + '/version' ).strip
 
 end
 end
