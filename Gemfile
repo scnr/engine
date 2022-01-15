@@ -23,6 +23,10 @@ group :spec do
     if File.exist? '../ui-cli'
         gem 'scnr-ui-cli', path: '../ui-cli'
     end
+
+    if File.exist? '../application'
+        gem 'scnr-application', path: '../application'
+    end
 end
 
 group :prof do

@@ -71,7 +71,7 @@ describe SCNR::Engine::OptionGroups::Paths do
 
     describe '#logs' do
         it 'returns the default location' do
-            expect(subject.logs).to eq("#{subject.root}logs/")
+            expect(subject.logs).to eq("#{subject.home_path}logs/")
         end
 
         context 'when the SCNR_ENGINE_LOGDIR environment variable' do
@@ -90,13 +90,14 @@ describe SCNR::Engine::OptionGroups::Paths do
                 end
 
                 expect(described_class.new.logs).to eq('logs-stuff/')
+                @created_resources << described_class.new.logs
             end
         end
     end
 
     describe '#snapshots' do
         it 'returns the default location' do
-            expect(subject.snapshots).to eq("#{subject.root}snapshots/")
+            expect(subject.snapshots).to eq("#{subject.home_path}snapshots/")
         end
 
         context "when #{described_class}.config['snapshots']" do
@@ -108,13 +109,14 @@ describe SCNR::Engine::OptionGroups::Paths do
                 end
 
                 expect(described_class.new.snapshots).to eq('snapshots-stuff/')
+                @created_resources << described_class.new.snapshots
             end
         end
     end
 
     describe '#reports' do
         it 'returns the default location' do
-            expect(subject.reports).to eq("#{subject.root}reports/")
+            expect(subject.reports).to eq("#{subject.home_path}reports/")
         end
 
         context "when #{described_class}.config['reports']" do
@@ -126,6 +128,7 @@ describe SCNR::Engine::OptionGroups::Paths do
                 end
 
                 expect(described_class.new.reports).to eq('reports-stuff/')
+                @created_resources << described_class.new.reports
             end
         end
     end
