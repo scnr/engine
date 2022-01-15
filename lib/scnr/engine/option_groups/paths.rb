@@ -100,16 +100,21 @@ class Paths < SCNR::Engine::OptionGroup
 
     def initialize
         @root = self.root_path
+        FileUtils.mkdir_p home_path
 
-        @snapshots = self.config['snapshots'] || @root + 'snapshots/'
-        @reports   = self.config['reports']   || @root + 'reports/'
+        @snapshots = self.config['snapshots'] || home_path + '/snapshots/'
+        FileUtils.mkdir_p @snapshots
+
+        @reports = self.config['reports']   || home_path + '/reports/'
+        FileUtils.mkdir_p @reports
 
         if ENV['SCNR_ENGINE_LOGDIR']
             @logs = "#{ENV['SCNR_ENGINE_LOGDIR']}/"
         elsif self.config['logs']
             @logs = self.config['logs']
         else
-            @logs = "#{@root}logs/"
+            @logs = "#{home_path}/logs/"
+            FileUtils.mkdir_p @logs
         end
 
         @lib         = @root    + 'lib/scnr/engine/'
@@ -130,6 +135,10 @@ class Paths < SCNR::Engine::OptionGroup
         end
 
         tmpdir
+    end
+
+    def home_path
+        @home_path ||= "#{ENV['HOME']}/.scnr/"
     end
 
     def root_path
