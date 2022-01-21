@@ -1,5 +1,5 @@
 =begin
-    Copyright 2020 Tasos Laskos <tasos.laskos@gmail.com> 
+    Copyright 2020-2022 Tasos Laskos <tasos.laskos@gmail.com> 
 
     This file is part of the SCNR::Engine project and is subject to
     redistribution and commercial restrictions. Please see the SCNR::Engine

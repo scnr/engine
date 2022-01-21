@@ -1,3 +1,3 @@
 # License
 
-All rights reserved, copyright 2020 Tasos Laskos <tasos.laskos@gmail.com>.
+All rights reserved, Copyright 2020-2022 Tasos Laskos <tasos.laskos@gmail.com>.
