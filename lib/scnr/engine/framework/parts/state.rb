@@ -51,7 +51,7 @@ module State
             SCNR::Engine::Check::Manager.reset
             SCNR::Engine::Plugin::Manager.reset
             SCNR::Engine::Reporter::Manager.reset
-            HTTP::Client.reset
+            HTTP::Client.reset true
             SCNR::Engine::Browser.reset
         end
     end

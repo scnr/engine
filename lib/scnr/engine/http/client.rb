@@ -135,7 +135,7 @@ class Client
 
     # @return   [SCNR::Engine::HTTP]
     #   Reset `self`.
-    def reset( hooks_too = true )
+    def reset( hooks_too = false )
         clear_observers if hooks_too
         State.http.clear
 

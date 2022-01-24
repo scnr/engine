@@ -53,7 +53,7 @@ def reset_framework
     # SCNR::Engine::UI::Output.mute
 
     SCNR::Engine::Framework.reset
-    SCNR::Engine::HTTP::Client.reset
+    SCNR::Engine::HTTP::Client.reset true
 end
 
 def reset_all
