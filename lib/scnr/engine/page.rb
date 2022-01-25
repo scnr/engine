@@ -625,6 +625,7 @@ class Page
         end
 
         data.delete 'cookie_jar'
+        data.delete 'headers'
 
         data
     end
