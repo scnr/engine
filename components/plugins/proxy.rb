@@ -115,6 +115,8 @@ class SCNR::Engine::Plugins::Proxy < SCNR::Engine::Plugin::Base
     end
 
     def request_handler( req, res )
+        req.update_cookies = true
+
         url = req.url
 
         if !system_url?( url ) && req.scope.out?
@@ -137,7 +139,7 @@ class SCNR::Engine::Plugins::Proxy < SCNR::Engine::Plugin::Base
         # (so that we can check those requests too prevent another user
         # from shutting down the proxy).
         #
-        p = URI( framework.options.url )
+        p = URI( SCNR::Engine::Options.url )
 
         # This is the URL we'll use to sign in and set the cookie for the
         # domain of the scan target.
@@ -187,7 +189,11 @@ class SCNR::Engine::Plugins::Proxy < SCNR::Engine::Plugin::Base
         if shutdown?( url )
             print_status 'Shutting down...'
             set_response_body( res, erb( :shutdown_message ) )
-            clean_up
+
+            Thread.new do
+                sleep 1
+                clean_up
+            end
             return
         end
 
@@ -223,8 +229,8 @@ class SCNR::Engine::Plugins::Proxy < SCNR::Engine::Plugin::Base
                         when '/record/stop'
                             record_stop
                             erb :verify_login_check, verify_fail: false, params: {
-                                'url'     => framework.options.session.check_url,
-                                'pattern' => framework.options.session.check_pattern
+                                'url'     => SCNR::Engine::Options.session.check_url,
+                                'pattern' => SCNR::Engine::Options.session.check_pattern
                             }
 
                         when '/verify/login_check'
@@ -232,8 +238,8 @@ class SCNR::Engine::Plugins::Proxy < SCNR::Engine::Plugin::Base
                             if req.method != :post
                                 erb :verify_login_check, verify_fail: false
                             else
-                                framework.options.session.check_url     = params['url']
-                                framework.options.session.check_pattern = params['pattern']
+                                SCNR::Engine::Options.session.check_url     = params['url']
+                                SCNR::Engine::Options.session.check_pattern = params['pattern']
 
                                 if !session.logged_in?
                                     erb :verify_login_check,
@@ -535,7 +541,7 @@ a way to restrict usage enough to avoid users unwittingly interfering with each
 others' sessions.
 } % SCNR::Engine::HTTP::ProxyServer::SSLInterceptor::CA_CERTIFICATE,
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
-            version:     '0.4',
+            version:     '0.4.1',
             options:     [
                 Options::Port.new( :port,
                     description: 'Port to bind to.',

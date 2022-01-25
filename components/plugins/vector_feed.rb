@@ -90,7 +90,7 @@ class SCNR::Engine::Plugins::VectorFeed < SCNR::Engine::Plugin::Base
 
     def page_from_vector( vector )
         Page.from_data(
-            url:      vector[:url] || framework.options.url.to_s,
+            url:      vector[:url] || SCNR::Engine::Options.url.to_s,
             response: {
                 code:    Integer( vector[:code] || 200 ),
                 body:    vector[:body]     || '',
@@ -100,7 +100,7 @@ class SCNR::Engine::Plugins::VectorFeed < SCNR::Engine::Plugin::Base
     end
 
     def hash_to_element( vector )
-        owner  = framework.options.url.to_s
+        owner  = SCNR::Engine::Options.url.to_s
         action = vector[:action]
         inputs = vector[:inputs]
         source = vector[:source].to_s
@@ -226,7 +226,7 @@ Example YAML file:
 
 },
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
-            version:     '0.2.1',
+            version:     '0.2.2',
             options:     [
                 Options::Object.new( :vectors,
                     description: ' Vector array (for configuration over RPC).'
