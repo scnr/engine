@@ -14,12 +14,12 @@ class Chrome < Base
 
     REQUIREMENTS = {
         'chrome'       => {
-            min: 98,
-            max: 98
+            min: 97,
+            max: 100
         },
         'chromedriver' => {
-            min: 98,
-            max: 98
+            min: 97,
+            max: 100
         }
     }
 
