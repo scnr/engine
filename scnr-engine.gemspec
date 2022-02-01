@@ -84,8 +84,8 @@ Gem::Specification.new do |s|
     s.add_dependency 'msgpack',             '1.1.0'
 
     # Optimized JSON.
-    s.add_dependency 'oj',                  '3.11.5'
-    s.add_dependency 'oj_mimic_json',       '1.0.1'
+    # s.add_dependency 'oj',                  '3.11.5'
+    # s.add_dependency 'oj_mimic_json',       '1.0.1'
 
     # Web server
     s.add_dependency 'puma',                '5.5.2'

@@ -13,8 +13,8 @@ require 'rubygems'
 require 'bundler/setup'
 require 'tmpdir'
 require 'cuboid'
-require 'oj'
-require 'oj_mimic_json'
+# require 'oj'
+# require 'oj_mimic_json'
 
 require_relative 'engine/version'
 
