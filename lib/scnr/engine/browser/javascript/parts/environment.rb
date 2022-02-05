@@ -80,8 +80,24 @@ module Environment
                 return
             end
         end
-
         print_debug_level_2 '...done.'
+
+        print_debug_level_2 'Waiting for the DOM to settle...'
+        digest = @dom_monitor.digest
+        t      = Time.now
+        loop do
+            sleep 0.05
+
+            if Time.now - t > Options.dom.job_timeout
+                print_debug_level_2 '...timed out.'
+                break
+            end
+
+            break if digest == @dom_monitor.digest
+            digest = @dom_monitor.digest
+        end
+        print_debug_level_2 '...done.'
+
         true
     end
 
