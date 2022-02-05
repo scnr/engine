@@ -37,6 +37,7 @@ describe SCNR::Engine::Browser::Javascript::Parts::Environment do
 
     describe '#wait_till_ready' do
         it 'waits until the JS environment is #ready?'
+        it 'waits for the DOM to settle'
 
         context 'when it exceeds Options.dom.job_timeout' do
             it 'returns' do
