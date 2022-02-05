@@ -86,7 +86,7 @@ module Environment
         digest = @dom_monitor.digest
         t      = Time.now
         loop do
-            sleep 0.05
+            sleep 0.1
 
             if Time.now - t > Options.dom.job_timeout
                 print_debug_level_2 '...timed out.'
