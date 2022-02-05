@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # gem 'bootsnap', require: false
 gem 'rake', '11.3.0'
 
-gem 'nokogiri', github: 'sparklemotion/nokogiri'
+gem 'nokogiri', github: 'sparklemotion/nokogiri', branch: 'main'
 gem 'ethon',    github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'
 
 gem 'cuboid',   github: 'qadron/cuboid'
