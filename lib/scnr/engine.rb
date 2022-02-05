@@ -10,11 +10,13 @@ Encoding.default_external = 'BINARY'
 Encoding.default_internal = 'BINARY'
 
 require 'rubygems'
+
+require 'oj'
+require 'oj_mimic_json'
+
 require 'bundler/setup'
 require 'tmpdir'
 require 'cuboid'
-require 'oj'
-require 'oj_mimic_json'
 
 require_relative 'engine/version'
 
