@@ -15,11 +15,11 @@ class Firefox < Base
     REQUIREMENTS = {
         'firefox'     => {
             min: 96,
-            max: 96
+            max: 1000
         },
         'geckodriver' => {
             min: 0.30,
-            max: 0.30
+            max: 1000
         }
     }
 
