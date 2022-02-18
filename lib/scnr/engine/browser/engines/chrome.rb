@@ -47,13 +47,7 @@ class Chrome < Base
             if SCNR::Engine.mac?
                 browser_bin = self.find_executable( 'Google Chrome' )
             else
-                browser_bin = begin
-                                  self.find_executable( 'google-chrome' )
-                              rescue
-                                  self.find_executable( 'google-chrome-beta' )
-                              rescue
-                                  self.find_executable( 'chrome' )
-                              end
+                browser_bin = self.find_executable( 'google-chrome' )
             end
 
             driver_bin = self.find_executable( DRIVER )
