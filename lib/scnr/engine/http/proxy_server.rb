@@ -7,7 +7,6 @@
 =end
 
 require 'http/parser'
-require 'arachni/reactor'
 
 require_relative 'proxy_server/tunnel'
 require_relative 'proxy_server/connection'
@@ -37,7 +36,7 @@ class ProxyServer
     #   Block to be called to handle each request as it arrives -- will be
     #   passed the request and response.
     def initialize( options = {} )
-        @reactor = Arachni::Reactor.new
+        @reactor = Raktr.new
         @options = options
 
         @active_connections = ::Set.new
@@ -84,7 +83,7 @@ class ProxyServer
         begin
             @reactor.stop
             @reactor.wait
-        rescue Arachni::Reactor::Error::NotRunning
+        rescue Raktr::Error::NotRunning
         end
 
         print_debug_level_2 '...shutdown.'

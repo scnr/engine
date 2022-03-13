@@ -10,7 +10,7 @@ module SCNR::Engine
 module HTTP
 class ProxyServer
 
-class Connection < Arachni::Reactor::Connection
+class Connection < Raktr::Connection
     include SCNR::Engine::UI::Output
     personalize_output!
 
@@ -90,7 +90,7 @@ class Connection < Arachni::Reactor::Connection
 
         host = (headers['Host'] || @parser.request_url).split( ':', 2 ).first
 
-        @tunnel = reactor.connect( host, 80, Tunnel, @options.merge( client: self ) )
+        @tunnel = raktr.connect( host, 80, Tunnel, @options.merge( client: self ) )
 
         # This is our last HTTP message, from this point on we'll only be
         # tunnelling to the origin server.
@@ -126,7 +126,7 @@ class Connection < Arachni::Reactor::Connection
                 print_debug_level_3 '-- Handler approves, running...'
 
                 @parent.thread_pool.post do
-                    self.class.bridge( self, reactor, request )
+                    self.class.bridge( self, raktr, request )
                 end
             else
                 print_debug_level_3 '-- Handler did not approve, will not run.'
@@ -136,7 +136,7 @@ class Connection < Arachni::Reactor::Connection
                     return
                 end
 
-                reactor.schedule do
+                raktr.schedule do
                     handle_response( response )
                     print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
                     print_debug_level_3 'Processed request.'
@@ -146,12 +146,12 @@ class Connection < Arachni::Reactor::Connection
             print_debug_level_3 '-- Running...'
 
             @parent.thread_pool.post do
-                self.class.bridge( self, reactor, request )
+                self.class.bridge( self, raktr, request )
             end
         end
     end
 
-    def self.bridge( connection, reactor, request )
+    def self.bridge( connection, raktr, request )
         response = request.run
 
         if connection.closed?
@@ -159,7 +159,7 @@ class Connection < Arachni::Reactor::Connection
             return
         end
 
-        reactor.schedule do
+        raktr.schedule do
             connection.handle_response( response )
             print_debug_level_3 "-- ...completed in #{response.time}: #{response.status_line}"
             print_debug_level_3 'Processed request.'
@@ -281,7 +281,7 @@ class Connection < Arachni::Reactor::Connection
 
         print_debug_level_3 "Starting interceptor on port: #{@interceptor_port}"
 
-        @ssl_interceptor_reactor = Arachni::Reactor.new
+        @ssl_interceptor_reactor = Raktr.new
         @ssl_interceptor_reactor.run_in_thread do
             @ssl_interceptor = @ssl_interceptor_reactor.listen(
               @options[:address], @interceptor_port, SSLInterceptor,
@@ -289,7 +289,7 @@ class Connection < Arachni::Reactor::Connection
             )
         end
 
-        @tunnel_reactor = Arachni::Reactor.new
+        @tunnel_reactor = Raktr.new
         @tunnel_reactor.run_in_thread do
             @tunnel = @tunnel_reactor.connect(
               @options[:address], @interceptor_port, Tunnel,

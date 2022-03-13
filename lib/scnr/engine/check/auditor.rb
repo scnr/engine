@@ -547,7 +547,7 @@ module Auditor
     #
     # @yield       [element]
     #   Each candidate element.
-    # @yieldparam [Arachni::Element]
+    # @yieldparam [Element]
     def each_candidate_element( &block )
         types = self.class.elements
         types = ELEMENTS_WITH_INPUTS if types.empty?
@@ -595,7 +595,7 @@ module Auditor
     #
     # @yield       [element]
     #   Each candidate element.
-    # @yieldparam [Arachni::Element::DOM]
+    # @yieldparam [Element::DOM]
     def each_candidate_dom_element( &block )
         types = self.class.elements
         types = DOM_ELEMENTS_WITH_INPUTS if types.empty?

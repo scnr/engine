@@ -6,9 +6,6 @@ gem 'rake', '11.3.0'
 gem 'nokogiri', github: 'sparklemotion/nokogiri', branch: 'main'
 gem 'ethon',    github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'
 
-gem 'cuboid',   github: 'qadron/cuboid'
-gem 'dsel',     github: 'qadron/dsel'
-
 group :docs do
     gem 'yard'
     gem 'redcarpet'

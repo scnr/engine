@@ -97,9 +97,6 @@ Gem::Specification.new do |s|
     s.add_dependency 'sinatra',             '2.1.0'
     s.add_dependency 'sinatra-contrib',     '2.1.0'
 
-    # RPC client/server implementation.
-    s.add_dependency 'arachni-rpc',         '~> 0.2.1.4'
-
     # HTTP client.
     s.add_dependency 'typhoeus',            '1.4.0'
 

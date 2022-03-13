@@ -8,7 +8,6 @@
 
 require_relative '../../support/helpers/paths'
 require_relative 'web_server_manager'
-require 'arachni/rpc'
 
 # @note Needs `ENV['WEB_SERVER_DISPATCHER']` in the format of `host:port`.
 #

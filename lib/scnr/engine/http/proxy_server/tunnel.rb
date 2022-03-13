@@ -11,7 +11,7 @@ module HTTP
 class ProxyServer
 
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
-class Tunnel < Arachni::Reactor::Connection
+class Tunnel < Raktr::Connection
     include SCNR::Engine::UI::Output
     personalize_output!
 

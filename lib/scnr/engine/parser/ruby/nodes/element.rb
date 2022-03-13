@@ -1,8 +1,8 @@
 =begin
     Copyright 2020-2022 Tasos Laskos <tasos.laskos@gmail.com>
 
-    This file is part of the Arachni Framework project and is subject to
-    redistribution and commercial restrictions. Please see the Arachni Framework
+    This file is part of the SCNR::Engine Framework project and is subject to
+    redistribution and commercial restrictions. Please see the SCNR::Engine Framework
     web site for more information on licensing and terms of use.
 =end
 
