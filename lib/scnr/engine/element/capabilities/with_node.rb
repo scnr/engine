@@ -15,7 +15,6 @@ module Element::Capabilities
 module WithNode
     include WithSource
 
-    # @return [Ox::Element]
     def node
         return if !@source
         SCNR::Engine::Parser.parse_fragment( @source )
