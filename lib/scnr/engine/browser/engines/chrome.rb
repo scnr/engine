@@ -34,6 +34,8 @@ class Chrome < Base
 
         '--disable-plugins',
 
+        '--no-sandbox',
+
         '--process-per-site'
     ]
 
