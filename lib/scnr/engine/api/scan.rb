@@ -109,6 +109,7 @@ child :scan, :Scan do
         resume!
         abort!
         suspend! suspending? suspended?
+        snapshot_path
     ).each do |m|
         send( "def_#{m}", &proc { UnsafeFramework.send( m ) } )
     end
