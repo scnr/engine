@@ -24,7 +24,7 @@ class Report < SCNR::Engine::OptionGroup
 
         if path.end_with?( '/' ) && !File.exist?( path )
             raise ArgumentError,
-                  "Snapshot location does not exist: #{path}"
+                  "Location does not exist: #{path}"
         end
 
         path = File.expand_path( path )
@@ -36,7 +36,7 @@ class Report < SCNR::Engine::OptionGroup
     end
 
     def default_path
-        Paths.config['reports']
+        Paths.new.reports
     end
 
     def defaults

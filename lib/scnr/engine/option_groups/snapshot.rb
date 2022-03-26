@@ -14,7 +14,7 @@ module SCNR::Engine::OptionGroups
 class Snapshot < Report
 
     def default_path
-        Paths.config['snapshots']
+        Paths.new.snapshots
     end
 
 end
