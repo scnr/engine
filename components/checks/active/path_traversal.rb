@@ -50,19 +50,13 @@ class SCNR::Engine::Checks::PathTraversal < SCNR::Engine::Check::Base
     def self.add_traversals( payload )
         trv = '/'
         traversals = (MINIMUM_TRAVERSALS..MAXIMUM_TRAVERSALS).map do
-            "#{trv << '../'}#{payload}"
-        end
+            ["#{trv << '../'}#{payload}", "file://#{trv}#{payload}"]
+        end.flatten
 
         # Use max traversal only, 99% of the time it's enough because it'll
         # get us to root and then go from there.
         if Options.audit.low_paranoia? || Options.audit.medium_paranoia?
             return traversals.last
-        end
-
-        # Use traversals 1-5 in case we need to get them just right and also
-        # the max one in case more than 6 traversals are necessary and we don't.
-        if Options.audit.high_paranoia?
-            return traversals[0..4] + [traversals.last]
         end
 
         if Options.audit.high_paranoia?
@@ -98,7 +92,7 @@ class SCNR::Engine::Checks::PathTraversal < SCNR::Engine::Check::Base
         end
 
         @payloads[paranoia][:java] = [ '/../../', '../../', ].map do |trv|
-             [ "#{trv}WEB-INF/web.xml" ]
+            [ "#{trv}WEB-INF/web.xml", "file://#{trv}WEB-INF/web.xml" ]
         end.flatten
 
         @payloads[paranoia]
