@@ -69,7 +69,12 @@ pub fn parse( html: &str, filter: bool ) -> node::Handle {
     let _ = chunk.try_push_bytes( html.as_bytes());
 
     let mut input = BufferQueue::new();
-    input.push_back( chunk.try_reinterpret().unwrap() );
+
+    match chunk.try_reinterpret() {
+        Result::Ok( val ) => input.push_back( val ),
+        Result::Err( _err ) =>
+            return root
+    }
 
     let mut tok = Tokenizer::new( sink, TokenizerOpts { .. Default::default() });
 
