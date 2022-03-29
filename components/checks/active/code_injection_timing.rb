@@ -22,8 +22,6 @@
 # @see http://en.wikipedia.org/wiki/Eval#Ruby
 class SCNR::Engine::Checks::CodeInjectionTiming < SCNR::Engine::Check::Base
 
-    prefer :code_injection
-
     OPTIONS = {
         format:  [Format::STRAIGHT],
         timeout: 4000

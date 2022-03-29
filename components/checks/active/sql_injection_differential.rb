@@ -19,8 +19,6 @@
 # @see https://www.owasp.org/index.php/Blind_SQL_Injection
 class SCNR::Engine::Checks::SqlInjectionDifferential < SCNR::Engine::Check::Base
 
-    prefer :sql_injection
-
     def self.queries_for_expression( expression )
         (@templates ||= read_file( 'payloads.txt' )).map do |template|
             [ '\'', '"', '' ].map do |quote|

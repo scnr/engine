@@ -15,8 +15,6 @@
 # @see https://www.owasp.org/index.php/Blind_SQL_Injection
 class SCNR::Engine::Checks::SqlInjectionTiming < SCNR::Engine::Check::Base
 
-    prefer :sql_injection, :sql_injection_differential
-
     OPTIONS = {
         format:          [Format::APPEND],
         timeout:         4000,
