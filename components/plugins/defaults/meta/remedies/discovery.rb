@@ -44,6 +44,8 @@ class SCNR::Engine::Plugins::Discovery < SCNR::Engine::Plugin::Base
             # Skip it if already flagged as untrusted.
             next if issue.untrusted?
 
+            next if issue.response.body.strip.empty?
+
             # We'll do this per path since 404 handlers and such operate per
             # directory...usually...probably...hopefully.
             path = File.dirname( uri_parse( issue.vector.action ).path )
