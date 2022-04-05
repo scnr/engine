@@ -147,6 +147,14 @@ module Analysis
             # Append a random string to the resource name.
             g << proc { url.gsub( rn, "#{rn}#{random_string[0..precision]}" ) }
 
+            g << proc { url.gsub( rn, "#{rn}-#{random_string[0..precision]}" ) }
+
+            g << proc { url.gsub( rn, "#{rn}/#{random_string[0..precision]}" ) }
+
+            g << proc do
+                url.gsub( rn.split( '.', 2 ).first, "#{rn}(#{random_string[0..precision]}).#{parsed.resource_extension}" )
+            end
+
             # Prepend a random string to the resource name.
             g << proc { url.gsub( rn, "#{random_string[0..precision]}#{rn}" ) }
         end
