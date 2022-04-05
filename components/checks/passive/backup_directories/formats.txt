@@ -33,7 +33,6 @@ Copy of Copy of [name]/
 [name].bak/
 [name].bac/
 [name].backup/
-[name].1/
 [name].a/
 [name].inc/
 [name].include/
