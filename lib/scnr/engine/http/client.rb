@@ -209,7 +209,7 @@ class Client
     # Runs all queued requests
     def run
         exception_jail false do
-            @burst_runtime = nil
+            @burst_runtime = 0
 
             loop do
                 @soft_404.wait
