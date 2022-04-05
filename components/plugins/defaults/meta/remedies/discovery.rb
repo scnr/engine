@@ -29,8 +29,14 @@ class SCNR::Engine::Plugins::Discovery < SCNR::Engine::Plugin::Base
 
         # URL path => size of response bodies.
         response_size_per_path  = {}
-
         issue_count_per_path = {}
+
+        issue_digests_per_check = {}
+
+        signatures_per_check  = {}
+
+        response_size_per_check  = {}
+        issue_count_per_check = {}
 
         Data.issues.each do |issue|
             next if !issue.tags.includes_tags?( :discovery )
@@ -53,6 +59,18 @@ class SCNR::Engine::Plugins::Discovery < SCNR::Engine::Plugin::Base
             issue_digests_per_path[path] ||= []
             issue_digests_per_path[path] << issue.digest
 
+            check = issue.name
+            issue_count_per_check[check] ||= 0
+            issue_count_per_check[check]  += 1
+
+            # Gather total response sizes per path.
+            response_size_per_check[check] ||= 0
+            response_size_per_check[check]  += issue.response.body.size
+
+            # Categorize issues per path as well.
+            issue_digests_per_check[check] ||= []
+            issue_digests_per_check[check] << issue.digest
+
             # Extract the static parts of the responses in order to determine
             # how much of them doesn't change between requests.
             #
@@ -65,6 +83,11 @@ class SCNR::Engine::Plugins::Discovery < SCNR::Engine::Plugin::Base
             signatures_per_path[path] = Support::Signature.for_or_refine(
                 signatures_per_path[path],
                 issue.response.body
+            )
+
+            signatures_per_check[check] = Support::Signature.for_or_refine(
+              signatures_per_check[check],
+              issue.response.body
             )
         end
 
@@ -80,6 +103,19 @@ class SCNR::Engine::Plugins::Discovery < SCNR::Engine::Plugin::Base
                 similarity, issue_digests_per_path[path]
             )
         end
+
+        signatures_per_check.each_pair do |check, signature|
+            # Not a lot of sense in comparing a single issue with itself.
+            next if issue_count_per_check[check] <= 1
+
+            # Calculate the similarity ratio of the responses under the current path.
+            similarity = Float( signature.size * issue_digests_per_check[check].size ) /
+              response_size_per_check[check]
+
+            SCNR::Engine::Element::Server.flag_issues_if_untrusted(
+              similarity, issue_digests_per_check[check]
+            )
+        end
     end
 
     def self.info
@@ -93,7 +129,7 @@ while the server responses were exhibiting an anomalous factor of similarity.
 There's a good chance that these issues are false positives.
 },
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
-            version:     '0.3.3',
+            version:     '0.4',
             tags:        %w(anomaly discovery file directories meta)
         }
     end
