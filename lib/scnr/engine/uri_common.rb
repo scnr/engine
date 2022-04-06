@@ -232,7 +232,7 @@ module URICommon
     #   `true` if the scan #{Utilities.random_seed seed} is included in the
     #   domain, `false` otherwise.
     def seed_in_host?
-        host.optimized_include?( Utilities.random_seed )
+        host && host.optimized_include?( Utilities.random_seed )
     end
 
     def to_absolute( reference )
