@@ -103,8 +103,6 @@ class Framework
         clean_up
         exception_jail( false ){ block.call } if block_given?
 
-        state.status = :done
-
         true
     end
 

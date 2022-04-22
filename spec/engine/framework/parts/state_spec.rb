@@ -504,12 +504,12 @@ describe SCNR::Engine::Framework::Parts::State do
             end
         end
 
-        it 'sets the status to cleanup' do
+        it 'sets the status to :done' do
             SCNR::Engine::Framework.safe do |f|
                 SCNR::Engine::Options.url = url + '/elem_combo'
 
                 f.clean_up
-                expect(f.status).to eq(:cleanup)
+                expect(f.status).to eq(:done)
             end
         end
 

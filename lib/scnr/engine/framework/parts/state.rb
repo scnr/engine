@@ -121,6 +121,8 @@ module State
         @session.clean_up if @session
         @session = nil
 
+        state.status = :done
+
         true
     end
 
@@ -314,8 +316,6 @@ module State
         state.suspending?
     end
 
-    private
-
     # @note Must be called before calling any audit methods.
     #
     # Prepares the framework for the audit.
@@ -330,6 +330,8 @@ module State
 
         Snapshot.restored? ? @plugins.restore : @plugins.run
     end
+
+    private
 
     def reset_session
         @session.clean_up if @session

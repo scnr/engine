@@ -46,6 +46,14 @@ class Trainer
         @trainings_per_url = Hash.new( 0 )
     end
 
+    def unhook!
+        @unhook = true
+    end
+
+    def unhook?
+        !!@unhook
+    end
+
     def setup
         return if @setup
         @setup = true
@@ -55,6 +63,7 @@ class Trainer
         end
 
         HTTP::Client.on_complete do |response|
+            next if unhook?
             next if response.request.buffered? || !response.request.train?
 
             if response.redirect?

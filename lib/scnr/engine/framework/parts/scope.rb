@@ -30,7 +30,7 @@ module Scope
     #   `true` if the framework can process more pages, `false` is scope limits
     #   have been reached.
     def accepts_more_pages?
-        crawl? && !page_limit_reached?
+        !page_limit_reached?
     end
 
 end

@@ -75,9 +75,9 @@ describe SCNR::Engine::Framework::Parts::Scope do
 
         context 'when #crawl?' do
             context 'false' do
-                it 'returns false' do
+                it 'returns true' do
                     allow(subject).to receive(:crawl?) { false }
-                    expect(subject.accepts_more_pages?).to be_falsey
+                    expect(subject.accepts_more_pages?).to be_truthy
                 end
             end
         end

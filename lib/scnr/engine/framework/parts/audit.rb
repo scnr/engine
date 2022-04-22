@@ -128,10 +128,11 @@ module Audit
 
         # Pass the page to the BrowserPool to explore its DOM and feed
         # resulting pages back to the framework.
-        perform_browser_analysis( page )
+        perform_browser_analysis( page ) if crawl?
 
         ran = false
         if checks.any?
+
             # Remove elements which have already passed through here.
             pre_audit_element_filter( page )
 
@@ -176,8 +177,6 @@ module Audit
         ran
     end
 
-    private
-
     # Performs the audit.
     def audit
         handle_signals
@@ -185,8 +184,11 @@ module Audit
 
         state.status = :scanning if !pausing?
 
-        push_to_url_queue( Options.url )
-        Options.scope.extend_paths.each { |url| push_to_url_queue( url ) }
+        if crawl?
+            push_to_url_queue( Options.url )
+            Options.scope.extend_paths.each { |url| push_to_url_queue( url ) }
+        end
+
         Options.scope.restrict_paths.each { |url| push_to_url_queue( url, true ) }
 
         # Initialize the BrowserPool.
@@ -226,14 +228,13 @@ module Audit
         end
     end
 
+    private
+
     # Audits the {Data::Framework.url_queue URL} and {Data::Framework.page_queue Page}
     # queues while maintaining a valid session with the webapp if we've got
     # login capabilities.
     def audit_queues
-        return if @audit_queues_done == false || !has_audit_workload? ||
-            page_limit_reached?
-
-        @audit_queues_done = false
+        return if !has_audit_workload? || page_limit_reached?
 
         while !suspended? && !page_limit_reached? && (page = pop_page)
             audit_page( page )
@@ -245,8 +246,6 @@ module Audit
 
             handle_signals
         end
-
-        @audit_queues_done = true
     end
 
     def wait_for_trainer?
