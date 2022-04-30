@@ -13,7 +13,7 @@ class SinkTrace
 class DOMSinkTracer
 
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
-class Result < DOMExploration::Result
+class Result < Jobs::DOMExploration::Result
 end
 
 end
