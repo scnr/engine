@@ -20,6 +20,14 @@ rescue EOFError, Errno::EPIPE => e
     true
 end
 
+if ENV['HOST_LD_LIBRARY_PATH']
+    ENV['LD_LIBRARY_PATH'] = ENV['HOST_LD_LIBRARY_PATH']
+end
+
+if ENV['HOST_LIBRARY_PATH']
+    ENV['LIBRARY_PATH'] = ENV['HOST_LIBRARY_PATH']
+end
+
 # Get a clean slate every time.
 ENV['TMPDIR'] = "#{$options[:tmpdir]}/#{File.basename( $options[:executable] )}_#{Process.pid}"
 
