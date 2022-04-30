@@ -6,7 +6,7 @@
     web site for more information on licensing and terms of use.
 =end
 
-require_relative '../../dom_exploration/result'
+require_relative '../../dom_exploration'
 
 module SCNR::Engine
 class BrowserPool
