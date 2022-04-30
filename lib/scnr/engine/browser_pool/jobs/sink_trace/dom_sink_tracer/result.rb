@@ -6,6 +6,8 @@
     web site for more information on licensing and terms of use.
 =end
 
+require_relative '../../dom_exploration/result'
+
 module SCNR::Engine
 class BrowserPool
 module Jobs
