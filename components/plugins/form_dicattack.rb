@@ -11,7 +11,7 @@
 class SCNR::Engine::Plugins::FormDicattack < SCNR::Engine::Plugin::Base
 
     def prepare
-        @url = framework.options.url
+        @url = SCNR::Engine::Options.url
 
         @users   = File.read( options[:username_list] ).split( "\n" )
         @passwds = File.read( options[:password_list] ).split( "\n" )

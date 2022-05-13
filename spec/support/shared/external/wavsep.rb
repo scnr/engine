@@ -4,7 +4,7 @@ shared_examples_for 'wavsep' do
     let(:url) { "#{wavsep_url}/active/" }
 
     before :each do
-        framework.options.audit.elements :links, :forms
+        SCNR::Engine::Options.audit.elements :links, :forms
 
         # Force the sink trace to run prior to the checks.
         SCNR::Engine::Element::Capabilities::WithSinks::Sinks.add_to_max_cost 9999
@@ -72,10 +72,10 @@ shared_examples_for 'wavsep' do
                                     expect(SCNR::Engine::Data.issues).to be_empty
 
                                     if info[:root_url]
-                                        framework.options.url = wavsep_url
+                                        SCNR::Engine::Options.url = wavsep_url
                                     else
 
-                                        framework.options.url = "#{url}/#{info[:url]}"
+                                        SCNR::Engine::Options.url = "#{url}/#{info[:url]}"
                                     end
 
                                     framework.checks.load info[:checks]
@@ -83,7 +83,7 @@ shared_examples_for 'wavsep' do
 
                                     urls      = SCNR::Engine::Data.issues.map { |i| i.vector.action }.uniq.sort
                                     resources = urls.map { |url| url.split('?').first }.uniq.sort
-                                    expected  = info[:vulnerable].map { |resource| framework.options.url + resource }
+                                    expected  = info[:vulnerable].map { |resource| SCNR::Engine::Options.url + resource }
 
                                     if info[:vulnerable_absolute]
                                         expected |= info[:vulnerable_absolute].map { |resource| wavsep_url + resource }
@@ -91,7 +91,7 @@ shared_examples_for 'wavsep' do
 
                                     expected.sort!
 
-                                    # pp resources.map { |u| u.gsub( framework.options.url, '' ) }
+                                    # pp resources.map { |u| u.gsub( SCNR::Engine::Options.url, '' ) }
                                     # puts format_error( urls, resources, expected )
 
                                     expect(resources).to eq(expected), format_error( urls, resources, expected )

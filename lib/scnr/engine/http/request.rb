@@ -455,7 +455,7 @@ class Request < Message
             maxfilesize:     max_size,
 
             # Go for HTTP/2 if possible.
-            http_version:    :httpv2_0,
+            # http_version:    :httpv2_0,
 
             # Reusing connections for blocking requests used to cause FD leaks
             # but doesn't appear to do so anymore.

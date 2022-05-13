@@ -61,8 +61,8 @@ class SCNR::Engine::Plugins::LoginForm < SCNR::Engine::Plugin::Base
 
         print_status "Form submitted successfully, checking the session's validity."
 
-        framework.options.session.check_url     ||= response.url
-        framework.options.session.check_pattern ||= @verifier
+        SCNR::Engine::Options.session.check_url     ||= response.url
+        SCNR::Engine::Options.session.check_pattern ||= @verifier
 
         if !session.logged_in?
             register_results(

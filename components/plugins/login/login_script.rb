@@ -133,8 +133,8 @@ value of `nil`.
 
     # You can also configure the session check from the script, dynamically,
     # if you don't want to set static options via the user interface.
-    framework.options.session.check_url     = browser.url
-    framework.options.session.check_pattern = /Sign Off|MY ACCOUNT/
+    SCNR::Engine::Options.session.check_url     = browser.url
+    SCNR::Engine::Options.session.check_pattern = /Sign Off|MY ACCOUNT/
 
 ## Without browser (fast)
 
@@ -151,8 +151,8 @@ and consume much less resources.
         update_cookies: true
     )
 
-    framework.options.session.check_url     = to_absolute( response.headers.location, response.url )
-    framework.options.session.check_pattern = /Sign Off|MY ACCOUNT/
+    SCNR::Engine::Options.session.check_url     = to_absolute( response.headers.location, response.url )
+    SCNR::Engine::Options.session.check_pattern = /Sign Off|MY ACCOUNT/
 
 ## From cookie-jar
 
