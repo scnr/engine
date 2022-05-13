@@ -13,11 +13,11 @@ require 'open3'
 class SCNR::Engine::Plugins::Exec < SCNR::Engine::Plugin::Base
 
     def prepare
-        parsed_url = SCNR::Engine::URI( framework.options.url )
+        parsed_url = SCNR::Engine::URI( SCNR::Engine::Options.url )
 
         @data          = {}
         @substitutions = {
-            '__URL__'               => framework.options.url,
+            '__URL__'               => SCNR::Engine::Options.url,
             '__URL_SCHEME__'        => parsed_url.scheme,
             '__URL_HOST__'          => parsed_url.host,
             '__URL_PORT__'          => parsed_url.port || 80,

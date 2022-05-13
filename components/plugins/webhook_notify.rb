@@ -41,7 +41,7 @@ class SCNR::Engine::Plugins::WebhookNotify < SCNR::Engine::Plugin::Base
     def interpolate_variables( data )
         report = framework.report
 
-        data = data.gsub( '$URL$', framework.options.url )
+        data = data.gsub( '$URL$', SCNR::Engine::Options.url )
 
         data.gsub!( '$SEED$', random_seed )
         data.gsub!( '$ISSUE_COUNT$', report.issues.size.to_s )

@@ -48,7 +48,7 @@ class SCNR::Engine::Plugins::WAFDetector < SCNR::Engine::Plugin::Base
             @unsafe[name] = i.to_s + '_' + bad.join( '_' )
         end
 
-        @url = framework.options.url
+        @url = SCNR::Engine::Options.url
 
         @responses = {
             original: nil,

@@ -171,7 +171,7 @@ class SCNR::Engine::Plugins::Proxy < SCNR::Engine::Plugin::Base
             elsif url.start_with?( url_for( :sign_in ) )
 
                 # ...time to send the user to the webapp.
-                res.headers['Location'] = framework.options.url
+                res.headers['Location'] = SCNR::Engine::Options.url
             end
 
             return

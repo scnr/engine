@@ -11,7 +11,7 @@
 class SCNR::Engine::Plugins::HTTPDicattack < SCNR::Engine::Plugin::Base
 
     def prepare
-        @url = framework.options.url.to_s
+        @url = SCNR::Engine::Options.url.to_s
 
         @users   = File.read( options[:username_list] ).split( "\n" )
         @passwds = File.read( options[:password_list] ).split( "\n" )
@@ -48,8 +48,8 @@ class SCNR::Engine::Plugins::HTTPDicattack < SCNR::Engine::Plugin::Base
                     print_ok "Found a match. Username: '#{user}' -- Password: '#{pass}'"
                     print_info "URL: #{res.url}"
 
-                    framework.options.http.authentication_username = user
-                    framework.options.http.authentication_password = pass
+                    SCNR::Engine::Options.http.authentication_username = user
+                    SCNR::Engine::Options.http.authentication_password = pass
 
                     # register our findings...
                     register_results( 'username' => user, 'password' => pass )

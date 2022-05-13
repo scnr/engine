@@ -24,7 +24,7 @@ class SCNR::Engine::Plugins::EmailNotify < SCNR::Engine::Plugin::Base
         report = framework.report
 
         opts = {
-            subject:     "Scan for #{framework.options.url} finished in #{report.delta_time}",
+            subject:     "Scan for #{SCNR::Engine::Options.url} finished in #{report.delta_time}",
             body:        "Found #{report.issues.size} unique issues.",
             to:          options[:to],
             cc:          options[:cc],

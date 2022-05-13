@@ -15,7 +15,7 @@ describe name_from_filename do
 
         options.plugins[component_name] = { 'script' => script_path }
 
-        framework.options.scope.dom_depth_limit = 1
+        SCNR::Engine::Options.scope.dom_depth_limit = 1
     end
 
     after(:each) { FileUtils.rm_f script_path }
@@ -28,9 +28,9 @@ describe name_from_filename do
             context 'when using a Ruby script' do
                 let(:script) do
                     <<EOSCRIPT
-                framework.options.datastore.browser = browser.class.to_s
-                framework.options.datastore.window_width = browser.execute_script( 'return window.innerWidth;' )
-                framework.options.datastore.window_height = browser.execute_script( 'return window.innerHeight;' )
+                SCNR::Engine::Options.datastore.browser = browser.class.to_s
+                SCNR::Engine::Options.datastore.window_width = browser.execute_script( 'return window.innerWidth;' )
+                SCNR::Engine::Options.datastore.window_height = browser.execute_script( 'return window.innerHeight;' )
 EOSCRIPT
                 end
 
@@ -43,8 +43,8 @@ EOSCRIPT
                 it 'sets the appropriate resolution' do
                     run
 
-                    expect(framework.options.datastore.window_width).to eq SCNR::Engine::Options.dom.window_width
-                    expect(framework.options.datastore.window_height).to eq SCNR::Engine::Options.dom.window_height
+                    expect(SCNR::Engine::Options.datastore.window_width).to eq SCNR::Engine::Options.dom.window_width
+                    expect(SCNR::Engine::Options.datastore.window_height).to eq SCNR::Engine::Options.dom.window_height
                 end
             end
 
@@ -78,13 +78,13 @@ EOSCRIPT
 
         context 'is not available' do
             before do
-                framework.options.scope.dom_depth_limit = 0
+                SCNR::Engine::Options.scope.dom_depth_limit = 0
             end
 
             context 'when using a Ruby script' do
                 let(:script) do
                     <<EOSCRIPT
-                    framework.options.datastore.browser = browser
+                    SCNR::Engine::Options.datastore.browser = browser
 EOSCRIPT
                 end
 

@@ -5,7 +5,7 @@ describe name_from_filename do
 
     before ( :all ) do
         options.url = url
-        framework.options.audit.elements :links
+        SCNR::Engine::Options.audit.elements :links
         framework.checks.load :xss
     end
 

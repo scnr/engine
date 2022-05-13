@@ -133,18 +133,18 @@ describe name_from_filename do
 
         context 'nil' do
             it 'sets it to the login response URL' do
-                framework.options.session.check_url = nil
+                SCNR::Engine::Options.session.check_url = nil
                 run
-                expect(framework.options.session.check_url).to eq(url)
+                expect(SCNR::Engine::Options.session.check_url).to eq(url)
             end
         end
 
         context 'is set' do
             it 'does not change it' do
                 option_url = url + '/stuff'
-                framework.options.session.check_url = option_url
+                SCNR::Engine::Options.session.check_url = option_url
                 run
-                expect(framework.options.session.check_url).to eq(option_url)
+                expect(SCNR::Engine::Options.session.check_url).to eq(option_url)
             end
         end
     end
@@ -160,17 +160,17 @@ describe name_from_filename do
 
         context 'nil' do
             it 'sets it to the plugin pattern' do
-                framework.options.session.check_pattern = nil
+                SCNR::Engine::Options.session.check_pattern = nil
                 run
-                expect(framework.options.session.check_pattern).to eq(/Hi there logged-in user/)
+                expect(SCNR::Engine::Options.session.check_pattern).to eq(/Hi there logged-in user/)
             end
         end
 
         context 'is set' do
             it 'does not change it' do
-                framework.options.session.check_pattern = /stuff/
+                SCNR::Engine::Options.session.check_pattern = /stuff/
                 run
-                expect(framework.options.session.check_pattern).to eq(/stuff/)
+                expect(SCNR::Engine::Options.session.check_pattern).to eq(/stuff/)
             end
         end
     end

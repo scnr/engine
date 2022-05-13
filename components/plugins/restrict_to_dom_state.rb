@@ -13,10 +13,10 @@ class SCNR::Engine::Plugins::RestrictToDOMState < SCNR::Engine::Plugin::Base
     def prepare
         # Disable any operations that can lead to a crawl, we only want the
         # system to audit the page snapshot we give it.
-        framework.options.scope.do_not_crawl
+        SCNR::Engine::Options.scope.do_not_crawl
 
         @fragment = options[:fragment]
-        @url      = "#{framework.options.url}##{@fragment}"
+        @url      = "#{SCNR::Engine::Options.url}##{@fragment}"
 
         print_info "Full URL set to: #{@url}"
 
