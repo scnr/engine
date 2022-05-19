@@ -7,7 +7,7 @@ describe SCNR::Engine::OptionGroups::Paths do
     end
 
     after :each do
-        ENV['SCNR_ENGINE_LOGDIR'] = nil
+        ENV['SCNR_ENGINE_LOG_DIR'] = nil
 
         (@created_resources + [paths_config_file]).each do |r|
             FileUtils.rm_rf r
@@ -74,9 +74,9 @@ describe SCNR::Engine::OptionGroups::Paths do
             expect(subject.logs).to eq("#{subject.home_path}logs/")
         end
 
-        context 'when the SCNR_ENGINE_LOGDIR environment variable' do
+        context 'when the SCNR_ENGINE_LOG_DIR environment variable' do
             it 'returns its value' do
-                ENV['SCNR_ENGINE_LOGDIR'] = 'test'
+                ENV['SCNR_ENGINE_LOG_DIR'] = 'test'
                 expect(subject.logs).to eq('test/')
             end
         end
