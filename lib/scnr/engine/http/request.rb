@@ -660,8 +660,6 @@ class Request < Message
         )
 
         self.response.update_from_typhoeus typhoeus_response
-    ensure
-        @response_body_buffer = nil
     end
 
     def prepare_headers
@@ -866,6 +864,7 @@ class Request < Message
                 end
 
                 set_response_data typhoeus_response
+                @response_body_buffer = nil
 
                 on_complete.each do |b|
                     exception_jail false do
