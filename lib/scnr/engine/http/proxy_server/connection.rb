@@ -227,13 +227,11 @@ class Connection < Raktr::Connection
         if @ssl_interceptor
             @ssl_interceptor.close( reason )
             @ssl_interceptor = nil
-            @ssl_interceptor_reactor.stop
         end
 
         if @tunnel
             @tunnel.close_without_callback
             @tunnel = nil
-            @tunnel_reactor.stop
         end
     end
 
@@ -281,21 +279,15 @@ class Connection < Raktr::Connection
 
         print_debug_level_3 "Starting interceptor on port: #{@interceptor_port}"
 
-        @ssl_interceptor_reactor = Raktr.new
-        @ssl_interceptor_reactor.run_in_thread do
-            @ssl_interceptor = @ssl_interceptor_reactor.listen(
-              @options[:address], @interceptor_port, SSLInterceptor,
-              @options.merge( origin_host: origin_host )
-            )
-        end
+        @ssl_interceptor = @parent.reactor.listen(
+          @options[:address], @interceptor_port, SSLInterceptor,
+          @options.merge( origin_host: origin_host )
+        )
 
-        @tunnel_reactor = Raktr.new
-        @tunnel_reactor.run_in_thread do
-            @tunnel = @tunnel_reactor.connect(
-              @options[:address], @interceptor_port, Tunnel,
-              @options.merge( client: self )
-            )
-        end
+        @tunnel = @parent.reactor.connect(
+          @options[:address], @interceptor_port, Tunnel,
+          @options.merge( client: self )
+        )
     end
 
     def cleanup_request_headers( headers )

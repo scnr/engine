@@ -20,6 +20,8 @@ class ProxyServer
     include SCNR::Engine::UI::Output
     personalize_output!
 
+    attr_reader :reactor
+
     # @param   [Hash]  options
     # @option options   [String]    :address    ('0.0.0.0')
     #   Address to bind to.
