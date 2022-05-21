@@ -408,7 +408,7 @@ describe SCNR::Engine::HTTP::Request do
                 request.run
 
                 expect(response.code).to eq 200
-                expect(response.body).to eq 'GET'
+                expect(response.body.to_string_io.string).to eq 'GET'
                 expect(response.headers).to be_any
             end
 
@@ -426,7 +426,7 @@ describe SCNR::Engine::HTTP::Request do
 
                 passed_responses.each do |response|
                     expect(response.code).to eq 200
-                    expect(response.body).to eq 'GET'
+                    expect(response.body.to_string_io.string).to eq 'GET'
                     expect(response.headers).to be_any
                 end
             end
@@ -442,7 +442,7 @@ describe SCNR::Engine::HTTP::Request do
                     request.run
 
                     expect(response.code).to eq 200
-                    expect(response.body).to eq 'GET'
+                    expect(response.body.to_string_io.string).to eq 'GET'
                     expect(response.headers).to be_any
                 end
             end
@@ -579,7 +579,7 @@ describe SCNR::Engine::HTTP::Request do
 
                     last_line = ''
                     request.on_complete do |response|
-                        last_line = response.body
+                        last_line = response.body.to_string_io.string
                     end
                     request.run
 
@@ -662,7 +662,7 @@ describe SCNR::Engine::HTTP::Request do
 
                     last_line = ''
                     request.on_complete do |response|
-                        last_line = response.body
+                        last_line = response.body.to_string_io.string
                     end
                     request.run
 

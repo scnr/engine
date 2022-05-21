@@ -14,7 +14,7 @@ describe SCNR::Engine::Element::Header do
     # it_should_behave_like 'line_buffered_auditable'
 
     def auditable_extract_parameters( resource )
-        YAML.load( resource.body )
+        YAML.load( resource.body.to_string_io.string )
     end
 
     def run

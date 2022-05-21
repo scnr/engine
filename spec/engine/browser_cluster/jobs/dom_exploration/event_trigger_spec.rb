@@ -54,7 +54,7 @@ describe SCNR::Engine::BrowserPool::Jobs::DOMExploration::EventTrigger do
 
         expect(page.dom.transitions[1].event).to eq(event)
 
-        expect(Nokogiri::HTML( page.body ).xpath("//div").first.to_s).to eq(
+        expect(Nokogiri::HTML( page.body.to_string_io.string ).xpath("//div").first.to_s).to eq(
             '<div id="my-div"><a href="#1">My link</a></div>'
         )
     end

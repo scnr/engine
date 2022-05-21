@@ -84,12 +84,12 @@ class SCNR::Engine::Plugins::Discovery < SCNR::Engine::Plugin::Base
             # discovery checks look for different things.
             signatures_per_path[path] = Support::Signature.for_or_refine(
                 signatures_per_path[path],
-                issue.response.body
+                issue.response.body.to_string_io.string
             )
 
             signatures_per_check[check] = Support::Signature.for_or_refine(
               signatures_per_check[check],
-              issue.response.body
+              issue.response.body.to_string_io.string
             )
         end
 

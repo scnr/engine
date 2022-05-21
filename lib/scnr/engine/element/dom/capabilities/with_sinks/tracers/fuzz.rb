@@ -57,7 +57,7 @@ class Fuzz < Base
         mutation.sinks.traced!
 
         # One of the occurrences will be the actual setting of the taint.
-        if /#{seed}/i.match? page.body
+        if page.body.match? /#{seed}/i
             mutation.sinks.active!
             mutation.sinks.body!
 

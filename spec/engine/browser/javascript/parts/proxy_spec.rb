@@ -128,7 +128,7 @@ EOHTML
                                 described_class::ENV_SCRIPT_DATA_END
 
                             subject.inject( response )
-                            expect(Nokogiri::HTML( response.body ).xpath( "//script[@src='#{env_url}']" ).size).to eq 1
+                            expect(Nokogiri::HTML( response.body.to_string_io.string ).xpath( "//script[@src='#{env_url}']" ).size).to eq 1
                         end
                     end
 
@@ -142,7 +142,7 @@ EOHTML
                                 described_class::ENV_SCRIPT_DATA_END
 
                             subject.inject( response )
-                            expect(Nokogiri::HTML( response.body ).xpath( "//script[@src='#{env_url}']" ).size).to eq 1
+                            expect(Nokogiri::HTML( response.body.to_string_io.string ).xpath( "//script[@src='#{env_url}']" ).size).to eq 1
                         end
                     end
 
@@ -153,7 +153,7 @@ EOHTML
 
                         it 'wraps the script code in env update calls' do
                             subject.inject( response )
-                            expect(Nokogiri::HTML(response.body).css('script').last.to_s).to eq(
+                            expect(Nokogiri::HTML(response.body.to_string_io.string).css('script').last.to_s).to eq(
                                 "<script>/* #{SCNR::Engine::Browser::Javascript.token}RemoveLine */ " <<
                                     "#{SCNR::Engine::Browser::Javascript.token}EnvUpdate();// " <<
                                     "My code and stuff;/* #{SCNR::Engine::Browser::Javascript.token}RemoveLine " <<
@@ -170,7 +170,7 @@ EOHTML
                         presponse = response.deep_clone
 
                         expect(subject.inject( response )).to be_falsey
-                        expect(response.body).to eq(presponse.body)
+                        expect(response.body.to_string_io.string).to eq(presponse.body.to_string_io.string)
                     end
                 end
             end

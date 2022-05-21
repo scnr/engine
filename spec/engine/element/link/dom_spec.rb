@@ -16,7 +16,7 @@ describe SCNR::Engine::Element::Link::DOM do
     it_should_behave_like 'auditable_dom'
 
     def auditable_extract_parameters( page )
-        { 'param' => Nokogiri::HTML(page.body).css('#container').text }
+        { 'param' => Nokogiri::HTML(page.body.to_string_io.string).css('#container').text }
     end
 
     def run

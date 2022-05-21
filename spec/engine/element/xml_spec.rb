@@ -20,7 +20,7 @@ describe SCNR::Engine::Element::XML do
     # it_should_behave_like 'line_buffered_auditable'
 
     def auditable_extract_parameters( resource )
-        described_class.parse_inputs( resource.body )
+        described_class.parse_inputs( resource.body.to_string_io.string )
     end
 
     def run

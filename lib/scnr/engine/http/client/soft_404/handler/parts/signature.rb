@@ -65,7 +65,7 @@ module Signature
 
                 signature[:refined] = Support::Signature.refine(
                     signature[:refined] || signature[:original],
-                    response.body
+                    response.body.to_string_io.string
                 )
 
                 next if gathered_responses != controlled_precision

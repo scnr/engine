@@ -12,7 +12,7 @@ describe SCNR::Engine::Element::Cookie::DOM do
     it_should_behave_like 'auditable_dom'
 
     def auditable_extract_parameters( page )
-        Hash[[Nokogiri::HTML(page.body).css('#container').text.split( '=' )]]
+        Hash[[Nokogiri::HTML(page.body.to_string_io.string).css('#container').text.split( '=' )]]
     end
 
     def run

@@ -81,7 +81,7 @@ shared_examples_for 'submittable_dom' do
                     title = 'Injected title'
 
                     subject.submit custom_code: "document.title = #{title.inspect}" do |page|
-                        expect(Nokogiri::HTML(page.body).css('title').text).to eq(title)
+                        expect(Nokogiri::HTML(page.body.to_string_io.string).css('title').text).to eq(title)
                         called = true
                     end
 

@@ -112,9 +112,7 @@ module Helpers
     end
 
     def html?( response )
-        # If the server says it's HTML dig deeper to ensure it.
-        # We don't want wrong response headers messing up the JS env.
-        response.html? && Parser.html?( response.body )
+        response.html?
     end
 
     # @return   [String]

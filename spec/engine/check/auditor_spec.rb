@@ -809,7 +809,7 @@ describe SCNR::Engine::Check::Auditor do
 
                 issue = SCNR::Engine::Data.issues.sort.first
 
-                expect(issue.page.body).to eq(issue_data[:referring_page].body)
+                expect(issue.page.body.to_string_io.string).to eq(issue_data[:referring_page].body.to_string_io.string)
                 expect(issue.response).to eq(issue_data[:referring_page].response)
                 expect(issue.request).to eq(issue_data[:referring_page].request)
             end

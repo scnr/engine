@@ -859,8 +859,6 @@ class Request < Message
                 if @response_body_buffer && (on_body_line.any? || on_body_lines.any?)
                     typhoeus_response.options[:response_body] =
                       @response_body_buffer
-
-                    @response_body_buffer = nil
                 end
 
                 set_response_data typhoeus_response

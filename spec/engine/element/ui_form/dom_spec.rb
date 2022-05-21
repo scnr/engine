@@ -21,7 +21,7 @@ describe SCNR::Engine::Element::UIForm::DOM do
 
     def auditable_extract_parameters( page )
         {
-            'my-input' => Nokogiri::HTML(page.body).css('#container').text.strip
+            'my-input' => Nokogiri::HTML(page.body.to_string_io.string).css('#container').text.strip
         }
     end
 

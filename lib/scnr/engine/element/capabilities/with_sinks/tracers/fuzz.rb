@@ -53,7 +53,7 @@ class Fuzz < Base
     def self.find_sinks( seed, mutation, response )
         r = /#{seed}/i
 
-        if r.match? response.body
+        if response.body.match? r
             mutation.sinks.body!
         end
 

@@ -22,7 +22,7 @@ describe SCNR::Engine::Element::LinkTemplate do
     end
 
     def auditable_extract_parameters( resource )
-        YAML.load( resource.body )
+        YAML.load( resource.body.to_string_io.string )
     end
 
     def run

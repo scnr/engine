@@ -283,13 +283,17 @@ class Page
         end
     end
 
-    # @param    [String]    string
+    # @param    [String]    b
     #   Page body.
-    def body=( string )
+    def body=( b )
         @has_javascript = nil
         clear_cache
 
-        @body = string
+        if b.is_a? HTTP::Response::Body
+            @body = b
+        else
+            @body = HTTP::Response::Body.from( b )
+        end
     end
 
     ELEMENTS.each do |type|
@@ -494,7 +498,7 @@ class Page
     end
 
     def paths_hash
-        "#{parsed_url.path}-#{body}".persistent_hash
+        "#{parsed_url.path}-#{body.persistent_hash}".persistent_hash
     end
 
     def ==( other )

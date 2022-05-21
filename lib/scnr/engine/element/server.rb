@@ -191,7 +191,7 @@ class Server < Base
             # similar) as these types of responses stay pretty close.
             baseline = SCNR::Engine::Support::Signature.for_or_refine(
                 baseline,
-                response.body
+                response.body.to_string_io.string
             )
         end
 

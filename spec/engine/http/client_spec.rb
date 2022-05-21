@@ -14,7 +14,7 @@ describe SCNR::Engine::HTTP::Client do
 
     it 'supports gzip content-encoding' do
         body = nil
-        subject.get( url + 'gzip' ) { |res| body = res.body }
+        subject.get( url + 'gzip' ) { |res| body = res.body.to_string_io.string }
         subject.run
         expect(body).to eq('success')
     end
@@ -25,7 +25,7 @@ describe SCNR::Engine::HTTP::Client do
         subject.run
         expect(subject.cookies.first.value).to eq("=stuf \00 here==")
 
-        subject.get( url + 'cookies' ) { |res| body = res.body }
+        subject.get( url + 'cookies' ) { |res| body = res.body.to_string_io.string }
         subject.run
         expect(YAML.load( body )).to eq({ 'stuff' => "=stuf \00 here==" })
     end
@@ -94,7 +94,7 @@ describe SCNR::Engine::HTTP::Client do
                     SCNR::Engine::Options.url = u.to_s
 
                     body = nil
-                    subject.get( "#{url}auth/simple-chars" ) { |res| body = res.body }
+                    subject.get( "#{url}auth/simple-chars" ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq('authenticated!')
                 end
@@ -216,14 +216,14 @@ describe SCNR::Engine::HTTP::Client do
                 subject.get( url + 'auth/weird-chars' ) { |res| response = res }
                 subject.run
                 expect(response.code).to eq(200)
-                expect(response.body).to eq('authenticated!')
+                expect(response.body.to_string_io.string).to eq('authenticated!')
             end
         end
 
         describe 'user_agent' do
             it 'uses the default user-agent setting' do
                 body = nil
-                subject.get( url + 'user-agent' ) { |res| body = res.body }
+                subject.get( url + 'user-agent' ) { |res| body = res.body.to_string_io.string }
                 subject.run
 
                 expect(body).to eq(SCNR::Engine::Options.device.user_agent)
@@ -236,7 +236,7 @@ describe SCNR::Engine::HTTP::Client do
                     subject.reset
 
                     body = nil
-                    subject.get( url + 'user-agent' ) { |res| body = res.body }
+                    subject.get( url + 'user-agent' ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq(ua)
                 end
@@ -256,7 +256,7 @@ describe SCNR::Engine::HTTP::Client do
                     subject.reset
 
                     body = nil
-                    subject.get( url + 'redirect', follow_location: true ) { |res| body = res.body }
+                    subject.get( url + 'redirect', follow_location: true ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq('This is the end.')
                 end
@@ -266,7 +266,7 @@ describe SCNR::Engine::HTTP::Client do
                     subject.reset
 
                     body = nil
-                    subject.get( url + 'redirect', follow_location: true ) { |res| body = res.body }
+                    subject.get( url + 'redirect', follow_location: true ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq('This is the end.')
                 end
@@ -870,7 +870,7 @@ describe SCNR::Engine::HTTP::Client do
             context 'true' do
                 it 'skips the cookie-jar' do
                     body = nil
-                    subject.request( url + '/cookies', no_cookie_jar: true ) { |res| body = res.body }
+                    subject.request( url + '/cookies', no_cookie_jar: true ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(YAML.load( body )).to eq({})
                 end
@@ -883,7 +883,7 @@ describe SCNR::Engine::HTTP::Client do
 
                     body = nil
 
-                    subject.request( url + '/cookies', no_cookie_jar: false ) { |res| body = res.body }
+                    subject.request( url + '/cookies', no_cookie_jar: false ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(YAML.load( body )).to eq({
                         'my_cookie_name' => '"val1"',
@@ -901,7 +901,7 @@ describe SCNR::Engine::HTTP::Client do
 
                         custom_cookies = { 'newcookie' => 'newval', 'blah_name' => 'val3' }
                         subject.request( url + '/cookies', cookies: custom_cookies,
-                                       no_cookie_jar: false ) { |res| body = res.body }
+                                       no_cookie_jar: false ) { |res| body = res.body.to_string_io.string }
                         subject.run
                         expect(YAML.load( body )).to eq({
                             'my_cookie_name' => 'val1',
@@ -920,7 +920,7 @@ describe SCNR::Engine::HTTP::Client do
 
                     body = nil
 
-                    subject.request( url + '/cookies', no_cookie_jar: false ) { |res| body = res.body }
+                    subject.request( url + '/cookies', no_cookie_jar: false ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(YAML.load( body )).to eq({
                         'my_cookie_name' => '"val1"',
@@ -935,7 +935,7 @@ describe SCNR::Engine::HTTP::Client do
             it 'uses its value as a request body' do
                 req_body = 'heyaya'
                 body = nil
-                subject.request( url + '/body', method: :post, body: req_body ) { |res| body = res.body }
+                subject.request( url + '/body', method: :post, body: req_body ) { |res| body = res.body.to_string_io.string }
                 subject.run
                 expect(body).to eq(req_body)
             end
@@ -945,7 +945,7 @@ describe SCNR::Engine::HTTP::Client do
             describe 'nil' do
                 it 'performs a GET HTTP request' do
                     body = nil
-                    subject.request( url ) { |res| body = res.body }
+                    subject.request( url ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq('GET')
                 end
@@ -953,7 +953,7 @@ describe SCNR::Engine::HTTP::Client do
             describe ':get' do
                 it 'performs a GET HTTP request' do
                     body = nil
-                    subject.request( url, method: :get ) { |res| body = res.body }
+                    subject.request( url, method: :get ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq('GET')
                 end
@@ -966,7 +966,7 @@ describe SCNR::Engine::HTTP::Client do
                             'param2' => 'value 2'
                         }
                         u = url + '/echo?param1=value1&param3=value3'
-                        subject.request( u, parameters: params, method: :get ){ |res| body = res.body }
+                        subject.request( u, parameters: params, method: :get ){ |res| body = res.body.to_string_io.string }
                         subject.run
                         expect(YAML.load( body )).to eq params.merge( 'param3' => 'value3' )
                     end
@@ -975,7 +975,7 @@ describe SCNR::Engine::HTTP::Client do
             describe ':post' do
                 it 'performs a POST HTTP request' do
                     body = nil
-                    subject.request( url, method: :post ) { |res| body = res.body }
+                    subject.request( url, method: :post ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq('POST')
                 end
@@ -983,7 +983,7 @@ describe SCNR::Engine::HTTP::Client do
             describe ':put' do
                 it 'performs a PUT HTTP request' do
                     body = nil
-                    subject.request( url, method: :put ) { |res| body = res.body }
+                    subject.request( url, method: :put ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq('PUT')
                 end
@@ -991,7 +991,7 @@ describe SCNR::Engine::HTTP::Client do
             describe ':options' do
                 it 'performs a OPTIONS HTTP request' do
                     body = nil
-                    subject.request( url, method: :options ) { |res| body = res.body }
+                    subject.request( url, method: :options ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq('OPTIONS')
                 end
@@ -999,7 +999,7 @@ describe SCNR::Engine::HTTP::Client do
             describe ':delete' do
                 it 'performs a POST HTTP request' do
                     body = nil
-                    subject.request( url, method: :delete ) { |res| body = res.body }
+                    subject.request( url, method: :delete ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(body).to eq('DELETE')
                 end
@@ -1010,7 +1010,7 @@ describe SCNR::Engine::HTTP::Client do
             it 'specifies the query params as a hash' do
                 body = nil
                 params = { 'param' => 'value' }
-                subject.request( url + '/echo', parameters: params ) { |res| body = res.body }
+                subject.request( url + '/echo', parameters: params ) { |res| body = res.body.to_string_io.string }
                 subject.run
                 expect(params).to eq YAML.load( body )
             end
@@ -1018,7 +1018,7 @@ describe SCNR::Engine::HTTP::Client do
             it 'preserves nullbytes' do
                 body = nil
                 params = { "pa\0ram" => "v\0alue" }
-                subject.request( url + '/echo', parameters: params ) { |res| body = res.body }
+                subject.request( url + '/echo', parameters: params ) { |res| body = res.body.to_string_io.string }
                 subject.run
                 expect(params).to eq YAML.load( body )
             end
@@ -1028,7 +1028,7 @@ describe SCNR::Engine::HTTP::Client do
             it 'properly encodes special characters' do
                 body = nil
                 params = { '% param\ +=&;' => '% value\ +=&;', 'nil' => nil }
-                subject.request( url + '/echo', method: :post, body: params ) { |res| body = res.body }
+                subject.request( url + '/echo', method: :post, body: params ) { |res| body = res.body.to_string_io.string }
                 subject.run
                 expect(YAML.load( body )).to eq({ '% param\ +=&;' => '% value\ +=&;', 'nil' => '' })
             end
@@ -1036,7 +1036,7 @@ describe SCNR::Engine::HTTP::Client do
             it 'preserves nullbytes' do
                 body = nil
                 params = { "st\0uff" => "test\0" }
-                subject.request( url + '/echo', method: :post, body: params, ) { |res| body = res.body }
+                subject.request( url + '/echo', method: :post, body: params, ) { |res| body = res.body.to_string_io.string }
                 subject.run
                 expect(YAML.load( body )).to eq(params)
             end
@@ -1081,7 +1081,7 @@ describe SCNR::Engine::HTTP::Client do
                     password: 'p a  :wo\'rd$@#@#%$3#@%@#' ) { |res| response = res }
                 subject.run
                 expect(response.code).to eq(200)
-                expect(response.body).to eq('authenticated!')
+                expect(response.body.to_string_io.string).to eq('authenticated!')
             end
         end
 
@@ -1089,7 +1089,7 @@ describe SCNR::Engine::HTTP::Client do
             it 'preserves nullbytess' do
                 cookies = { "name\0" => "val\0" }
                 body = nil
-                subject.request( url + '/cookies', cookies: cookies ) { |res| body = res.body }
+                subject.request( url + '/cookies', cookies: cookies ) { |res| body = res.body.to_string_io.string }
                 subject.run
                 # expect(YAML.load( body )).to eq(cookies)
                 expect(YAML.load( body )).to eq({ "name%00" => "val\0" })
@@ -1102,7 +1102,7 @@ describe SCNR::Engine::HTTP::Client do
                     subject.reset
 
                     body = nil
-                    subject.request( url + '/cookies' ) { |res| body = res.body }
+                    subject.request( url + '/cookies' ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(YAML.load( body )).to eq({
                         'my_cookie_name' => 'val1',
@@ -1124,7 +1124,7 @@ describe SCNR::Engine::HTTP::Client do
 
                     subject.cookie_jar.update( cookies )
                     body = nil
-                    subject.request( url + '/cookies' ) { |res| body = res.body }
+                    subject.request( url + '/cookies' ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(YAML.load( body )).to eq({ 'key2' => 'val2' })
                 end
@@ -1134,7 +1134,7 @@ describe SCNR::Engine::HTTP::Client do
                 it 'uses the key-value pairs as cookies' do
                     cookies = { 'name' => 'val' }
                     body = nil
-                    subject.request( url + '/cookies', cookies: cookies ) { |res| body = res.body }
+                    subject.request( url + '/cookies', cookies: cookies ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     expect(YAML.load( body )).to eq(cookies)
                 end
@@ -1150,7 +1150,7 @@ describe SCNR::Engine::HTTP::Client do
                         cookies: {
                             'my_cookie_name' => 'updated_val'
                         }
-                    ) { |res| body = res.body }
+                    ) { |res| body = res.body.to_string_io.string }
                     subject.run
 
                     expect(YAML.load( body )).to eq({
@@ -1171,7 +1171,7 @@ describe SCNR::Engine::HTTP::Client do
                         }
 
                         body = nil
-                        subject.request( url + '/cookies', options ) { |res| body = res.body }
+                        subject.request( url + '/cookies', options ) { |res| body = res.body.to_string_io.string }
                         subject.run
 
                         expect(YAML.load( body )).to eq({ 'test' => '1', 'name' => 'val' })
@@ -1224,7 +1224,7 @@ describe SCNR::Engine::HTTP::Client do
             describe 'nil' do
                 it 'uses the default headers' do
                     body = nil
-                    subject.request( url + '/headers' ) { |res| body = res.body }
+                    subject.request( url + '/headers' ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     sent_headers = YAML.load( body )
                     subject.headers.each { |k, v| expect(sent_headers[k]).to eq(v) }
@@ -1235,7 +1235,7 @@ describe SCNR::Engine::HTTP::Client do
                 it 'merges them with the default headers' do
                     headers = { 'My-Header' => 'my value'}
                     body = nil
-                    subject.request( url + '/headers', headers: headers ) { |res| body = res.body }
+                    subject.request( url + '/headers', headers: headers ) { |res| body = res.body.to_string_io.string }
                     subject.run
                     sent_headers = YAML.load( body )
                     subject.headers.merge( headers ).each { |k, v| expect(sent_headers[k]).to eq(v) }
@@ -1299,7 +1299,7 @@ describe SCNR::Engine::HTTP::Client do
                     subject.request( url + '/follow_location' ) { |c_res| res = c_res }
                     subject.run
                     expect(res.url.start_with?( url + 'follow_location' )).to be_truthy
-                    expect(res.body).to eq('')
+                    expect(res.body.to_string_io.string).to eq('')
                 end
             end
             describe 'false' do
@@ -1308,7 +1308,7 @@ describe SCNR::Engine::HTTP::Client do
                     subject.request( url + '/follow_location', follow_location: false ) { |c_res| res = c_res }
                     subject.run
                     expect(res.url.start_with?( url + 'follow_location' )).to be_truthy
-                    expect(res.body).to eq('')
+                    expect(res.body.to_string_io.string).to eq('')
                 end
             end
             describe 'true' do
@@ -1317,7 +1317,7 @@ describe SCNR::Engine::HTTP::Client do
                     subject.request( url + '/follow_location', follow_location: true ) { |c_res| res = c_res }
                     subject.run
                     expect(res.url).to eq(url + 'redir_2')
-                    expect(res.body).to eq("Welcome to redir_2!")
+                    expect(res.body.to_string_io.string).to eq("Welcome to redir_2!")
                 end
             end
         end
@@ -1335,7 +1335,7 @@ describe SCNR::Engine::HTTP::Client do
                 subject.request(
                     url + '/cookies',
                     cookies: { 'blah' => 'val' }
-                ) { |res| body = res.body }
+                ) { |res| body = res.body.to_string_io.string }
                 subject.run
 
                 expect(YAML.load( body )).to eq({ 'blah' => 'val' })
@@ -1346,7 +1346,7 @@ describe SCNR::Engine::HTTP::Client do
     describe '#get' do
         it 'queues a GET request' do
             body = nil
-            subject.get { |res| body = res.body }
+            subject.get { |res| body = res.body.to_string_io.string }
             subject.run
             expect(body).to eq('GET')
         end
@@ -1361,7 +1361,7 @@ describe SCNR::Engine::HTTP::Client do
     describe '#post' do
         it 'queues a POST request' do
             body = nil
-            subject.post { |res| body = res.body }
+            subject.post { |res| body = res.body.to_string_io.string }
             subject.run
             expect(body).to eq('POST')
         end
@@ -1369,7 +1369,7 @@ describe SCNR::Engine::HTTP::Client do
         it 'passes :parameters as a #request :body' do
             body = nil
             params = { '% param\ +=&;' => '% value\ +=&;', 'nil' => nil }
-            subject.post( url + '/echo', parameters: params ) { |res| body = res.body }
+            subject.post( url + '/echo', parameters: params ) { |res| body = res.body.to_string_io.string }
             subject.run
             expect(YAML.load( body )).to eq({ '% param\ +=&;' => '% value\ +=&;', 'nil' => '' })
         end
@@ -1379,7 +1379,7 @@ describe SCNR::Engine::HTTP::Client do
         it 'queues a GET request' do
             body = nil
             cookies = { 'name' => "v%+;al\00=" }
-            subject.cookie( url + '/cookies', parameters: cookies ) { |res| body = res.body }
+            subject.cookie( url + '/cookies', parameters: cookies ) { |res| body = res.body.to_string_io.string }
             subject.run
             expect(YAML.load( body )).to eq(cookies)
         end
@@ -1389,7 +1389,7 @@ describe SCNR::Engine::HTTP::Client do
         it 'queues a GET request' do
             body = nil
             headers = { 'name' => 'val' }
-            subject.header( url + '/headers', parameters: headers ) { |res| body = res.body }
+            subject.header( url + '/headers', parameters: headers ) { |res| body = res.body.to_string_io.string }
             subject.run
             expect(YAML.load( body )['Name']).to eq(headers.values.first)
         end

@@ -16,7 +16,7 @@ describe SCNR::Engine::Element::Form::DOM do
     it_should_behave_like 'auditable_dom'
 
     def auditable_extract_parameters( page )
-        YAML.load( Nokogiri::HTML(page.body).css( 'body' ).text )
+        YAML.load( Nokogiri::HTML(page.body.to_string_io.string).css( 'body' ).text )
     end
 
     def run

@@ -216,7 +216,7 @@ class Connection < Raktr::Connection
 
         print_debug_level_3 "Sending response for: #{@request.url}"
 
-        write (res << response.body)
+        write (res << response.body.to_string_io.string)
     end
 
     def on_close( reason = nil )

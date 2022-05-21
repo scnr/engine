@@ -301,7 +301,7 @@ module Signature
         return if !signature
 
         if signature.is_a? Regexp
-            signature.match? response.body
+            response.body.match? signature
         else
             response.body.optimized_include?( signature )
         end

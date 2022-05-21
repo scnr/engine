@@ -22,8 +22,7 @@ describe SCNR::Engine::Element::Form do
     # it_should_behave_like 'line_buffered_auditable'
 
     def auditable_extract_parameters( resource )
-        ap resource.body
-        YAML.load( resource.body )
+        YAML.load( resource.body.to_string_io.string )
     end
 
     def run
@@ -605,7 +604,7 @@ describe SCNR::Engine::Element::Form do
                 body_should = "#{f.method}#{f.inputs.to_s}"
                 body = nil
 
-                f.submit { |res| body = res.body }
+                f.submit { |res| body = res.body.to_string_io.string }
                 http.run
                 expect(body_should).to eq(body)
             end
@@ -621,7 +620,7 @@ describe SCNR::Engine::Element::Form do
                 body_should = "#{f.method}#{f.inputs.to_s}"
 
                 body = nil
-                f.submit { |res| body = res.body }
+                f.submit { |res| body = res.body.to_string_io.string }
                 http.run
                 expect(body_should).to eq(body)
             end
@@ -644,7 +643,7 @@ describe SCNR::Engine::Element::Form do
             it 'refreshes its value before submitting it' do
                 body = nil
 
-                subject.submit { |res| body = res.body }
+                subject.submit { |res| body = res.body.to_string_io.string }
                 http.run
                 expect(body).not_to eq(subject.default_inputs['nonce'])
                 expect(body.to_i).to be > 0
@@ -655,7 +654,7 @@ describe SCNR::Engine::Element::Form do
                     body = nil
 
                     allow(subject).to receive(:refresh) { nil }
-                    subject.submit { |res| body = res.body }
+                    subject.submit { |res| body = res.body.to_string_io.string }
                     http.run
 
                     expect(body).not_to eq(subject.default_inputs['nonce'])

@@ -40,14 +40,76 @@ class Response < Message
             @buffer.binary?
         end
 
+        def html?
+            fail_if_freed
+            as_document.traverse do |n|
+                return true if n.is_a? Parser::Nodes::Element
+            end
+        end
+
         def <<( string )
             fail_if_freed
             @buffer << string
         end
 
-        def match?( pattern )
+        def insert( *args )
             fail_if_freed
-            pattern.match? @buffer
+            @buffer.insert *args
+        end
+
+        def match?( regex )
+            fail_if_freed
+            regex.match? @buffer
+        end
+
+        def match( regex )
+            fail_if_freed
+            regex.match @buffer
+        end
+
+        def include?( substring )
+            fail_if_freed
+            @buffer.include? substring
+        end
+
+        def persistent_hash
+            fail_if_freed
+            @buffer.persistent_hash
+        end
+
+        def hash
+            @buffer.hash
+        end
+
+        def optimized_include?( substring )
+            fail_if_freed
+            @buffer.optimized_include? substring
+        end
+
+        def gsub( *args )
+            fail_if_freed
+            self.class.from @buffer.gsub( *args )
+        end
+
+        def gsub!( *args )
+            fail_if_freed
+            @buffer.gsub! *args
+            self
+        end
+
+        def scan( *args )
+            fail_if_freed
+            @buffer.scan *args
+        end
+
+        def bytesize
+            fail_if_freed
+            @buffer.bytesize
+        end
+
+        def size
+            fail_if_freed
+            @buffer.size
         end
 
         def as_document
@@ -55,14 +117,29 @@ class Response < Message
             Parser.parse @buffer, filter: true
         end
 
+        def diff_ratio( other )
+            fail_if_freed
+            @buffer.diff_ratio( other.to_string_io.string )
+        end
+
+        def signature
+            fail_if_freed
+            @buffer.signature
+        end
+
         def downcase
             fail_if_freed
-            @buffer.downcase
+            self.class.from @buffer.downcase
         end
 
         def has_html_tag?( *args )
             fail_if_freed
             @buffer.has_html_tag?( *args )
+        end
+
+        def strip
+            fail_if_freed
+            self.class.from @buffer.strip
         end
 
         def empty?
@@ -71,6 +148,7 @@ class Response < Message
         end
 
         def free
+            fail_if_freed
             @buffer.clear
             @buffer = nil
             @freed = true
@@ -79,6 +157,12 @@ class Response < Message
 
         def to_string_io
             StringIO.new( @buffer )
+        end
+
+        def method_missing( *args )
+            ap args
+            ap caller
+            Process.kill 'KILL', Process.pid
         end
 
         private
@@ -139,7 +223,7 @@ class Response < Message
     def initialize( options = {} )
         super( options )
 
-        @body ||= ''
+        @body ||= Body.new(0)
         @code ||= 0
 
         # Holds the redirection responses that eventually led to this one.
@@ -242,7 +326,9 @@ class Response < Message
     end
 
     def html?
-        HTML_CONTENT_TYPES.include?( headers.simple_content_type )
+        # If the server says it's HTML dig deeper to ensure it.
+        # We don't want wrong response headers messing up the JS env.
+        HTML_CONTENT_TYPES.include?( headers.simple_content_type ) && @body.html?
     end
 
     def javascript?
@@ -254,7 +340,7 @@ class Response < Message
 
     def body=( body )
         if body.is_a? Body
-            return @body = @body
+            return @body = body
         end
 
         body = body || ''
