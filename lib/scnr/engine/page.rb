@@ -159,23 +159,15 @@ class Page
         @cache[:parser] = options.delete(:parser)
         @response = @cache[:parser].response if @cache[:parser]
 
-        if @cache[:parser] && @cache[:parser].document
-            self.sanitized_body = @cache[:parser].document.to_html
-        end
-
         # We need to know whether or not the page has been dynamically updated
         # with elements, in order to optimize #dup and #hash operations.
         @has_custom_elements = Set.new
 
         @metadata ||= {}
 
-        sanitized_body = options.delete(:sanitized_body)
-
         options.each do |k, v|
             send( "#{k}=", try_dup( v ) )
         end
-
-        self.sanitized_body ||= sanitized_body
 
         @dom = DOM.new( (options[:dom] || {}).merge( page: self ) )
 
@@ -211,11 +203,7 @@ class Page
         @cache[:parser] = Parser.new( @response )
 
         # The page may have a browser-assigned body, set it as the one to parse.
-        @cache[:parser].body = self.sanitized_body || body
-
-        if @cache[:parser].document
-            self.sanitized_body ||= @cache[:parser].document.to_html
-        end
+        @cache[:parser].body = body
 
         @cache[:parser]
     end
@@ -288,26 +276,20 @@ class Page
     # @return    [String]
     #   HTTP response body.
     def body
-        return '' if !@body && !@response
-        @body ||= response.body
+        if !@body && !@response
+            Response::Body.from( '' )
+        else
+            @body ||= response.body
+        end
     end
 
     # @param    [String]    string
     #   Page body.
     def body=( string )
-        self.sanitized_body = @has_javascript = nil
+        @has_javascript = nil
         clear_cache
 
-        @body = string.to_s.freeze
-    end
-
-    # @private
-    def sanitized_body=( b )
-        @sanitized_body = b.freeze
-    end
-    # @private
-    def sanitized_body
-        @sanitized_body
+        @body = string
     end
 
     ELEMENTS.each do |type|
@@ -370,17 +352,7 @@ class Page
     # @return   [SCNR::Engine::Parser::Document]
     #   Parsed {#body HTML} document.
     def document
-        return @cache[:document] if @cache[:document]
-
-        @cache[:document] = (parser.nil? ?
-            SCNR::Engine::Parser.parse( self.sanitized_body || body ) :
-            parser.document)
-
-        if @cache[:document]
-            self.sanitized_body ||= @cache[:document].to_html
-        end
-
-        @cache[:document]
+        @cache[:document] ||= (parser.nil? ? body.as_document : parser.document)
     end
 
     # @note Will preserve caches for elements which have been externally modified.
@@ -569,8 +541,7 @@ class Page
 
     def to_initialization_options( deep = true )
         h = {}
-        h[:body]           = @body           if @body
-        h[:sanitized_body] = @sanitized_body if @sanitized_body
+        h[:body] = @body if @body
 
         [:cookie_jar, :element_audit_whitelist, :metadata].each do |m|
             h[m] = instance_variable_get( "@#{m}".to_sym )
@@ -619,6 +590,10 @@ class Page
         data['element_audit_whitelist'] = element_audit_whitelist.to_a
         data['response'] = data['response'].to_rpc_data
 
+        if data['body']
+            data['body'] = data['body'].to_string_io.string
+        end
+
         (ELEMENTS - [:headers]).map(&:to_s).each do |e|
             next if !data[e]
             data[e] = send(e).map(&:to_rpc_data)
@@ -642,6 +617,9 @@ class Page
             value = case name
                         when 'response'
                             HTTP::Response.from_rpc_data( value )
+
+                        when 'body'
+                            HTTP::Response::Body.from value
 
                         when *ELEMENTS.map(&:to_s)
                             value.map do |e|

@@ -660,6 +660,8 @@ class Request < Message
         )
 
         self.response.update_from_typhoeus typhoeus_response
+    ensure
+        @response_body_buffer = nil
     end
 
     def prepare_headers
@@ -745,7 +747,7 @@ class Request < Message
                     end
                 end
 
-                @response_body_buffer = String.new( '', capacity: cl )
+                @response_body_buffer = Response::Body.new( cl )
                 set_body_reader( typhoeus_request, @response_body_buffer )
             end
         end
@@ -787,7 +789,7 @@ class Request < Message
                     # Set it as the generic body buffer in order to be accessible
                     # via #on_complete in case this was indeed the end of the
                     # response.
-                    @response_body_buffer = last_line.dup
+                    @response_body_buffer = Response::Body.from( last_line )
 
                     # Also push it back to our own buffer in case there's more
                     # to read in order to complete the line.
@@ -859,6 +861,8 @@ class Request < Message
                 if @response_body_buffer && (on_body_line.any? || on_body_lines.any?)
                     typhoeus_response.options[:response_body] =
                       @response_body_buffer
+
+                    @response_body_buffer = nil
                 end
 
                 set_response_data typhoeus_response
@@ -903,7 +907,7 @@ class Request < Message
             next aborted if aborted
 
             if buffer.size + chunk.size > typhoeus_request.options[:maxfilesize]
-                buffer.clear
+                buffer.free
                 next aborted = :abort
             end
 

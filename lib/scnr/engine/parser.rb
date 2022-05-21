@@ -56,7 +56,7 @@ class Parser
             sax_options = prepare_ox_options( options )
 
             begin
-                Ox.sax_html( handler, StringIO.new( html ), sax_options )
+                Ox.sax_html( handler, html.to_string_io, sax_options )
             rescue SAX::Stop
             end
 
@@ -234,7 +234,7 @@ class Parser
     #   Override the {#response} body for the parsing process.
     def body=( string )
         @links = @forms = @cookies = @document = nil
-        @body = string
+        @body = HTTP::Response::Body.from( string )
     end
 
     def body
@@ -249,7 +249,11 @@ class Parser
         return @document if @document
         return if !text?
 
-        @document = self.class.parse( body, filter: true )
+        if from_response?
+            @document = @response.body.as_document
+        else
+            @document = self.class.parse( body, filter: true )
+        end
     end
 
     # @note It will include common request headers as well headers from the HTTP

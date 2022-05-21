@@ -357,7 +357,7 @@ class Cookie < Base
         end
 
         def in_html?( html )
-            /set-cookie/i.match? html
+            html.match? /set-cookie/i
         end
 
         # Extracts cookies from the `Set-Cookie` HTTP response header field.

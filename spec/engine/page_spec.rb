@@ -58,10 +58,6 @@ describe SCNR::Engine::Page do
             expect(data['metadata']).to eq(subject.metadata)
         end
 
-        it "includes 'sanitized_body'" do
-            expect(data['sanitized_body']).to eq(subject.sanitized_body)
-        end
-
         %w(response dom).each do |attribute|
             it "includes '#{attribute}'" do
                 expect(data[attribute]).to eq(subject.send( attribute ).to_rpc_data)
@@ -94,12 +90,6 @@ describe SCNR::Engine::Page do
             it "restores '#{attribute}'" do
                 expect(restored.send( attribute )).to eq(subject.send( attribute ))
             end
-        end
-
-        it "restores 'sanitized_body'" do
-            subject.document
-            expect(subject.sanitized_body).to be_truthy
-            expect(restored.sanitized_body).to eq(subject.sanitized_body)
         end
 
         it "restores #{described_class::DOM}#page" do
@@ -186,7 +176,6 @@ describe SCNR::Engine::Page do
                     expect(page.headers).to eq(parser.headers)
                     expect(page.cookie_jar).to eq(parser.cookie_jar)
                     expect(page.text?).to eq(parser.text?)
-                    expect(page.sanitized_body).to eq(parser.document.to_html)
                 end
             end
 
@@ -348,17 +337,6 @@ describe SCNR::Engine::Page do
             expect(subject.body).to eq('stuff')
         end
 
-        context 'when there is no #sanitized_body' do
-            before do
-                subject.sanitized_body = nil
-            end
-
-            it 'sets the applicable #parser body' do
-                subject.body = 'stuff'
-                expect(subject.parser.body).to eq('stuff')
-            end
-        end
-
         it 'calls #clear_cache' do
             expect(subject).to receive(:clear_cache)
             subject.body = 'stuff'
@@ -389,21 +367,6 @@ describe SCNR::Engine::Page do
             s.parser
             expect(SCNR::Engine::Parser).not_to receive(:new)
             s.parser
-        end
-
-        context 'when there is no #sanitized_body' do
-            it 'uses the Page#body instead of HTTP::Response#body' do
-                page = described_class.new(
-                    response: response.tap { |r| r.body = 'blah'},
-                    body:     'stuff'
-                )
-                expect(page.body).to eq('stuff')
-                expect(page.parser.body).to eq(page.body)
-
-                page.sanitized_body = nil
-                page.body = 'stuff2'
-                expect(page.parser.body).to eq(page.body)
-            end
         end
     end
 
@@ -697,33 +660,10 @@ EOHTML
             "<!DOCTYPE html>\n<a href=\"/stuff\">\n</a>\n\n"
         end
 
-        # it 'returns a sanitized parsed document' do
-        #     subject.body = html
-        #     expect(subject.document).to be_kind_of Engine::Parser::Document
-        #     expect(subject.document.to_html).to eq sanitized_html
-        # end
-        #
-        # it 'sets #sanitized_body' do
-        #     subject.body = html
-        #     subject.document
-        #
-        #     expect(subject.sanitized_body).to eq sanitized_html
-        # end
-
-        context 'when #sanitized_body is available' do
-            let(:sanitized_html) do
-                "<!DOCTYPE html>\n<a href=\"/other/stuff\">\n</a>\n\n"
-            end
-
-            it 'is used for the document' do
-                subject.body           = html
-                subject.sanitized_body = '<a href="/other/stuff">Other stuff</a>'
-
-                subject.document
-                subject.clear_cache
-
-                expect(subject.document.to_html).to eq sanitized_html
-            end
+        it 'returns a sanitized parsed document' do
+            subject.body = html
+            expect(subject.document).to be_kind_of Engine::Parser::Document
+            expect(subject.document.to_html).to eq sanitized_html
         end
     end
 

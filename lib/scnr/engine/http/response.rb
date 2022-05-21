@@ -17,6 +17,77 @@ class Response < Message
 
     HTML_CONTENT_TYPES = Set.new(%w(text/html application/xhtml+xml))
 
+    class Body
+
+        class <<self
+
+            def from( string )
+                return string if string.is_a? self
+
+                body = new( string.size )
+                body << string
+                body
+            end
+
+        end
+
+        def initialize( capacity )
+            @buffer = String.new( '', capacity: capacity )
+        end
+
+        def binary?
+            fail_if_freed
+            @buffer.binary?
+        end
+
+        def <<( string )
+            fail_if_freed
+            @buffer << string
+        end
+
+        def match?( pattern )
+            fail_if_freed
+            pattern.match? @buffer
+        end
+
+        def as_document
+            fail_if_freed
+            Parser.parse @buffer, filter: true
+        end
+
+        def downcase
+            fail_if_freed
+            @buffer.downcase
+        end
+
+        def has_html_tag?( *args )
+            fail_if_freed
+            @buffer.has_html_tag?( *args )
+        end
+
+        def empty?
+            fail_if_freed
+            @buffer.empty?
+        end
+
+        def free
+            @buffer.clear
+            @buffer = nil
+            @freed = true
+            nil
+        end
+
+        def to_string_io
+            StringIO.new( @buffer )
+        end
+
+        private
+
+        def fail_if_freed
+            fail 'Already freed' if @freed
+        end
+    end
+
     # @return   [Integer]
     #   HTTP response status code.
     attr_accessor :code
@@ -182,12 +253,16 @@ class Response < Message
     end
 
     def body=( body )
-        @body = body || ''
+        if body.is_a? Body
+            return @body = @body
+        end
+
+        body = body || ''
 
         text_check = text?
-        @body.recode! if text_check.nil? || text_check
+        body.recode! if text_check.nil? || text_check
 
-        @body
+        @body = Body.from( body )
     end
 
     # @return [SCNR::Engine::Page]
@@ -207,6 +282,8 @@ class Response < Message
         end
 
         hash[:headers] = {}.merge( hash[:headers] )
+
+        hash[:body] = hash[:body].to_string_io.string
 
         hash.delete( :normalize_url )
         hash.delete( :is_text )
@@ -234,7 +311,7 @@ class Response < Message
     # @param    [Hash]  data    {#to_rpc_data}
     # @return   [Request]
     def self.from_rpc_data( data )
-        data['request']     = Request.from_rpc_data( data['request'] )
+        data['request'] = Request.from_rpc_data( data['request'] )
 
         if data['return_code'].is_a? String
             data['return_code'] = data['return_code'].to_sym
