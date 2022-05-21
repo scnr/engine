@@ -108,14 +108,15 @@ class Paths < SCNR::Engine::OptionGroup
         @reports = self.config['reports']   || home_path + 'reports/'
         FileUtils.mkdir_p @reports
 
-        if ENV['SCNR_ENGINE_LOGDIR']
-            @logs = "#{ENV['SCNR_ENGINE_LOGDIR']}/"
+        if ENV['SCNR_ENGINE_LOG_DIR']
+            @logs = "#{ENV['SCNR_ENGINE_LOG_DIR']}/"
         elsif self.config['logs']
             @logs = self.config['logs']
         else
             @logs = "#{home_path}logs/"
-            FileUtils.mkdir_p @logs
         end
+
+        FileUtils.mkdir_p @logs
 
         @lib         = @root    + 'lib/scnr/engine/'
         @executables = @lib     + 'processes/executables/'
