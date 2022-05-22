@@ -31,30 +31,16 @@ class Base
     end
 
     def traverse( &block )
-        if @traverse
-            @traverse.each( &block )
-            return
-        end
-        @traverse = []
-
         @native.traverse (proc do |native|
             node = Nodes::Base.from_native( native )
-            @traverse << node
             block.call node
             # native.free
         end)
     end
 
     def traverse_comments( &block )
-        if @traverse_comments
-            @traverse_comments.each( &block )
-            return
-        end
-        @traverse_comments = []
-
         @native.traverse_comments (proc do |native|
             node = Nodes::Base.from_native( native )
-            @traverse_comments << node
             block.call node
             # native.free
         end)
@@ -62,18 +48,8 @@ class Base
 
     def nodes_by_name( name, &block )
         name = name.to_s
-        @nodes_by_name ||= {}
-
-        k = name.hash
-        if @nodes_by_name.include?( k )
-            @nodes_by_name[k].each( &block )
-            return
-        end
-        @nodes_by_name[k] = []
-
         @native.nodes_by_name name, (proc do |native|
             node = Nodes::Base.from_native( native )
-            @nodes_by_name[k] << node
             block.call node
             # native.free
         end)
@@ -87,18 +63,8 @@ class Base
         name  = name.to_s
         value = value.to_s
 
-        @nodes_by_attribute_name_and_value ||= {}
-
-        k = [name, value].hash
-        if @nodes_by_attribute_name_and_value.include?( k )
-            @nodes_by_attribute_name_and_value[k].each( &block )
-            return
-        end
-        @nodes_by_attribute_name_and_value[k] = []
-
         @native.nodes_by_attribute_name_and_value name, value, (proc do |native|
             node = Nodes::Base.from_native( native )
-            @nodes_by_attribute_name_and_value[k] << node
             block.call node
             # native.free
         end)
