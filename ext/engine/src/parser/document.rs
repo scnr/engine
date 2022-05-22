@@ -157,6 +157,10 @@ impl Node {
         panic!( "Use after free." );
     }
 
+    pub fn free( &mut self ) {
+        self.native = None;
+    }
+
     fn handle_to_ruby( handle: &node::Handle ) -> AnyObject {
         Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
             get_nested_class( "Rust" ).get_nested_class( "Parser" ).
@@ -236,6 +240,11 @@ unsafe_methods!(
         _itself.get_data( &*NODE_WRAPPER ).parent()
     }
 
+    fn free() -> NilClass {
+        _itself.get_data_mut( &*NODE_WRAPPER ).free();
+        NilClass::new()
+    }
+
     fn to_html() -> RString {
         let parser   = &_itself.get_data( &*NODE_WRAPPER );
         let document = &parser.native.clone().unwrap();
@@ -262,6 +271,7 @@ pub fn initialize() {
         _itself.def( "attributes", attributes );
         _itself.def( "name", name );
         _itself.def( "root?", is_root );
+        _itself.def( "free", free );
         _itself.def( "to_html", to_html );
 
     });
