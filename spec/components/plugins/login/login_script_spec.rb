@@ -23,54 +23,25 @@ describe name_from_filename do
 
     context 'when a browser' do
         context 'is available' do
-            context 'when using a Ruby script' do
-                let(:script) do
-                    <<EOSCRIPT
-                SCNR::Engine::Options.datastore.browser = browser.class.to_s
-                SCNR::Engine::Options.datastore.window_width = browser.execute_script( 'return window.innerWidth;' )
-                SCNR::Engine::Options.datastore.window_height = browser.execute_script( 'return window.innerHeight;' )
+            let(:script) do
+                <<EOSCRIPT
+            SCNR::Engine::Options.datastore.browser = browser.class.to_s
+            SCNR::Engine::Options.datastore.window_width = browser.execute_script( 'return window.innerWidth;' )
+            SCNR::Engine::Options.datastore.window_height = browser.execute_script( 'return window.innerHeight;' )
 EOSCRIPT
-                end
-
-                it "exposes a Watir::Browser interface via the 'browser' variable" do
-                    run
-
-                    expect(options.datastore.browser).to eq 'Watir::Browser'
-                end
-
-                it 'sets the appropriate resolution' do
-                    run
-
-                    expect(SCNR::Engine::Options.datastore.window_width).to eq SCNR::Engine::Options.device.width
-                    expect(SCNR::Engine::Options.datastore.window_height).to eq SCNR::Engine::Options.device.height
-                end
             end
 
-            context 'when using a Javascript script' do
-                let(:script) do
-                    <<EOSCRIPT
-                document.cookie = 'mycookie=myvalue'
-                document.cookie = 'width=' + window.innerWidth
-                document.cookie = 'height=' + window.innerHeight
-EOSCRIPT
-                end
-                let(:script_path) { "#{super()}.js" }
+            it "exposes a Watir::Browser interface via the 'browser' variable" do
+                run
 
-                it 'runs the code' do
-                    run
+                expect(options.datastore.browser).to eq 'Watir::Browser'
+            end
 
-                    expect(framework.http.cookies.
-                        find { |c| c.name == 'mycookie' }.value).to eq('myvalue')
-                end
+            it 'sets the appropriate resolution' do
+                run
 
-                it 'sets the appropriate resolution' do
-                    run
-
-                    expect(framework.http.cookies.
-                        find { |c| c.name == 'width' }.value).to eq SCNR::Engine::Options.device.width.to_s
-                    expect(framework.http.cookies.
-                        find { |c| c.name == 'height' }.value).to eq SCNR::Engine::Options.device.height.to_s
-                end
+                expect(SCNR::Engine::Options.datastore.window_width).to eq SCNR::Engine::Options.device.width
+                expect(SCNR::Engine::Options.datastore.window_height).to eq SCNR::Engine::Options.device.height
             end
         end
 
@@ -79,45 +50,16 @@ EOSCRIPT
                 SCNR::Engine::Options.scope.dom_depth_limit = 0
             end
 
-            context 'when using a Ruby script' do
-                let(:script) do
-                    <<EOSCRIPT
-                    SCNR::Engine::Options.datastore.browser = browser
+            let(:script) do
+                <<EOSCRIPT
+                SCNR::Engine::Options.datastore.browser = browser
 EOSCRIPT
-                end
-
-                it "sets 'browser' to 'nil'" do
-                    run
-
-                    expect(options.datastore.browser).to be_nil
-                end
             end
 
-            context 'when using a Javascript script' do
-                let(:script) do
-                    <<EOSCRIPT
-                document.cookie = 'mycookie=myvalue'
-EOSCRIPT
-                end
-                let(:script_path) { "#{super()}.js" }
+            it "sets 'browser' to 'nil'" do
+                run
 
-                it 'sets the status' do
-                    run
-
-                    expect(actual_results['status']).to  eq('missing_browser')
-                end
-
-                it 'sets the message' do
-                    run
-
-                    expect(actual_results['message']).to eq(plugin::STATUSES[:missing_browser])
-                end
-
-                it 'aborts the scan' do
-                    run
-
-                    expect(framework.status).to eq(:aborted)
-                end
+                expect(options.datastore.browser).to be_nil
             end
 
         end
@@ -206,114 +148,56 @@ EOSCRIPT
     end
 
     context 'when there is a runtime error in the script' do
-        context 'when using Ruby' do
-            let(:script) do
-                <<EOSCRIPT
-                    fail
+        let(:script) do
+            <<EOSCRIPT
+                fail
 EOSCRIPT
-            end
-
-            it 'sets the status' do
-                run
-
-                expect(actual_results['status']).to  eq('error')
-            end
-
-            it 'sets the message' do
-                run
-
-                expect(actual_results['message']).to eq(plugin::STATUSES[:error])
-            end
-
-            it 'aborts the scan' do
-                run
-
-                expect(framework.status).to eq(:aborted)
-            end
         end
 
-        context 'when using Javascript' do
-            let(:script) do
-                <<EOSCRIPT
-                doesNotExist()
-EOSCRIPT
-            end
-            let(:script_path) { "#{super()}.js" }
+        it 'sets the status' do
+            run
 
-            it 'sets the status' do
-                run
+            expect(actual_results['status']).to  eq('error')
+        end
 
-                expect(actual_results['status']).to  eq('error')
-            end
+        it 'sets the message' do
+            run
 
-            it 'sets the message' do
-                run
+            expect(actual_results['message']).to eq(plugin::STATUSES[:error])
+        end
 
-                expect(actual_results['message']).to eq(plugin::STATUSES[:error])
-            end
+        it 'aborts the scan' do
+            run
 
-            it 'aborts the scan' do
-                run
-
-                expect(framework.status).to eq(:aborted)
-            end
+            expect(framework.status).to eq(:aborted)
         end
     end
 
     context 'when there is a syntax error in the script' do
-        context 'when using Ruby' do
-            let(:script) do
-                <<EOSCRIPT
-                    {
-                        id: => stuff
-                    }
+        let(:script) do
+            <<EOSCRIPT
+                {
+                    id: => stuff
+                }
 EOSCRIPT
-            end
-
-            it 'sets the status' do
-                run
-
-                expect(actual_results['status']).to  eq('error')
-            end
-
-            it 'sets the message' do
-                run
-
-                expect(actual_results['message']).to eq(plugin::STATUSES[:error])
-            end
-
-            it 'aborts the scan' do
-                run
-
-                expect(framework.status).to eq(:aborted)
-            end
         end
 
-        context 'when using Javascript' do
-            let(:script) do
-                <<EOSCRIPT
-                document.cookie = '
-EOSCRIPT
-            end
-            let(:script_path) { "#{super()}.js" }
+        it 'sets the status' do
+            run
 
-            it 'sets the status' do
-                run
+            expect(actual_results['status']).to  eq('error')
+        end
 
-                expect(actual_results['status']).to  eq('error')
-            end
+        it 'sets the message' do
+            run
 
-            it 'sets the message' do
-                run
+            expect(actual_results['message']).to eq(plugin::STATUSES[:error])
+        end
 
-                expect(actual_results['message']).to eq(plugin::STATUSES[:error])
-            end
+        it 'aborts the scan' do
+            run
 
-            it 'aborts the scan' do
-                run
-
-                expect(framework.status).to eq(:aborted)
-            end
+            expect(framework.status).to eq(:aborted)
         end
     end
 

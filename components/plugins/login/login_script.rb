@@ -20,20 +20,7 @@ class SCNR::Engine::Plugins::LoginScript < SCNR::Engine::Plugin::Base
     }
 
     def prepare
-        script    = IO.read( @options[:script] )
-        @script   = proc do |browser|
-            if javascript?
-                browser.goto SCNR::Engine::Options.url
-                browser.execute_script script
-            else
-                eval script
-            end
-        end
-
-        if javascript? && !session.has_browser?
-            set_status :missing_browser, :error
-            return
-        end
+        script = IO.read( @options[:script] )
 
         session.record_login_sequence do |browser|
             print_info 'Running the script.'
@@ -44,10 +31,10 @@ class SCNR::Engine::Plugins::LoginScript < SCNR::Engine::Plugin::Base
                     SCNR::Engine::Options.device.width,
                     SCNR::Engine::Options.device.height
                 )
-                @script.call watir
+                proc { |browser| eval script }.call( watir )
                 browser.wait_till_ready
             else
-                @script.call
+                eval script
             end
 
             print_info 'Execution completed.'
@@ -82,10 +69,6 @@ class SCNR::Engine::Plugins::LoginScript < SCNR::Engine::Plugin::Base
         print_exception e
     end
 
-    def javascript?
-        @options[:script].split( '.' ).last == 'js'
-    end
-
     def set_status( status, type = nil, extra = {} )
         type ||= status
 
@@ -115,9 +98,7 @@ The script needn't necessarily perform an actual login operation. If another
 process is used to manage sessions, the script can be used to communicate with
 that process and, for example, load and set cookies from a shared cookie-jar.
 
-# Ruby
-
-## With browser (slow)
+# With browser
 
 If a [browser](http://watir.github.io/) is available, it will be exposed to
 the script via the `browser` variable. Otherwise, that variable will have a
@@ -136,7 +117,7 @@ value of `nil`.
     SCNR::Engine::Options.session.check_url     = browser.url
     SCNR::Engine::Options.session.check_pattern = /Sign Off|MY ACCOUNT/
 
-## Without browser (fast)
+# Without browser
 
 If a real browser environment is not required for the login operation, then
 using the system-wide HTTP interface is preferable, as it will be much faster
@@ -154,14 +135,14 @@ and consume much less resources.
     SCNR::Engine::Options.session.check_url     = to_absolute( response.headers.location, response.url )
     SCNR::Engine::Options.session.check_pattern = /Sign Off|MY ACCOUNT/
 
-## From cookie-jar
+# From cookie-jar
 
 If an external process is used to manage sessions, you can keep SCNR::Engine in sync
 by loading cookies from a shared Netscape-style cookie-jar file.
 
     http.cookie_jar.load 'cookies.txt'
 
-## Advanced session check configuration
+# Advanced session check configuration
 
 In addition to just settings the `check_url` and `check_pattern` options,
 you can also set arbitrary HTTP request options for the login check, to cover
@@ -189,20 +170,9 @@ cases where extra tokens or a method other than `GET` must be used.
             'X-Custom-Header' => 'value'
         }
     }
-
-# Javascript
-
-When the given script has a `.js` file extension, it will be loaded and executed
-in the browser, within the page of the target URL.
-
-    document.getElementById( 'uid' ).value   = 'jsmith';
-    document.getElementById( 'passw' ).value = 'Demo1234';
-
-    document.getElementById( 'login' ).submit();
-
 },
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
-            version:     '0.2.3',
+            version:     '0.3',
             options:     [
                 Options::Path.new( :script,
                     required:    true,
