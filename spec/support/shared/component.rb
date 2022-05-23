@@ -4,6 +4,10 @@ shared_examples_for "component" do
         @name = self.class.metadata[:example_group][:description]
     end
 
+    after :each do
+        SCNR::Engine::Framework.unsafe.reset
+    end
+
     let(:name) { @name }
     let(:component_name) { name }
     let(:framework) { SCNR::Engine::Framework.unsafe }
@@ -16,9 +20,9 @@ shared_examples_for "component" do
     end
 
     def url
-        @url ||= web_server_url_for( @use_https ? "#{name}_https" : name ) + '/'
+        @url ||= web_server_url_for( @use_https ? "#{@name}_https" : @name ) + '/'
     rescue
-        raise "Could not find server for '#{name}' component."
+        raise "Could not find server for '#{@name}' component."
     end
 
     def yaml_load( yaml )

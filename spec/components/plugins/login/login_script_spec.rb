@@ -3,11 +3,8 @@ require 'spec_helper'
 describe name_from_filename do
     include_examples 'plugin'
 
-    before( :all ) do
-        options.url = url
-    end
-
     before :each do
+        SCNR::Engine::Options.url = url
         options.session.check_url     = nil
         options.session.check_pattern = nil
 
@@ -15,6 +12,7 @@ describe name_from_filename do
 
         options.plugins[component_name] = { 'script' => script_path }
 
+        SCNR::Engine::Options.dom.pool_size = 1
         SCNR::Engine::Options.scope.dom_depth_limit = 1
     end
 
@@ -43,8 +41,8 @@ EOSCRIPT
                 it 'sets the appropriate resolution' do
                     run
 
-                    expect(SCNR::Engine::Options.datastore.window_width).to eq SCNR::Engine::Options.dom.window_width
-                    expect(SCNR::Engine::Options.datastore.window_height).to eq SCNR::Engine::Options.dom.window_height
+                    expect(SCNR::Engine::Options.datastore.window_width).to eq SCNR::Engine::Options.device.width
+                    expect(SCNR::Engine::Options.datastore.window_height).to eq SCNR::Engine::Options.device.height
                 end
             end
 
@@ -69,9 +67,9 @@ EOSCRIPT
                     run
 
                     expect(framework.http.cookies.
-                        find { |c| c.name == 'width' }.value).to eq SCNR::Engine::Options.dom.window_width.to_s
+                        find { |c| c.name == 'width' }.value).to eq SCNR::Engine::Options.device.width.to_s
                     expect(framework.http.cookies.
-                        find { |c| c.name == 'height' }.value).to eq SCNR::Engine::Options.dom.window_height.to_s
+                        find { |c| c.name == 'height' }.value).to eq SCNR::Engine::Options.device.height.to_s
                 end
             end
         end

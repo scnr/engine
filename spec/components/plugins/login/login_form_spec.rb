@@ -3,11 +3,8 @@ require 'spec_helper'
 describe name_from_filename do
     include_examples 'plugin'
 
-    before( :all ) do
-        options.url = url
-    end
-
     before :each do
+        options.url = url
         options.session.check_url     = nil
         options.session.check_pattern = nil
     end
@@ -66,7 +63,7 @@ describe name_from_filename do
             run
 
             expect(actual_results['status']).to  eq('form_not_found')
-            expect(actual_results['message']).to eq(plugin::STATUSES[:form_not_found])
+            expect(actual_results['message']).to include(plugin::STATUSES[:form_not_found])
         end
 
         it 'aborts the scan' do

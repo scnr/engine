@@ -1,13 +1,6 @@
 shared_examples_for 'plugin' do
     include_examples 'component'
 
-    # before( :all ) do
-    #     FileUtils.cp "#{fixtures_path}checks/test2.rb", options.paths.checks
-    # end
-    # after( :all ) do
-    #     FileUtils.rm "#{options.paths.checks}test2.rb"
-    # end
-
     before( :each ) do
         options.paths.plugins = nil
 
