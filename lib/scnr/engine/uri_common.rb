@@ -24,10 +24,10 @@ module URICommon
     end
 
     CACHE = {
-        parse:       5_000,
+        parse:       1_000,
 
-        normalize:   5_000,
-        to_absolute: 5_000,
+        normalize:   1_000,
+        to_absolute: 1_000,
 
         encode:      5_000,
         decode:      5_000

@@ -12,8 +12,8 @@ module SCNR::Engine::Support
 module SignatureCommon
 
     CACHE = {
-        for:      1_000,
-        refine:   1_000,
+        for:      250,
+        refine:   250,
         similar?: 20_000
     }.inject({}) do |h, (name, size)|
         h.merge! name => Cache::LeastRecentlyPushed.new( size: size )
