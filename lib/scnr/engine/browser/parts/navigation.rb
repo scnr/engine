@@ -38,6 +38,8 @@ module Navigation
     def initialize
         super
 
+        @add_transitions = true
+
         # User-controlled preloaded responses, by URL.
         @preloads = {}
     end
@@ -90,9 +92,9 @@ module Navigation
                 @transitions = resource.transitions.dup
                 update_skip_states resource.skip_states
 
-                @add_request_transitions = false if @transitions.any?
+                @add_transitions = false if @transitions.any?
                 resource.restore *[self, options[:take_snapshot]].compact
-                @add_request_transitions = true
+                @add_transitions = true
 
                 Navigation.notify_after_load resource, options, self
 
@@ -142,12 +144,7 @@ module Navigation
         take_snapshot      = options[:take_snapshot]
         extra_cookies      = options[:cookies] || {}
         update_transitions = options.include?(:update_transitions) ?
-            options[:update_transitions] : true
-
-        pre_add_request_transitions = @add_request_transitions
-        if !update_transitions
-            @add_request_transitions = false
-        end
+                               options[:update_transitions] : true
 
         @last_url = SCNR::Engine::URI( url ).to_s
         self.class.add_asset_domain @last_url
@@ -186,11 +183,9 @@ module Navigation
             javascript.set_element_ids
         end
 
-        if @add_request_transitions
+        if @add_transitions && update_transitions
             @transitions << transition
         end
-
-        @add_request_transitions = pre_add_request_transitions
 
         update_cookies
 

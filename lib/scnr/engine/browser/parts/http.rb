@@ -152,12 +152,6 @@ module HTTP
                 print_debug_level_2 'Out of scope, ignoring.'
                 return
             end
-
-            if @add_request_transitions
-                @request_transitions << Page::DOM::Transition.new(
-                    request.url, :request
-                )
-            end
         end
 
         # Signal the proxy to not actually perform the request if we have a
@@ -203,11 +197,6 @@ module HTTP
         response.headers.delete 'Content-Security-Policy'
 
         print_debug_level_2 "Got response: #{response.url}"
-
-        @request_transitions.each do |transition|
-            next if !transition.running? || transition.element != request.url
-            transition.complete
-        end
 
         # If we abort the request because it's out of scope we need to emulate
         # an OK response because we **do** want to be able to grab a page with

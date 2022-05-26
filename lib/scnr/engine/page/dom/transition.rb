@@ -49,14 +49,6 @@ class Transition
         class NotRunning < Error
         end
 
-        # Raised when a transition is not {Transition#playable?}.
-        #
-        # @see #play
-        #
-        # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
-        class NotPlayable < Error
-        end
-
         # Raised when an invalid element type is provided.
         #
         # @see #initialize
@@ -66,12 +58,6 @@ class Transition
         class InvalidElement < Error
         end
     end
-
-    # Non-playable events.
-    NON_PLAYABLE = Set.new([:request])
-
-    # Events without a DOM depth.
-    ZERO_DEPTH     = Set.new([:request])
 
     # @return   [Browser::ElementLocator]
     #   HTML element which received the {#event}.
@@ -175,10 +161,8 @@ class Transition
 
     # @return   [Integer]
     #   Depth for this transition.
-    #
-    # @see ZERO_DEPTH
     def depth
-        ZERO_DEPTH.include?( event ) ? 0 : 1
+        1
     end
 
     # @param    [Browser]   browser
@@ -187,14 +171,14 @@ class Transition
     # @return   [Transition, nil]
     #   New transition as a result of the play, `nil` if the play wasn't
     #   successful.
-    #
-    # @raise    [Error::NotPlayable]
-    #   When the transition is not {#playable?}.
     def play( browser )
-        fail Error::NotPlayable, "Transition is not playable: #{self}" if !playable?
 
         if element == :page && event == :load
-            return browser.goto( options[:url], cookies: options[:cookies] )
+            return browser.goto(
+              options[:url],
+              cookies:            options[:cookies],
+              update_transitions: false
+            )
         end
 
         pre_windows_size = browser.selenium.window_handles.size
@@ -240,15 +224,6 @@ class Transition
     # @see #complete
     def completed?
         !!@time
-    end
-
-    # @return   [Bool]
-    #   `true` if the transition is for an event that can be played, `false`
-    #   otherwise.
-    #
-    # @see NON_PLAYABLE
-    def playable?
-        !NON_PLAYABLE.include?( event )
     end
 
     # @return   [String]

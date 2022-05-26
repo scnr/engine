@@ -677,7 +677,7 @@ class Page
         # where both checkboxes would be checked, because we'd check one, nothing
         # would change and we'd discard that page -- never exploring it further
         # and checking the second one.
-        "#{dom.playable_transitions_hash}:#{body.persistent_hash}:" <<
+        "#{dom.transitions_hash}:#{body.persistent_hash}:" <<
             "#{element_hashes.sort}:#{element_sink_trace_hash}"
     end
 

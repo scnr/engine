@@ -50,7 +50,7 @@ describe SCNR::Engine::BrowserPool::Jobs::DOMExploration::EventTrigger do
 
         page = pages.first
 
-        expect(page.dom.transitions.size).to eq(3)
+        expect(page.dom.transitions.size).to eq(2)
 
         expect(page.dom.transitions[1].event).to eq(event)
 

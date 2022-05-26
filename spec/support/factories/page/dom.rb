@@ -9,7 +9,6 @@ Factory.define :dom_data do
         skip_states:          SCNR::Engine::Support::Filter::Set.new.tap { |h| h << 0 },
         transitions:          [
             Factory[:page_load_with_cookies_transition].complete,
-            Factory[:request_transition].complete,
             Factory[:input_transition].complete,
             Factory[:form_input_transition].complete
         ],

@@ -120,7 +120,7 @@ class Framework
 
         @page_queue_filter = Support::Filter::Set.new(hasher: :persistent_hash )
         @page_paths_filter = Support::Filter::Set.new(hasher: :paths_hash )
-        @dom_analysis_filter = Support::Filter::Set.new(hasher: :playable_transitions_hash )
+        @dom_analysis_filter = Support::Filter::Set.new(hasher: :transitions_hash )
         @url_queue_filter  = Support::Filter::Set.new(hasher: :persistent_hash )
 
         @element_pre_check_filter = Support::Filter::Set.new(hasher: :coverage_and_trace_hash )

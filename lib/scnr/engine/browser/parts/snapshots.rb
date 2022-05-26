@@ -64,9 +64,7 @@ module Snapshots
         # Keeps track of resources which should be skipped -- like already fired
         # events and clicked links etc.
         @skip_states = Support::Filter::Set.new(hasher: :persistent_hash )
-
         @transitions = []
-        @add_request_transitions = true
     end
 
     def parse_profile=( profile )
@@ -309,8 +307,7 @@ module Snapshots
     def capture_snapshot( transition = nil )
         pages = []
 
-        request_transitions = flush_request_transitions
-        transitions = ([transition] + request_transitions).flatten.compact
+        transitions = [transition].flatten.compact
 
         window_handles = selenium.window_handles
 
@@ -353,7 +350,7 @@ module Snapshots
 
                 # Safegued against pages which generate an inf number of DOM
                 # states regardless of UI interactions.
-                transition_id ="#{page.dom.url}:#{page.dom.playable_transitions.map(&:hash)}"
+                transition_id ="#{page.dom.url}:#{page.dom.transitions.map(&:hash)}"
                 transition_id_seen = skip_state?( transition_id )
                 skip_state transition_id
                 next page.clear_cache if transition_id_seen
@@ -500,7 +497,6 @@ module Snapshots
 
         page = Page.from_data( elements.merge( url: request.url ) )
         page.response.request = request
-        page.dom.push_transition Page::DOM::Transition.new( request.url, :request )
 
         @captured_pages << page if store_pages?
         notify_on_new_page( page )
@@ -527,12 +523,6 @@ module Snapshots
 
         return if !store_pages?
         @page_snapshots_with_sinks << page
-    end
-
-    def flush_request_transitions
-        @request_transitions.dup
-    ensure
-        @request_transitions.clear
     end
 
     def skip_state?( state )

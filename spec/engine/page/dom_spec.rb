@@ -79,24 +79,6 @@ describe SCNR::Engine::Page::DOM do
         end
     end
 
-    describe '#playable_transitions' do
-        it 'returns playable transitions' do
-            dom.transitions = [
-                { :page                              => :load },
-                { "http://test.com/"                 => :request },
-                { "<body onload='loadStuff();'>"     => :onload },
-                { "http://test.com/ajax"             => :request },
-                { "<a href='javascript:clickMe();'>" => :click },
-            ].map { |t| described_class::Transition.new *t.first }
-
-            expect(dom.playable_transitions).to eq([
-                { :page                              => :load },
-                { "<body onload='loadStuff();'>"     => :onload },
-                { "<a href='javascript:clickMe();'>" => :click },
-            ].map { |t| described_class::Transition.new *t.first })
-        end
-    end
-
     describe '#data_flow_sinks' do
         it 'defaults to an empty Array' do
             expect(empty_dom.data_flow_sinks).to eq([])
@@ -172,10 +154,8 @@ describe SCNR::Engine::Page::DOM do
     describe '#depth' do
         it 'returns the amount of DOM transitions' do
             dom.transitions = [
-                { "http://test.com/"                 => :request },
                 { :page                              => :load },
                 { "<body onload='loadStuff();'>"     => :onload },
-                { "http://test.com/ajax"             => :request },
                 { "<a href='javascript:clickMe();'>" => :click },
             ].map { |t| described_class::Transition.new *t.first }
 
@@ -273,23 +253,23 @@ describe SCNR::Engine::Page::DOM do
         end
     end
 
-    describe '#playable_transitions_hash' do
+    describe '#transitions_hash' do
         it 'calculates a hash based on #playable_transitions' do
-            h = dom.playable_transitions_hash
+            h = dom.transitions_hash
 
             dom.push_transition described_class::Transition.new(
                 "<body onload='loadStuff();'>", :onload
             )
 
-            expect(h).to_not eq dom.playable_transitions_hash
+            expect(h).to_not eq dom.transitions_hash
         end
 
         it 'ignores the #time attributes' do
-            h = dom.playable_transitions_hash
+            h = dom.transitions_hash
 
-            dom.playable_transitions.last.time = 1000
+            dom.transitions.last.time = 1000
 
-            expect(h).to eq dom.playable_transitions_hash
+            expect(h).to eq dom.transitions_hash
         end
     end
 

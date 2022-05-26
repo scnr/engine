@@ -315,14 +315,10 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
 
             expect(pages.map(&:dom).map(&:transitions)).to eq([
                                                                   [
-                                                                      { :page => :load },
-                                                                      { "#{url}deep-dom" => :request },
-                                                                      { "#{url}level2" => :request }
+                                                                      { :page => :load }
                                                                   ],
                                                                   [
                                                                       { :page => :load },
-                                                                      { "#{url}deep-dom" => :request },
-                                                                      { "#{url}level2" => :request },
                                                                       {
                                                                           {
                                                                               tag_name: 'a',
@@ -335,8 +331,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                                                                   ],
                                                                   [
                                                                       { :page => :load },
-                                                                      { "#{url}deep-dom" => :request },
-                                                                      { "#{url}level2" => :request },
                                                                       {
                                                                           {
                                                                               tag_name: 'a',
@@ -344,13 +338,10 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                                                                                   'href'        => 'javascript:level3();'
                                                                               }
                                                                           } => :click
-                                                                      },
-                                                                      { "#{url}level4" => :request }
+                                                                      }
                                                                   ],
                                                                   [
                                                                       { :page => :load },
-                                                                      { "#{url}deep-dom" => :request },
-                                                                      { "#{url}level2" => :request },
                                                                       {
                                                                           {
                                                                               tag_name: 'a',
@@ -371,8 +362,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                                                                   ],
                                                                   [
                                                                       { :page => :load },
-                                                                      { "#{url}deep-dom" => :request },
-                                                                      { "#{url}level2" => :request },
                                                                       {
                                                                           {
                                                                               tag_name: 'a',
@@ -381,7 +370,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                                                                               }
                                                                           } => :click
                                                                       },
-                                                                      { "#{url}level4" => :request },
                                                                       {
                                                                           {
                                                                               tag_name: 'div',
@@ -390,9 +378,7 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                                                                                   'id'      => 'level5'
                                                                               }
                                                                           } => :click
-                                                                      },
-
-                                                                      { "#{url}level6" => :request }
+                                                                      }
                                                                   ]
                                                               ].map { |transitions| transitions_from_array( transitions ) })
         end
@@ -403,14 +389,10 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
 
                 expect(pages.map(&:dom).map(&:transitions)).to eq([
                                                                       [
-                                                                          { :page => :load },
-                                                                          { "#{url}deep-dom" => :request },
-                                                                          { "#{url}level2" => :request }
+                                                                          { :page => :load }
                                                                       ],
                                                                       [
                                                                           { :page => :load },
-                                                                          { "#{url}deep-dom" => :request },
-                                                                          { "#{url}level2" => :request },
                                                                           {
                                                                               {
                                                                                   tag_name: 'a',
@@ -423,8 +405,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                                                                       ],
                                                                       [
                                                                           { :page => :load },
-                                                                          { "#{url}deep-dom" => :request },
-                                                                          { "#{url}level2" => :request },
                                                                           {
                                                                               {
                                                                                   tag_name: 'a',
@@ -432,8 +412,7 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                                                                                       'href'        => 'javascript:level3();'
                                                                                   }
                                                                               } => :click
-                                                                          },
-                                                                          { "#{url}level4" => :request }
+                                                                          }
                                                                       ]
                                                                   ].map { |transitions| transitions_from_array( transitions ) })
             end
@@ -452,7 +431,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
 
             expect(doms[0].transitions).to eq(transitions_from_array([
                                                                          { page: :load },
-                                                                         { "#{url}lots_of_sinks?input=#{subject.javascript.log_execution_flow_sink_stub(1)}" => :request },
                                                                          {
                                                                              {
                                                                                  tag_name:   'a',
@@ -517,7 +495,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
 
             expect(doms[1].transitions).to eq(transitions_from_array([
                                                                          { page: :load },
-                                                                         { "#{url}lots_of_sinks?input=#{subject.javascript.log_execution_flow_sink_stub(1)}" => :request },
                                                                          {
                                                                              {
                                                                                  tag_name:   'form',
@@ -753,8 +730,7 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
             page = subject.to_page
 
             expect(page.dom.transitions).to eq(transitions_from_array([
-                                                                          { page: :load },
-                                                                          { url => :request }
+                                                                          { page: :load }
                                                                       ]))
         end
 

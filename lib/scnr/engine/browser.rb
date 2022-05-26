@@ -58,9 +58,7 @@ class Browser
     #   TODO: Raise error or unsupported value.
     def initialize( options = {} )
         @options = options.dup
-
-        @request_transitions = []
-        @window_responses    = {}
+        @window_responses = {}
 
         super()
 

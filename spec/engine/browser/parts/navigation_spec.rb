@@ -426,8 +426,7 @@ describe SCNR::Engine::Browser::Parts::Navigation do
                     expect(pages.size).to eq(1)
 
                     expect(pages.first.dom.transitions).to eq(transitions_from_array([
-                                                                                         { page: :load },
-                                                                                         { url => :request }
+                                                                                         { page: :load }
                                                                                      ]))
                 end
             end
@@ -503,8 +502,7 @@ describe SCNR::Engine::Browser::Parts::Navigation do
                     expect(pages.size).to eq(1)
 
                     expect(pages.first.dom.transitions).to eq(transitions_from_array([
-                                                                                         { page: :load },
-                                                                                         { url => :request }
+                                                                                         { page: :load }
                                                                                      ]))
                 end
             end

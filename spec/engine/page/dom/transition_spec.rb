@@ -160,11 +160,7 @@ describe SCNR::Engine::Page::DOM::Transition do
 
         context 'when the element is' do
             context 'String' do
-                it 'assigns it to #element' do
-                    empty_transition.start 'http://test.com/stuff', :request
-                    expect(empty_transition.element).to eq('http://test.com/stuff')
-
-                end
+                it 'assigns it to #element'
             end
             context 'Symbol' do
                 it 'assigns it to #element' do
@@ -231,18 +227,8 @@ describe SCNR::Engine::Page::DOM::Transition do
     end
 
     describe '#depth' do
-        context 'when the event is' do
-            context ':request' do
-                it 'returns 0' do
-                    expect(empty_transition.start( 'http://test/', :request ).depth).to eq(0)
-                end
-            end
-
-            context 'other' do
-                it 'returns 1' do
-                    expect(empty_transition.start( :stuff, :blah ).depth).to eq(1)
-                end
-            end
+        it 'returns 1' do
+            expect(empty_transition.start( :stuff, :blah ).depth).to eq(1)
         end
     end
 
@@ -328,36 +314,34 @@ describe SCNR::Engine::Page::DOM::Transition do
             browser.load( url ).start_capture
         end
 
-        context 'when the transition is playable' do
-            it 'plays it' do
-                pages_should_not_have_form_with_input [browser.to_page], 'by-ajax'
+        it 'plays it' do
+            pages_should_not_have_form_with_input [browser.to_page], 'by-ajax'
 
-                element = SCNR::Engine::Browser::ElementLocator.from_html(
-                    '<div id="my-div" onclick="addForm();">'
-                )
-                transition = described_class.new( element, :click )
-                expect(transition.complete.play( browser )).to eq(transition)
+            element = SCNR::Engine::Browser::ElementLocator.from_html(
+                '<div id="my-div" onclick="addForm();">'
+            )
+            transition = described_class.new( element, :click )
+            expect(transition.complete.play( browser )).to eq(transition)
 
-                pages_should_have_form_with_input [browser.to_page], 'by-ajax'
-            end
+            pages_should_have_form_with_input [browser.to_page], 'by-ajax'
+        end
 
-            it 'returns the new transition' do
-                url = SCNR::Engine::Utilities.normalize_url( web_server_url_for( :browser ) )
+        it 'returns the new transition' do
+            url = SCNR::Engine::Utilities.normalize_url( web_server_url_for( :browser ) )
 
-                browser.load( "#{url}/trigger_events" ).start_capture
+            browser.load( "#{url}/trigger_events" ).start_capture
 
-                pages_should_not_have_form_with_input [browser.to_page], 'by-ajax'
+            pages_should_not_have_form_with_input [browser.to_page], 'by-ajax'
 
-                element = SCNR::Engine::Browser::ElementLocator.from_html(
-                    '<div id="my-div">'
-                )
-                transition = described_class.new( element, :onclick )
-                expect(transition.complete.play( browser )).to eq(
-                    described_class.new( element, :click )
-                )
+            element = SCNR::Engine::Browser::ElementLocator.from_html(
+                '<div id="my-div">'
+            )
+            transition = described_class.new( element, :onclick )
+            expect(transition.complete.play( browser )).to eq(
+                described_class.new( element, :click )
+            )
 
-                pages_should_have_form_with_input [browser.to_page], 'by-ajax'
-            end
+            pages_should_have_form_with_input [browser.to_page], 'by-ajax'
         end
 
         context 'when the transition opens a new window' do
@@ -371,16 +355,6 @@ describe SCNR::Engine::Page::DOM::Transition do
                 )
                 expect(described_class.new( element, :click ).
                     complete.play( browser )).to be_nil
-            end
-        end
-
-        context 'when the transition is not playable' do
-            it "raises #{described_class::Error::NotPlayable}" do
-                transition = described_class.new( 'http://test/', :request )
-
-                expect do
-                    transition.complete.play( browser )
-                end.to raise_error described_class::Error::NotPlayable
             end
         end
     end

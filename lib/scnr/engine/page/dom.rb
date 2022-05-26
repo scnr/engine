@@ -93,10 +93,6 @@ class DOM
         @transitions.map { |t| t.depth }.inject(&:+).to_i
     end
 
-    def playable_transitions
-        transitions.select { |t| t.playable? }
-    end
-
     def print_transitions( printer, indent = '' )
         longest_event_size = 0
         @transitions.each do |t|
@@ -107,28 +103,24 @@ class DOM
             padding = longest_event_size - t.event.to_s.size + 1
             time    = sprintf( '%.4f', t.time.to_f )
 
-            if t.event == :request
-                printer.print_verbose "#{indent * 2}* [#{time}s] #{t.event}#{' ' * padding} => #{t.element}"
-            else
-                url = nil
-                if t.options[:url]
-                    url = "(#{t.options[:url]})"
+            url = nil
+            if t.options[:url]
+                url = "(#{t.options[:url]})"
+            end
+
+            printer.print_info "#{indent}-- [#{time}s] #{t.event}#{' ' * padding} => #{t.element} #{url}"
+
+            if t.options[:cookies] && t.options[:cookies].any?
+                printer.print_info "#{indent * 2}-- Cookies:"
+
+                t.options[:cookies].each do |name, value|
+                    printer.print_info  "#{indent * 3}* #{name}\t=> #{value}\n"
                 end
+            end
 
-                printer.print_info "#{indent}-- [#{time}s] #{t.event}#{' ' * padding} => #{t.element} #{url}"
-
-                if t.options[:cookies] && t.options[:cookies].any?
-                    printer.print_info "#{indent * 2}-- Cookies:"
-
-                    t.options[:cookies].each do |name, value|
-                        printer.print_info  "#{indent * 3}* #{name}\t=> #{value}\n"
-                    end
-                end
-
-                if t.options[:inputs] && t.options[:inputs].any?
-                    t.options[:inputs].each do |name, value|
-                        printer.print_info  "#{indent * 2}* #{name}\t=> #{value}\n"
-                    end
+            if t.options[:inputs] && t.options[:inputs].any?
+                t.options[:inputs].each do |name, value|
+                    printer.print_info  "#{indent * 2}* #{name}\t=> #{value}\n"
                 end
             end
         end
@@ -142,22 +134,24 @@ class DOM
     # @return   [Browser, nil]
     #   Live page in the `browser` if successful, `nil` otherwise.
     def restore( browser, take_snapshot = false )
-        playables = self.playable_transitions.dup
+        ts = self.transitions.dup
 
         # First transition will always be the page load and if that's all there
         # is then we're done.
-        if playables.size == 1
-            browser.goto playables.first.options[:url], take_snapshot: take_snapshot
+        if ts.size == 1
+            browser.goto ts.first.options[:url],
+                         take_snapshot: take_snapshot
             return browser
 
         # Alternatively, try to load the page via its DOM#url in case it can
         # restore itself via its URL fragments and whatnot.
         else
-            browser.goto self.url, take_snapshot: take_snapshot
+            browser.goto self.url,
+                         take_snapshot: take_snapshot
         end
 
         # No transitions, nothing more to be done.
-        return browser if playables.empty?
+        return browser if ts.empty?
 
         browser_dom = browser.state
 
@@ -180,14 +174,14 @@ class DOM
             'will load by replaying transitions.'
 
         # Already loaded the URL from before.
-        playables.shift if browser.url == self.url
+        ts.shift if browser.url == self.url
 
         # The URL restore failed, replay its transitions.
-        playables.each do |transition|
+        ts.each do |transition|
             next if transition.play( browser )
 
             browser.print_debug "Could not replay transition for: #{url}"
-            playables.each do |t|
+            ts.each do |t|
                 browser.print_debug "-#{t == transition ? '>' : '-'} #{transition}"
             end
 
@@ -197,9 +191,9 @@ class DOM
         browser
     end
 
-    def playable_transitions_hash
+    def transitions_hash
         s = ''
-        playable_transitions.each do |transition|
+        transitions.each do |transition|
             s << transition.to_h.tap { |h| h.delete :time }.to_s
         end
         s.persistent_hash

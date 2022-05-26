@@ -190,12 +190,10 @@ describe SCNR::Engine::Browser::Parts::Events do
 
             expect(pages.map(&:dom).map(&:transitions)).to eq([
                                                                   [
-                                                                      { :page => :load },
-                                                                      { "#{url}explore" => :request }
+                                                                      { :page => :load }
                                                                   ],
                                                                   [
                                                                       { :page => :load },
-                                                                      { "#{url}explore" => :request },
                                                                       {
                                                                           {
                                                                               tag_name: 'div',
@@ -204,12 +202,10 @@ describe SCNR::Engine::Browser::Parts::Events do
                                                                                   'onclick' => 'addForm();'
                                                                               }
                                                                           } => :click
-                                                                      },
-                                                                      { "#{url}get-ajax?ajax-token=my-token" => :request }
+                                                                      }
                                                                   ],
                                                                   [
                                                                       { :page => :load },
-                                                                      { "#{url}explore" => :request },
                                                                       {
                                                                           {
                                                                               tag_name: 'a',
@@ -217,8 +213,7 @@ describe SCNR::Engine::Browser::Parts::Events do
                                                                                   'href' => 'javascript:inHref();'
                                                                               }
                                                                           } => :click
-                                                                      },
-                                                                      { "#{url}href-ajax" => :request }
+                                                                      }
                                                                   ]
                                                               ].map { |transitions| transitions_from_array( transitions ) })
         end

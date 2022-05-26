@@ -10,10 +10,6 @@ Factory.define :completed_transition do
     SCNR::Engine::Page::DOM::Transition.new( :page, :load, stuff: 'here' ).complete
 end
 
-Factory.define :request_transition do
-    SCNR::Engine::Page::DOM::Transition.new( 'http://test.com', :request )
-end
-
 Factory.define :empty_transition do
     SCNR::Engine::Page::DOM::Transition.new
 end

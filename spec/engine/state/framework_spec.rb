@@ -727,7 +727,7 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            d = SCNR::Engine::Support::Filter::Set.new( hasher: :playable_transitions_hash )
+            d = SCNR::Engine::Support::Filter::Set.new( hasher: :transitions_hash )
             d << page.dom
             expect(Marshal.load( IO.read( "#{dump_directory}/dom_analysis_filter" ) )).to eq(d)
         end
@@ -797,7 +797,7 @@ describe SCNR::Engine::State::Framework do
 
             subject.dump( dump_directory )
 
-            set = SCNR::Engine::Support::Filter::Set.new(hasher: :playable_transitions_hash )
+            set = SCNR::Engine::Support::Filter::Set.new(hasher: :transitions_hash )
             set << page.dom
             expect(described_class.load( dump_directory ).dom_analysis_filter).to eq(set)
         end
