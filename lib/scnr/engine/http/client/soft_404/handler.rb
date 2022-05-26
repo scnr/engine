@@ -84,7 +84,7 @@ class Handler
     end
 
     def schedule_check( response, &block )
-        fail 'Corrupted, cannot check.' if corrupted?
+        return if corrupted?
 
         url       = response.request.url
         signature = (soft? ? response.body.signature : nil)
@@ -100,8 +100,7 @@ class Handler
     end
 
     def check( &block )
-        fail 'Corrupted, cannot check.' if corrupted?
-        return if !has_pending_checks?
+        return if !has_pending_checks? || corrupted?
 
         print_debug "[checking]: #{self.url} #{block}"
 
