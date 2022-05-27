@@ -11,8 +11,8 @@ Encoding.default_internal = 'BINARY'
 
 require 'rubygems'
 
-require 'oj'
-require 'oj_mimic_json'
+# require 'oj'
+# require 'oj_mimic_json'
 
 require 'bundler/setup'
 require 'tmpdir'
