@@ -101,10 +101,10 @@ class Base
             @options[:dumper].call( obj, io )
     end
 
-    def unserialize( source )
+    def unserialize( io )
         @options[:loader].respond_to?( :load ) ?
-            @options[:loader].load( source ) :
-            @options[:loader].call( source )
+            @options[:loader].load( io ) :
+            @options[:loader].call( io )
     end
 
     private
