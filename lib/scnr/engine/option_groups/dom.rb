@@ -57,12 +57,11 @@ class DOM < SCNR::Engine::OptionGroup
         wait_for_elements:   {},
         pool_size:           4,
 
-
         # Each event may have effects, like a page loading one.
         # Few transitions of clicks and such and we're there.
-        job_timeout:         60,
+        job_timeout:         120,
 
-        worker_time_to_live: 250,
+        worker_time_to_live: 1000,
 
         wait_for_timers:     false
     )
