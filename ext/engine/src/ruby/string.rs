@@ -14,9 +14,9 @@ fn compile_and_match( pattern: String, haystack: &str ) -> bool {
     let s            = pattern.clone();
     let mut compiled = COMPILED.lock().unwrap();
 
-    compiled.entry( pattern ).or_insert_with( || Regex::new( &s ).unwrap() );
-
-    compiled[&s].is_match( haystack )
+    compiled.entry( pattern ).
+        or_insert_with( || Regex::new( &s ).unwrap() ).
+        is_match( haystack )
 }
 
 unsafe_methods!(
