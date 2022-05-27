@@ -45,7 +45,7 @@ module WebDriver
 
                     # We need to start our own process because Selenium's way
                     # sometimes gives us zombies.
-                    url:          spawn,
+                    url:          self.spawn,
                     capabilities: options,
                     http_client:  Selenium::WebDriver::Remote::Http::Typhoeus.new
                 )
@@ -57,7 +57,7 @@ module WebDriver
                 Errno::ECONNREFUSED, Timeout::Error => e
 
                 print_debug_exception e
-                shutdown
+                self.shutdown
             end
         end
 
