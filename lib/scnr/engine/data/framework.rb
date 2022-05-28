@@ -81,6 +81,7 @@ class Framework
     # @param    [Page]  page
     #   Page to push to the {#page_queue}.
     def push_to_page_queue( page )
+        page.clear_cache
         notify_on_page( page )
 
         @page_queue << page

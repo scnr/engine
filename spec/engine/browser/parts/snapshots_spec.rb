@@ -743,12 +743,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
             expect(Set.new( page.dom.skip_states.collection.to_a )).to be_subset Set.new( subject.skip_states.collection.to_a )
         end
 
-        it "assigns the proper #{SCNR::Engine::Page::DOM}#cookies" do
-            subject.load "#{url}/dom-cookies-names"
-
-            expect(subject.to_page.dom.cookies).to eq subject.cookies
-        end
-
         it "assigns the proper #{SCNR::Engine::Page::DOM} sink data" do
             subject.load "#{web_server_url_for( :taint_tracer )}/debug" <<
                               "?input=#{subject.javascript.log_execution_flow_sink_stub(1)}"

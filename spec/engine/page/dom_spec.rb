@@ -44,7 +44,7 @@ describe SCNR::Engine::Page::DOM do
             end
         end
 
-        %w(cookies data_flow_sinks execution_flow_sinks cookies).each do |attribute|
+        %w(data_flow_sinks execution_flow_sinks).each do |attribute|
             it "includes '#{attribute}'" do
                 expect(data[attribute]).to eq(subject.send(attribute).map(&:to_rpc_data))
             end
@@ -59,7 +59,7 @@ describe SCNR::Engine::Page::DOM do
         let(:restored) { described_class.from_rpc_data data }
         let(:data) { SCNR::Engine::RPC::Serializer.rpc_data( subject ) }
 
-        %w(url cookies transitions digest skip_states data_flow_sinks
+        %w(url transitions digest skip_states data_flow_sinks
             execution_flow_sinks).each do |attribute|
             it "restores '#{attribute}'" do
                 expect(restored.send( attribute )).to eq(subject.send( attribute ))
@@ -199,12 +199,6 @@ describe SCNR::Engine::Page::DOM do
         it 'returns a hash with DOM data' do
             data = {
                 url:         'http://test/dom',
-                cookies:     [
-                    SCNR::Engine::Element::Cookie.new(
-                        url:    'http://test/dom',
-                        inputs: { 'name' => 'val' }
-                    )
-                ],
                 skip_states: SCNR::Engine::Support::Filter::Set.new.tap { |h| h << 0 },
                 transitions: [
                     { element:  :stuffed },
@@ -218,14 +212,12 @@ describe SCNR::Engine::Page::DOM do
             data[:transitions].each do |t|
                 empty_dom.push_transition t
             end
-            empty_dom.cookies = data[:cookies]
             empty_dom.skip_states = data[:skip_states]
             empty_dom.data_flow_sinks = data[:data_flow_sinks]
             empty_dom.execution_flow_sinks = data[:execution_flow_sinks]
 
             expect(empty_dom.to_h).to eq({
                 url:                  data[:url],
-                cookies:              data[:cookies].map(&:to_hash),
                 transitions:          data[:transitions].map(&:to_hash),
                 digest:               empty_dom.digest,
                 skip_states:          data[:skip_states],

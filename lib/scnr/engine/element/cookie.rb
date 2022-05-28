@@ -64,6 +64,8 @@ class Cookie < Base
 
     attr_reader :data
 
+    attr_reader :created
+
     # @param    [Hash]  options
     #   For options see {DEFAULT}, with the following extras:
     # @option   options [String]    :url
@@ -109,6 +111,8 @@ class Cookie < Base
         @data[:domain] ||= parsed_uri.host
 
         @default_inputs = self.inputs.dup.freeze
+
+        @created = caller
     end
 
     # Indicates whether the cookie must be only sent over an encrypted channel.

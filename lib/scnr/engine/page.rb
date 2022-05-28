@@ -326,15 +326,20 @@ class Page
 
     # @return   [Array<Element::Base>]
     #   All page elements.
-    def elements
-        ELEMENTS.map { |type| send( type ) }.flatten
+    def elements( except = [] )
+        except = Set.new( except )
+        ELEMENTS.map do |type|
+            next if except.include?( type )
+            send( type )
+        end.flatten.compact
     end
 
     # @return   [Array<Element::Base>]
     #   All page elements that are within the scope of the scan.
-    def elements_within_scope
+    def elements_within_scope( except = [] )
+        except = Set.new( except )
         ELEMENTS.map do |type|
-            next if !Options.audit.element? type
+            next if !Options.audit.element?( type ) || except.include?( type )
             send( type ).select { |e| e.scope.in? }
         end.flatten.compact
     end

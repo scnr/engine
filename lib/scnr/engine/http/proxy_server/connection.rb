@@ -152,6 +152,7 @@ class Connection < Raktr::Connection
     end
 
     def self.bridge( connection, raktr, request )
+        request.do_not_manipulate_cookies!
         response = request.run
 
         if connection.closed?

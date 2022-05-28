@@ -1,11 +1,5 @@
 Factory.define :dom_data do
     {
-        cookies:              [
-            SCNR::Engine::Element::Cookie.new(
-                url:    'http://test/dom',
-                inputs: { 'name' => 'val' }
-            )
-        ],
         skip_states:          SCNR::Engine::Support::Filter::Set.new.tap { |h| h << 0 },
         transitions:          [
             Factory[:page_load_with_cookies_transition].complete,

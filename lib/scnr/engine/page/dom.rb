@@ -36,9 +36,6 @@ class DOM
     #   {Browser::Javascript::TaintTracer#execution_flow_sinks} data.
     attr_accessor :execution_flow_sinks
 
-    # @return   [Array<SCNR::Engine::Element::Cookie>]
-    attr_accessor :cookies
-
     # @return   [Integer]
     #   Digest of the DOM tree.
     attr_accessor :digest
@@ -58,7 +55,6 @@ class DOM
         @page                 = options[:page]
         self.url              = options[:url]                   || @page.url
         self.digest           = options[:digest]
-        @cookies              = options[:cookies]               || []
         @transitions          = options[:transitions]           || []
         @data_flow_sinks      = options[:data_flow_sinks]       || []
         @execution_flow_sinks = options[:execution_flow_sinks]  || []
@@ -213,7 +209,6 @@ class DOM
         {
             url:                  url,
             transitions:          transitions.map(&:to_hash),
-            cookies:              cookies.map(&:to_hash),
             digest:               digest,
             skip_states:          skip_states,
             data_flow_sinks:      data_flow_sinks.map(&:to_hash),
@@ -240,7 +235,6 @@ class DOM
         {
             'url'                  => url,
             'transitions'          => transitions.map(&:to_rpc_data),
-            'cookies'              => cookies.map(&:to_rpc_data),
             'digest'               => digest,
             'skip_states'          => @skip_states.to_rpc_data,
             'data_flow_sinks'      => data_flow_sinks.map(&:to_rpc_data),
@@ -270,9 +264,6 @@ class DOM
             value = case name
                         when 'transitions'
                             value.map { |t| Transition.from_rpc_data t }
-
-                        when 'cookies'
-                            value.map { |c| Cookie.from_rpc_data c }
 
                         when 'data_flow_sinks'
                             value.map do |entry|

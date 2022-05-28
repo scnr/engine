@@ -74,6 +74,10 @@ class CookieJar
         self
     end
 
+    def size
+        @cookies.size
+    end
+
     # Updates the jar with `cookies`.
     #
     # @param    [Array<String, Hash, Cookie>]  cookies

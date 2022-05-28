@@ -14,7 +14,7 @@ class SCNR::Engine::Checks::InsecureCookies < SCNR::Engine::Check::Base
 
         # Page#cookies will also include stuff from the cookiejar, we only want
         # cookies for this page.
-        (page.dom.cookies | page.parser.cookies).each do |cookie|
+        page.parser.cookies.each do |cookie|
             next if cookie.secure? || audited?( cookie.name )
 
             log( vector: cookie )

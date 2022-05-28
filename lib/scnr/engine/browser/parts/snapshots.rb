@@ -63,7 +63,7 @@ module Snapshots
 
         # Keeps track of resources which should be skipped -- like already fired
         # events and clicked links etc.
-        @skip_states = Support::Filter::Set.new(hasher: :persistent_hash )
+        @skip_states = Support::Filter::Set.new( hasher: :persistent_hash )
         @transitions = []
     end
 
@@ -217,10 +217,6 @@ module Snapshots
             page.body = source
         end
 
-        if parse_profile.cookies
-            page.dom.cookies = self.cookies
-        end
-
         if parse_profile.digest
             page.dom.digest = @javascript.dom_digest
         end
@@ -350,7 +346,7 @@ module Snapshots
 
                 # Safegued against pages which generate an inf number of DOM
                 # states regardless of UI interactions.
-                transition_id ="#{page.dom.url}:#{page.dom.transitions.map(&:hash)}"
+                transition_id ="#{page.dom.url}:#{page.dom.transitions_hash}"
                 transition_id_seen = skip_state?( transition_id )
                 skip_state transition_id
                 next page.clear_cache if transition_id_seen
@@ -499,6 +495,8 @@ module Snapshots
         page.response.request = request
 
         @captured_pages << page if store_pages?
+
+        page.clear_cache
         notify_on_new_page( page )
     rescue => e
         print_error "Could not capture: #{request.url}"

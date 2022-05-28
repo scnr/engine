@@ -350,10 +350,7 @@ module State
     # with pages with lots of elements.
     def pre_audit_element_filter( page )
         unique_elements  = {}
-        page.elements.each do |e|
-            next if !SCNR::Engine::Options.audit.element?( e.type )
-            next if e.is_a?( Cookie ) || e.is_a?( Header )
-
+        page.elements_within_scope( [:cookies, :headers] ).each do |e|
             new_element               = false
             unique_elements[e.type] ||= []
 
