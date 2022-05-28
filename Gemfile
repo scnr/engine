@@ -13,6 +13,9 @@ end
 group :spec do
     gem 'simplecov', require: false, group: :test
 
+    gem 'sinatra'
+    gem 'sinatra-contrib'
+
     gem 'rspec'
     gem 'faker'
 

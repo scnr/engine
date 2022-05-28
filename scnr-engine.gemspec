@@ -50,7 +50,7 @@ Gem::Specification.new do |s|
 
     s.rdoc_options      = [ '--charset=UTF-8' ]
 
-    s.add_dependency 'cuboid'
+    s.add_dependency 'cuboid',               '~> 0.1.9.1'
     s.add_dependency 'dsel'
 
     s.add_dependency 'webrick',              '1.7.0'
@@ -90,12 +90,8 @@ Gem::Specification.new do |s|
     # Web server
     s.add_dependency 'puma',                '5.6.2'
 
-    s.add_dependency 'rack',                '2.2.3'
+    s.add_dependency 'rack',                '2.2.3.1'
     s.add_dependency 'rack-test'
-
-    # REST API
-    s.add_dependency 'sinatra',             '2.1.0'
-    s.add_dependency 'sinatra-contrib',     '2.1.0'
 
     # HTTP client.
     s.add_dependency 'typhoeus',            '1.4.0'
