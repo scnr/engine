@@ -261,15 +261,14 @@ class Connection < Raktr::Connection
     end
 
     def on_read( data )
-        # We need this in case we need to establish a tunnel for an "Upgrade".
-        @raw_request << data
-
         if @tunnel
             @tunnel.write( data )
             return
         end
 
-        @parser << data
+        # We need this in case we need to establish a tunnel for an "Upgrade".
+        @raw_request << data
+        @parser      << data
     rescue ::HTTP::Parser::Error => e
         close e
     end
