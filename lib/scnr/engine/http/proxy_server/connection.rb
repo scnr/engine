@@ -191,7 +191,7 @@ class Connection < Raktr::Connection
             code = 504
         end
 
-        res = "HTTP/#{http_version} #{code}\r\n"
+        write "HTTP/#{http_version} #{code}\r\n"
 
         headers = cleanup_response_headers( response.headers )
         headers['Content-Length'] = response.body.bytesize
@@ -204,20 +204,19 @@ class Connection < Raktr::Connection
         headers.each do |k, v|
             if v.is_a?( Array )
                 v.flatten.each do |h|
-                    res << "#{k}: #{h.gsub(/[\n\r]/, '')}\r\n"
+                    write "#{k}: #{h.gsub(/[\n\r]/, '')}\r\n"
                 end
 
                 next
             end
 
-            res << "#{k}: #{v}\r\n"
+            write "#{k}: #{v}\r\n"
         end
 
-        res << "\r\n"
+        write "\r\n"
 
         print_debug_level_3 "Sending response for: #{@request.url}"
-
-        write (res << response.body)
+        write response.body
     end
 
     def on_close( reason = nil )
@@ -248,9 +247,9 @@ class Connection < Raktr::Connection
             @last_http = false
         end
 
-        @body        = ''
-        @raw_request = ''
-        @request     = nil
+        @body.clear
+        @raw_request.clear
+        @request = nil
 
         @parser.reset!
         @parent.mark_connection_inactive self
@@ -280,12 +279,12 @@ class Connection < Raktr::Connection
 
         print_debug_level_3 "Starting interceptor on port: #{@interceptor_port}"
 
-        @ssl_interceptor = @parent.reactor.listen(
+        @ssl_interceptor = raktr.listen(
           @options[:address], @interceptor_port, SSLInterceptor,
           @options.merge( origin_host: origin_host )
         )
 
-        @tunnel = @parent.reactor.connect(
+        @tunnel = raktr.connect(
           @options[:address], @interceptor_port, Tunnel,
           @options.merge( client: self )
         )
