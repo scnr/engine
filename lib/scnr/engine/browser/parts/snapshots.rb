@@ -19,13 +19,6 @@ module Snapshots
     # @!method on_new_page_with_sink( &block )
     advertise :on_new_page_with_sink
 
-    # @return   [Support::Filter::Set]
-    #   States that have been visited and should be skipped.
-    #
-    # @see #skip_state
-    # @see #skip_state?
-    attr_reader :skip_states
-
     # @return   [ParseProfile]
     attr_accessor :parse_profile
 
@@ -61,9 +54,6 @@ module Snapshots
         # pages with sink (Page::DOM#sink) data as populated by Javascript#flush_sink.
         @page_snapshots_with_sinks = []
 
-        # Keeps track of resources which should be skipped -- like already fired
-        # events and clicked links etc.
-        @skip_states = Support::Filter::Set.new( hasher: :persistent_hash )
         @transitions = []
     end
 
@@ -159,8 +149,7 @@ module Snapshots
         Page::DOM.new(
             url:         d_url,
             transitions: @transitions.dup,
-            digest:      @javascript.dom_digest,
-            skip_states: skip_states.dup
+            digest:      @javascript.dom_digest
         )
     end
 
@@ -232,10 +221,6 @@ module Snapshots
 
         # TODO: Go through the stackframes of the traces and verify line
         # numbers with method calls in the page source, fail if they don't match.
-
-        if parse_profile.skip_states
-            page.dom.skip_states = skip_states.dup
-        end
 
         return page if !parse_profile.elements
 
@@ -524,15 +509,11 @@ module Snapshots
     end
 
     def skip_state?( state )
-        self.skip_states.include? state
+        SCNR::Engine::State.browser_pool.skip_state? state
     end
 
     def skip_state( state )
-        self.skip_states << state
-    end
-
-    def update_skip_states( states )
-        self.skip_states.merge states
+        SCNR::Engine::State.browser_pool.skip_state state
     end
 
 end

@@ -30,9 +30,6 @@ class ParseProfile
 
         # Sets {Page::DOM#data_flow_sinks} to {Browser::Javascript#data_flow_sinks}.
         :data_flow_sinks,
-
-        # Sets {Page::DOM#skip_states}.
-        :skip_states
     ]
 
     ATTRIBUTES.each do |v|

@@ -49,18 +49,13 @@ describe SCNR::Engine::Page::DOM do
                 expect(data[attribute]).to eq(subject.send(attribute).map(&:to_rpc_data))
             end
         end
-
-        it "includes 'skip_states'" do
-            expect(data['skip_states'].last).to eq(subject.skip_states.collection.to_a)
-        end
     end
 
     describe '.from_rpc_data' do
         let(:restored) { described_class.from_rpc_data data }
         let(:data) { SCNR::Engine::RPC::Serializer.rpc_data( subject ) }
 
-        %w(url transitions digest skip_states data_flow_sinks
-            execution_flow_sinks).each do |attribute|
+        %w(url transitions digest data_flow_sinks execution_flow_sinks).each do |attribute|
             it "restores '#{attribute}'" do
                 expect(restored.send( attribute )).to eq(subject.send( attribute ))
             end
@@ -142,15 +137,6 @@ describe SCNR::Engine::Page::DOM do
         end
     end
 
-    describe '#skip_states=' do
-        it 'sets #skip_states' do
-            skip_states = SCNR::Engine::Support::Filter::Set.new.tap { |h| h << 0 }
-
-            dom.skip_states = skip_states
-            expect(dom.skip_states).to eq(skip_states)
-        end
-    end
-
     describe '#depth' do
         it 'returns the amount of DOM transitions' do
             dom.transitions = [
@@ -189,7 +175,6 @@ describe SCNR::Engine::Page::DOM do
             expect(state.url).to eq dom.url
             expect(state.digest).to eq dom.digest
             expect(state.transitions).to eq dom.transitions
-            expect(state.skip_states).to eq dom.skip_states
             expect(state.data_flow_sinks).to be_empty
             expect(state.execution_flow_sinks).to be_empty
         end
@@ -199,7 +184,6 @@ describe SCNR::Engine::Page::DOM do
         it 'returns a hash with DOM data' do
             data = {
                 url:         'http://test/dom',
-                skip_states: SCNR::Engine::Support::Filter::Set.new.tap { |h| h << 0 },
                 transitions: [
                     { element:  :stuffed },
                     { element2: :stuffed2 }
@@ -212,7 +196,6 @@ describe SCNR::Engine::Page::DOM do
             data[:transitions].each do |t|
                 empty_dom.push_transition t
             end
-            empty_dom.skip_states = data[:skip_states]
             empty_dom.data_flow_sinks = data[:data_flow_sinks]
             empty_dom.execution_flow_sinks = data[:execution_flow_sinks]
 
@@ -220,7 +203,6 @@ describe SCNR::Engine::Page::DOM do
                 url:                  data[:url],
                 transitions:          data[:transitions].map(&:to_hash),
                 digest:               empty_dom.digest,
-                skip_states:          data[:skip_states],
                 data_flow_sinks:      data[:data_flow_sinks].map(&:to_hash),
                 execution_flow_sinks: data[:execution_flow_sinks].map(&:to_hash)
             })

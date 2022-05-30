@@ -677,23 +677,6 @@ describe SCNR::Engine::Browser::Parts::Navigation do
                     subject.load page.dom
                     expect(subject.source).not_to include ua
                 end
-
-                it 'loads its #skip_states' do
-                    subject.load( url )
-                    pages = subject.load( url + '/explore' ).trigger_events.
-                        page_snapshots
-
-                    page = pages.last
-                    expect(Set.new( page.dom.skip_states.collection.to_a )).to be_subset Set.new( subject.skip_states.collection.to_a )
-
-                    token = subject.generate_token
-
-                    dpage = page.dup
-                    dpage.dom.skip_states << token
-
-                    subject.load dpage.dom
-                    expect(subject.skip_states).to include token
-                end
             end
 
             describe 'Engine::Page' do
@@ -745,23 +728,6 @@ describe SCNR::Engine::Browser::Parts::Navigation do
                     page.dom.transitions.clear
                     subject.load page
                     expect(subject.source).not_to include ua
-                end
-
-                it 'loads its DOM#skip_states' do
-                    subject.load( url )
-                    pages = subject.load( url + '/explore' ).trigger_events.
-                        page_snapshots
-
-                    page = pages.last
-                    expect(Set.new( page.dom.skip_states.collection.to_a )).to be_subset Set.new( subject.skip_states.collection.to_a )
-
-                    token = subject.generate_token
-
-                    dpage = page.dup
-                    dpage.dom.skip_states << token
-
-                    subject.load dpage
-                    expect(subject.skip_states).to include token
                 end
             end
 

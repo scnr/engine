@@ -367,6 +367,18 @@ class BrowserPool
         @job_callbacks[job.id]
     end
 
+    def skip_state?( state )
+        SCNR::Engine::State.browser_pool.skip_state? state
+    end
+
+    def skip_state( state )
+        SCNR::Engine::State.browser_pool.skip_state state
+    end
+
+    def update_skip_states( states )
+        SCNR::Engine::State.browser_pool.update_skip_states states
+    end
+
     def increment_queued_job_count
         self.class.increment_queued_job_count
     end

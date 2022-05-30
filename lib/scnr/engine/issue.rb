@@ -313,7 +313,6 @@ class Issue
 
         if page
             dom_h = page.dom.to_h
-            dom_h.delete(:skip_states)
 
             h[:page] = {
                 body: page.body,
@@ -323,7 +322,6 @@ class Issue
 
         if referring_page
             referring_page_dom_h = referring_page.dom.to_h
-            referring_page_dom_h.delete(:skip_states)
 
             h[:referring_page] = {
                 body: referring_page.body,

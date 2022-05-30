@@ -58,16 +58,12 @@ class Job
     #   Category for {Support::Database::CategorizedQueue}.
     attr_accessor :category
 
-    attr_accessor :skip_states
-
     # @param    [Hash]  options
     def initialize( options = {} )
         @options      = options.dup
         @options[:id] = @id = options.delete(:id) || State.browser_pool.increment_job_id
 
-        @args        = @options[:args] || []
-        @skip_states = @options[:skip_states] ||
-            Support::Filter::Set.new( hasher: :persistent_hash )
+        @args = @options[:args] || []
 
         options.each { |k, v| options[k] = send( "#{k}=", v ) }
     end
@@ -150,7 +146,6 @@ class Job
     def clean_copy
         dup.tap do |j|
             j.remove_resources
-            j.skip_states.clear
         end
     end
 
@@ -159,7 +154,6 @@ class Job
     def dup
         n = self.class.new( add_id( @options ) )
         n.time = time
-        n.skip_states = skip_states.dup
         n.timed_out!( time ) if timed_out?
         n
     end
@@ -187,7 +181,6 @@ class Job
         # we thus need to keep track of it separately in the BrowserPool.
         job_type.new (forward_options( options ).tap do |h|
             h.delete :id
-            h.delete :skip_states
         end)
     end
 
@@ -216,7 +209,6 @@ class Job
     def forward_options( options )
         add_id( options ).merge(
             args:         args,
-            skip_states:  skip_states,
             category:     category,
             never_ending: never_ending?
         )

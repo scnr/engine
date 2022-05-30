@@ -20,9 +20,6 @@ class DOM
 
     require_relative 'dom/transition'
 
-    # @return   [Support::Filter::Set]
-    attr_accessor :skip_states
-
     # @return   [Array<Transition>]
     #   Transitions representing the steps required to convert a {DOM}
     #   snapshot to a live {Browser} page.
@@ -58,9 +55,6 @@ class DOM
         @transitions          = options[:transitions]           || []
         @data_flow_sinks      = options[:data_flow_sinks]       || []
         @execution_flow_sinks = options[:execution_flow_sinks]  || []
-        @skip_states          = options[:skip_states]           ||
-            Support::Filter::Set.new( hasher: :persistent_hash )
-
         @has_data_flow_sink_signal = options[:has_data_flow_sink_signal]
     end
 
@@ -199,8 +193,7 @@ class DOM
         self.class.new(
             url:         @url,
             digest:      @digest,
-            transitions: @transitions.dup,
-            skip_states: @skip_states.dup
+            transitions: @transitions.dup
         )
     end
 
@@ -210,7 +203,6 @@ class DOM
             url:                  url,
             transitions:          transitions.map(&:to_hash),
             digest:               digest,
-            skip_states:          skip_states,
             data_flow_sinks:      data_flow_sinks.map(&:to_hash),
             execution_flow_sinks: execution_flow_sinks.map(&:to_hash)
         }
@@ -236,7 +228,6 @@ class DOM
             'url'                  => url,
             'transitions'          => transitions.map(&:to_rpc_data),
             'digest'               => digest,
-            'skip_states'          => @skip_states.to_rpc_data,
             'data_flow_sinks'      => data_flow_sinks.map(&:to_rpc_data),
             'execution_flow_sinks' => execution_flow_sinks.map(&:to_rpc_data)
         }
@@ -274,9 +265,6 @@ class DOM
                             value.map do |entry|
                                 Browser::Javascript::TaintTracer::Sink::ExecutionFlow.from_rpc_data( entry )
                             end.to_a
-
-                        when 'skip_states'
-                            Support::Filter::Set.from_rpc_data( value )
 
                         else
                             value

@@ -121,7 +121,7 @@ describe SCNR::Engine::Page do
         end
 
         context 'Engine::Page::DOM' do
-            [:url, :skip_states, :transitions, :data_flow_sinks, :execution_flow_sinks].each do |m|
+            [:url, :transitions, :data_flow_sinks, :execution_flow_sinks].each do |m|
                 it "restores ##{m}" do
                     # Make sure we're not comparing nils.
                     expect(subject.dom.send( m )).to be_truthy
@@ -725,12 +725,6 @@ EOHTML
             expect(subject.dom.digest).to be_nil
         end
 
-        it 'removes #dom#skip_states' do
-            expect(subject.dom.skip_states).to be_truthy
-            subject.prepare_for_report
-            expect(subject.dom.digest).to be_nil
-        end
-
         it 'returns self' do
             expect(subject.prepare_for_report).to eq(subject)
         end
@@ -903,7 +897,7 @@ EOHTML
             end
 
             context 'Engine::Page::DOM' do
-                [:url, :skip_states, :transitions, :data_flow_sinks, :execution_flow_sinks].each do |m|
+                [:url, :transitions, :data_flow_sinks, :execution_flow_sinks].each do |m|
                     it "preserves ##{m}" do
                         dupped = subject.send(method)
 

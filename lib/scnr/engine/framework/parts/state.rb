@@ -176,8 +176,6 @@ module State
     def restore!( ses )
         Snapshot.load ses
 
-        browser_job_update_skip_states state.browser_skip_states
-
         checks.load  SCNR::Engine::Options.checks
         plugins.load SCNR::Engine::Options.plugins.keys
 
@@ -433,10 +431,6 @@ module State
         options.plugins = plugins.loaded.
             inject({}) { |h, name| h[name.to_s] =
                 options.plugins[name.to_s] || {}; h }
-
-        if browser_pool_job_skip_states
-            state.browser_skip_states.merge browser_pool_job_skip_states
-        end
 
         state.set_status_message :suspending_plugins
         @plugins.suspend
