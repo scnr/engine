@@ -51,15 +51,18 @@ class Scope < SCNR::Engine::Scope
     # @see OptionGroups::Scope#exclude_path_patterns
     # @see #exclude_file_extension?
     def exclude?
-        return true if exclude_file_extension?
+        exclude_file_extension? || exclude_path_patterns? ||
+          Scope.reject?( @url )
+    end
 
+    def exclude_path_patterns?
         exc = false
         if options.exclude_path_patterns.any?
             s = @url.to_s
             exc = !!options.exclude_path_patterns.find { |pattern| pattern.match? s }
         end
 
-        exc || Scope.reject?( @url )
+        exc
     end
 
     # @return   [Bool]

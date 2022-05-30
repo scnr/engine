@@ -340,24 +340,6 @@ describe SCNR::Engine::Browser::Parts::Navigation do
             end
         end
 
-        context "with #{SCNR::Engine::OptionGroups::Scope}#exclude_file_extensions" do
-            it 'respects scope restrictions' do
-                SCNR::Engine::Options.scope.exclude_file_extensions = ['png']
-                subject.load( "#{url}form-with-image-button" )
-                expect(image_hit_count).to eq(0)
-
-                SCNR::Engine::Options.scope.exclude_file_extensions = []
-                subject.load( "#{url}form-with-image-button" )
-                expect(image_hit_count).to be > 0
-            end
-
-            context 'but allows assets like' do
-                SCNR::Engine::Browser::Parts::HTTP::ASSET_EXTENSIONS.each do |ext|
-                    it ext
-                end
-            end
-        end
-
         context "with #{SCNR::Engine::OptionGroups::Scope}#exclude_path_patterns" do
             it 'respects scope restrictions' do
                 pages = subject.load( url + '/explore' ).start_capture.trigger_events.flush_pages
@@ -366,20 +348,6 @@ describe SCNR::Engine::Browser::Parts::Navigation do
                 SCNR::Engine::Options.scope.exclude_path_patterns << /ajax/
                 pages = subject.load( url + '/explore' ).start_capture.trigger_events.flush_pages
                 pages_should_not_have_form_with_input pages, 'by-ajax'
-            end
-        end
-
-        context "with #{SCNR::Engine::OptionGroups::Scope}#redundant_path_patterns" do
-            it 'respects scope restrictions' do
-                SCNR::Engine::Options.scope.redundant_path_patterns = { 'explore' => 0 }
-                expect(subject.load( url + '/explore' ).response.code).to eq(0)
-            end
-        end
-
-        context "with #{SCNR::Engine::OptionGroups::Scope}#auto_redundant_paths has bee configured" do
-            it 'respects scope restrictions' do
-                SCNR::Engine::Options.scope.auto_redundant_paths = 0
-                expect(subject.load( url + '/explore?test=1&test2=2' ).response.body).to be_empty
             end
         end
 

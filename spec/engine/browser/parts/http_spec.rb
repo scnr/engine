@@ -14,46 +14,10 @@ describe SCNR::Engine::Browser::Parts::HTTP do
             subject.goto url
         end
 
-        it 'puts the domain in the asset domains list' do
-            expect(SCNR::Engine::Browser.asset_domains).to include SCNR::Engine::URI( url ).domain
-        end
-
         it 'does not receive a Content-Security-Policy header' do
             subject.goto "#{url}/Content-Security-Policy"
             expect(subject.response.code).to eq(200)
             expect(subject.response.headers).not_to include 'Content-Security-Policy'
-        end
-
-        context 'when the page requires an asset' do
-            let(:url) { "#{root_url}/asset_domains" }
-
-            %w(link input script img).each do |type|
-                context 'via link' do
-                    let(:url) { "#{super()}/#{type}" }
-
-                    it 'whitelists it' do
-                        expect(SCNR::Engine::Browser.asset_domains).to include "#{type}.stuff"
-                    end
-                end
-            end
-
-            context 'with an extension of' do
-                SCNR::Engine::Browser::ASSET_EXTENSIONS.each do |extension|
-                    context extension do
-                        it 'loads it'
-                    end
-                end
-            end
-
-            context 'without an extension' do
-                context 'and has been whitelisted' do
-                    it 'loads it'
-                end
-
-                context 'and has not been whitelisted' do
-                    it 'does not load it'
-                end
-            end
         end
     end
 

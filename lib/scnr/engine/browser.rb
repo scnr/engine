@@ -40,7 +40,6 @@ class Browser
     attr_reader :javascript
 
     def self.reset
-        asset_domains.clear
     end
 
     # @param    [Hash]  options

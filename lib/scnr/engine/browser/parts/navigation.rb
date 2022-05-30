@@ -146,7 +146,6 @@ module Navigation
                                options[:update_transitions] : true
 
         @last_url = SCNR::Engine::URI( url ).to_s
-        self.class.add_asset_domain @last_url
 
         ensure_open_window
 

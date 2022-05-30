@@ -1052,9 +1052,9 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                 page = subject.to_page
 
                 expect(page.code).to eq(0)
-                expect(page.url).to  eq('http://google.com/')
+                expect(page.url).to  eq('http://www.google.com/')
                 expect(page.body).to be_empty
-                expect(page.dom.url).to eq('http://google.com/')
+                expect(page.dom.url).to eq('http://www.google.com/')
             end
         end
 

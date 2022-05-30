@@ -16,13 +16,6 @@ module HTTP
     # @!method on_response( &block )
     advertise :on_response
 
-    ASSET_EXTENSIONS = Set.new(%w( css js json ))
-
-    ASSET_EXTRACTORS = [
-        /<\s*link.*?href=\s*['"]?(.*?)?['"]?[\s>]/im,
-        /src\s*=\s*['"]?(.*?)?['"]?[\s>]/i,
-    ]
-
     AD_HOSTS = Support::Filter::Set.new
     File.open( Options.paths.root + 'config/adservers.txt' ) do |f|
         f.each_line do |entry|
@@ -33,32 +26,12 @@ module HTTP
 
     def self.included( base )
         base.extend( ClassMethods )
-        base.asset_domains
     end
 
     module ClassMethods
-
-        def request_for_asset?( request )
-            ASSET_EXTENSIONS.include?( request.parsed_url.resource_extension.to_s.downcase )
-        end
-
         def request_for_ad?( request )
             AD_HOSTS.include?( request.parsed_url.domain )
         end
-
-        def asset_domains
-            @asset_domains ||= Set.new
-        end
-
-        def add_asset_domain( url )
-            return if url.to_s.empty?
-            return if !(curl = SCNR::Engine::URI( url ))
-            return if !(domain = curl.domain)
-
-            asset_domains << domain
-            domain
-        end
-
     end
 
     def initialize
@@ -67,7 +40,7 @@ module HTTP
     end
 
     def response
-        u = dom_url
+        u = self.dom_url
 
         if u == 'about:blank'
             print_debug 'Blank page.'
@@ -147,11 +120,9 @@ module HTTP
             return
         end
 
-        if !request.url.include?( request_token )
-            if ignore_request?( request )
-                print_debug_level_2 'Out of scope, ignoring.'
-                return
-            end
+        if request.parsed_url.scope.exclude_path_patterns?
+            print_debug_level_2 'Disallow: Matches exclusion rules.'
+            return
         end
 
         # Signal the proxy to not actually perform the request if we have a
@@ -215,98 +186,27 @@ module HTTP
         end
 
         # Don't store assets, the browsers will cache them accordingly.
-        if self.class.request_for_asset?( request ) || !response.text?
-            print_debug_level_2 'Asset detected, will not store.'
+        if !response.text?
+            print_debug_level_2 'Asset detected....'
             return
         end
 
         # No-matter the scope, don't store resources for external domains.
         if !response.scope.in_domain?
-            print_debug_level_2 'Outside of domain scope, will not store.'
+            print_debug_level_2 'Outside of domain scope...'
             return
         end
 
         if enforce_scope? && response.scope.out?
-            print_debug_level_2 'Outside of general scope, will not store.'
+            print_debug_level_2 'Outside of general scope...'
             return
         end
 
-        whitelist_asset_domains( response )
         save_response response
 
         print_debug_level_2 'Stored.'
 
         nil
-    end
-
-    def ignore_request?( request )
-        print_debug_level_2 "Checking: #{request.url}"
-
-        if !enforce_scope?
-            print_debug_level_2 'Allow: Scope enforcement disabled.'
-            return
-        end
-
-        if self.class.request_for_asset?( request )
-            print_debug_level_2 'Allow: Asset detected.'
-            return false
-        end
-
-        if request.scope.exclude_file_extension?
-            print_debug_level_2 'Disallow: Cannot follow extension.'
-            return true
-        end
-
-        if !request.scope.follow_protocol?
-            print_debug_level_2 'Disallow: Cannot follow protocol.'
-            return true
-        end
-
-        if !request.scope.in_domain?
-            if self.class.asset_domains.include?( request.parsed_url.domain )
-                print_debug_level_2 'Allow: Out of scope but in CDN list.'
-                return false
-            end
-
-            print_debug_level_2 'Disallow: Domain out of scope and not in CDN list.'
-            return true
-        end
-
-        if request.scope.too_deep?
-            print_debug_level_2 'Disallow: Too deep.'
-            return true
-        end
-
-        if !request.scope.include?
-            print_debug_level_2 'Disallow: Does not match inclusion rules.'
-            return true
-        end
-
-        if request.scope.exclude?
-            print_debug_level_2 'Disallow: Matches exclusion rules.'
-            return true
-        end
-
-        if request.scope.redundant?
-            print_debug_level_2 'Disallow: Matches redundant rules.'
-            return true
-        end
-
-        false
-    end
-
-    def whitelist_asset_domains( response )
-        @whitelist_asset_domains ||= Support::Filter::Set.new
-        return if @whitelist_asset_domains.include? response.body
-        @whitelist_asset_domains << response.body
-
-        ASSET_EXTRACTORS.each do |regexp|
-            response.body.scan( regexp ).flatten.compact.each do |url|
-                next if !(domain = self.class.add_asset_domain( url ))
-
-                print_debug_level_2 "#{domain} from #{url} based on #{regexp.source}"
-            end
-        end
     end
 
     def from_preloads( request, response )
@@ -342,8 +242,8 @@ module HTTP
         # Rightly so...but we need to bypass it when auditing LinkTemplate
         # elements.
         @window_responses[url] ||
-            @window_responses[normalize_watir_url( url )] ||
-            @window_responses[normalize_url( url )]
+          @window_responses[normalize_watir_url( url )] ||
+          @window_responses[normalize_url( url )]
     end
 
     def normalize_watir_url( url )

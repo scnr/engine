@@ -67,7 +67,7 @@ module Engine
 
     # @return   [String]
     #   HTML code of the evaluated (DOM/JS/AJAX) page with the
-    #   {Browser::Javascript#remove_env_from_html JS env removed}.
+    #   {Browser::Javascript#remove_env_from_html! JS env removed}.
     def source
         javascript.remove_env_from_html!( real_source )
     end
