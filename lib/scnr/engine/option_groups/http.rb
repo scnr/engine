@@ -55,7 +55,7 @@ class HTTP < SCNR::Engine::OptionGroup
 
     # @return   [Array<String>]
     #   Supported SSL versions.
-    SSL_VERSIONS = %w(TLSv1 TLSv1_0 TLSv1_1 TLSv1_2 SSLv2 SSLv3)
+    SSL_VERSIONS = %w(TLSv1 TLSv1_0 TLSv1_1 TLSv1_2 TLSv1_3 SSLv2 SSLv3)
 
     # @note Default is '5'.
     #
