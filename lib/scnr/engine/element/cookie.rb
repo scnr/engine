@@ -164,7 +164,7 @@ class Cookie < Base
     #   Simple representation of the cookie as a hash -- with the cookie name as
     #   `key` and the cookie value as `value`.
     def simple
-        self.inputs.dup
+        self.inputs
     end
 
     # Uses the method name as a key to cookie attributes in {DEFAULT}.

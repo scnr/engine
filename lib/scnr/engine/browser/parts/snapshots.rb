@@ -190,7 +190,7 @@ module Snapshots
         end
 
         r = r.dup
-        javascript.remove_env_from_html!( r.body )
+        r.body = javascript.remove_env_from_html( r.body )
 
         page                 = r.to_page
         page.dom.url         = d_url

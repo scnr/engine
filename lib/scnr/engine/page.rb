@@ -150,7 +150,6 @@ class Page
     #   An instantiated {Parser}.
     def initialize( options )
         fail ArgumentError, 'Options cannot be empty.' if options.empty?
-        options = options.dup
 
         @cache = {}
 
@@ -166,7 +165,7 @@ class Page
         @metadata ||= {}
 
         options.each do |k, v|
-            send( "#{k}=", try_dup( v ) )
+            send( "#{k}=", v )
         end
 
         @dom = DOM.new( (options[:dom] || {}).merge( page: self ) )

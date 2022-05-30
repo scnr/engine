@@ -220,7 +220,7 @@ class Response < Message
     end
 
     def dup
-        self.class.from_rpc_data( to_rpc_data.deep_clone )
+        self.class.from_rpc_data( self.to_rpc_data )
     end
 
     # @return   [Hash]
