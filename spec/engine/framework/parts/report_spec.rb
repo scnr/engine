@@ -42,9 +42,12 @@ describe SCNR::Engine::Framework::Parts::Report do
             reset_options
         end
 
+        before :each do
+            subject.reporters.lib = SCNR::Engine::Options.paths.reporters
+        end
+
         context 'when passed a valid reporter name' do
             it 'returns the reporter as a string' do
-                subject.reporters.lib = SCNR::Engine::Options.paths.reporters
                 json = subject.report_as( :json )
                 expect(JSON.load( json )['issues'].size).to eq(subject.report.issues.size)
             end
