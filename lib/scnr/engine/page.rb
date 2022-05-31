@@ -387,14 +387,23 @@ class Page
         @cache.clear
 
         # If we're dealing with binary data remove it before storing.
-        if !text?
+        if text?
+            if @response
+                @response = @response.dup
+                @response.body = Browser::Javascript.remove_env_from_html( @response.body )
+            end
+
+            if @body
+                self.body = Browser::Javascript.remove_env_from_html( @body )
+            end
+        else
             response.body = nil
             self.body     = nil
         end
 
         @cookie_jar.clear if @cookie_jar
 
-        @dom.digest      = nil
+        @dom.digest = nil
 
         self
     end
@@ -404,11 +413,11 @@ class Page
     def has_script?
         return @has_javascript if !@has_javascript.nil?
 
-        if !response.headers.content_type.to_s.start_with?( 'text/html' ) || !text?
+        if !html? || !text?
             return @has_javascript = false
         end
 
-        dbody = body.downcase
+        dbody = self.body.downcase
 
         # First check, quick and simple.
         if dbody.optimized_include?( '<script' ) ||
@@ -463,6 +472,11 @@ class Page
     def text?
         return false if !response
         response.text?
+    end
+
+    def html?
+        return false if !response
+        response.html?
     end
 
     # @return   [String]

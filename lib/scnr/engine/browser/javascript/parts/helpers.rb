@@ -15,106 +15,110 @@ module Helpers
 
     DOM_MONITOR_NO_DIGEST_ATTRIBUTE = 'data-scnr-engine-no-digest'
 
-    def dom_monitor_no_digest_attribute
-        DOM_MONITOR_NO_DIGEST_ATTRIBUTE
+    def self.included( base )
+        base.extend ClassMethods
     end
 
-    # Removes environment modifications from HTML code.
-    #
-    # @param    [String]    html
-    #
-    # @return   [String]
-    #
-    # @see Parts::Proxy#inject
-    def remove_env_from_html( html )
-        remove_env_from_html!( html.dup )
-    end
+    module ClassMethods
 
-    def remove_env_from_html!( html )
-        # BEWARE!
-        #
-        # Careful not to remove new lines, they'll mess up the stackframe
-        # line numbers!
-
-        %w(http https).each do |proto|
-            env_url = env_script_url( proto )
-
-            # OK, this \n and the whitespace that follows it need to be removed
-            # because they're added by the browsers and the stackframes are adjusted
-            # for them.
-            escaped_url = Regexp.escape( env_url )
-            [
-                # Without any other script tags in the top/head of the page.
-                /<script.*?#{escaped_url}.*?<\/script>\s*\n\s*$/i,
-
-                # Surrounded by other script tags.
-                /<script.*?#{escaped_url}.*?<\/script>\s*\n\s*/i,
-
-                # Injected into an AJAX response or something, catch-all basically.
-                /<script.*?#{escaped_url}.*?<\/script>/i
-            ].each do |regex|
-                html.gsub!( regex, '' )
-            end
-
-            # Right after <script>
-            html.gsub!(
-                />#{Regexp.escape( js_line_wrapper )}.*?;/i,
-                '>'
-            )
-            # Right before </script>
-            html.gsub!(
-                /;#{Regexp.escape( js_line_wrapper )}.*?;/i,
-                ''
-            )
-
-            ensure_environment_removal( html, [env_url, js_line_wrapper] )
+        def dom_monitor_no_digest_attribute
+            DOM_MONITOR_NO_DIGEST_ATTRIBUTE
         end
 
-        html
-    end
-
-    # Removes environment modifications from JS code.
-    #
-    # @param    [String]    js
-    #
-    # @return   [String]
-    #
-    # @see Parts::Proxy#inject
-    def remove_env_from_js( js )
-        remove_env_from_js!( js.dup )
-    end
-
-    def remove_env_from_js!( js )
-        # BEWARE!
+        # Removes environment modifications from HTML code.
         #
-        # Careful not to remove new lines, they'll mess up the stackframe
-        # line numbers!
+        # @param    [String]    html
+        #
+        # @return   [String]
+        #
+        # @see Parts::Proxy#inject
+        def remove_env_from_html( html )
+            remove_env_from_html!( html.dup )
+        end
 
-        # Beginning of JS file.
-        js.sub!(
-            /#{env_update_function};/i,
-            ''
-        )
+        def remove_env_from_html!( html )
+            # BEWARE!
+            #
+            # Careful not to remove new lines, they'll mess up the stackframe
+            # line numbers!
 
-        # End of JS file.
-        js.sub!(
-            /;#{env_update_function};/i,
-            ''
-        )
+            %w(http https).each do |proto|
+                env_url = env_script_url( proto )
 
-        ensure_environment_removal( js, [env_update_function] )
+                # OK, this \n and the whitespace that follows it need to be removed
+                # because they're added by the browsers and the stackframes are adjusted
+                # for them.
+                escaped_url = Regexp.escape( env_url )
+                [
+                  # Without any other script tags in the top/head of the page.
+                  /<script.*?#{escaped_url}.*?<\/script>\s*\n\s*$/i,
 
-        js
-    end
+                  # Surrounded by other script tags.
+                  /<script.*?#{escaped_url}.*?<\/script>\s*\n\s*/i,
 
-    def javascript?( response )
-        response.javascript?
-    end
+                  # Injected into an AJAX response or something, catch-all basically.
+                  /<script.*?#{escaped_url}.*?<\/script>/i
+                ].each do |regex|
+                    html.gsub!( regex, '' )
+                end
 
-    def html?( response )
-        # If the server says it's HTML dig deeper to ensure it.
-        # We don't want wrong response headers messing up the JS env.
-        response.html? && Parser.html?( response.body )
+                # Right after <script>
+                html.gsub!(
+                  />#{Regexp.escape( js_line_wrapper )}.*?;/i,
+                  '>'
+                )
+                # Right before </script>
+                html.gsub!(
+                  /;#{Regexp.escape( js_line_wrapper )}.*?;/i,
+                  ''
+                )
+            end
+
+            html
+        end
+
+        # Removes environment modifications from JS code.
+        #
+        # @param    [String]    js
+        #
+        # @return   [String]
+        #
+        # @see Parts::Proxy#inject
+        def remove_env_from_js( js )
+            remove_env_from_js!( js.dup )
+        end
+
+        def remove_env_from_js!( js )
+            # BEWARE!
+            #
+            # Careful not to remove new lines, they'll mess up the stackframe
+            # line numbers!
+
+            # Beginning of JS file.
+            js.sub!(
+              /#{env_update_function};/i,
+              ''
+            )
+
+            # End of JS file.
+            js.sub!(
+              /;#{env_update_function};/i,
+              ''
+            )
+
+            js
+        end
+
+        def html?( response )
+            # If the server says it's HTML dig deeper to ensure it.
+            # We don't want wrong response headers messing up the JS env.
+            response.html? && Parser.html?( response.body )
+        end
+
+        def js_line_wrapper
+            "/* #{token}RemoveLine */"
+        end
+
     end
 
     # @return   [String]
@@ -199,15 +203,6 @@ module Helpers
 
     private
 
-    def ensure_environment_removal( string, tokens )
-        # Don't make the tokens dynamic, it can cause Regex leaks in Rust code!
-        tokens.each do |t|
-            next if !string.optimized_include?( t )
-
-            fail "Environment removal failed: #{t}"
-        end
-    end
-
     # @param    [HTTP::Response]    response
     #   Response whose {HTTP::Message#body} to check.
     #
@@ -215,7 +210,7 @@ module Helpers
     #   `true` if the {HTTP::Response response} {HTTP::Message#body} contains
     #   the code for the JS environment.
     def has_js_env?( response )
-        response.body.optimized_include? env_script_url( response.parsed_url.scheme )
+        response.body.optimized_include? self.class.env_script_url( response.parsed_url.scheme )
     end
 
     def dom_monitor_initializer
@@ -234,11 +229,7 @@ module Helpers
     end
 
     def wrapped_env_update_function
-        "#{js_line_wrapper} #{env_update_function}"
-    end
-
-    def js_line_wrapper
-        "/* #{token}RemoveLine */"
+        "#{self.class.js_line_wrapper} #{env_update_function}"
     end
 
     def js_initializer

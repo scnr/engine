@@ -189,9 +189,6 @@ module Snapshots
             end
         end
 
-        r = r.dup
-        r.body = javascript.remove_env_from_html( r.body )
-
         page                 = r.to_page
         page.dom.url         = d_url
         page.dom.transitions = @transitions.dup
@@ -203,7 +200,7 @@ module Snapshots
         return page if parse_profile.disabled?
 
         if parse_profile.body
-            page.body = source
+            page.body = self.real_source
         end
 
         if parse_profile.digest
