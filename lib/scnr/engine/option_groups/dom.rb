@@ -57,7 +57,7 @@ class DOM < SCNR::Engine::OptionGroup
         wait_for_elements:   {},
         pool_size:           [
           [
-            (Cuboid::System.platform.cpu_count/4).to_i, 10
+            (Cuboid::System.platform.cpu_count/2).to_i, 10
           ].min,
           1
         ].max,
