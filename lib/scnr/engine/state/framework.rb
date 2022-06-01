@@ -6,7 +6,6 @@
     web site for more information on licensing and terms of use.
 =end
 
-require_relative 'framework/rpc'
 require 'forwardable'
 
 module SCNR::Engine
@@ -86,9 +85,6 @@ class Framework
         InvalidStatusMessage = Cuboid::State::Application::Error::InvalidStatusMessage
     end
 
-    # @return     [RPC]
-    attr_accessor :rpc
-
     # @return     [Support::Filter::Set]
     attr_reader   :page_queue_filter
 
@@ -110,7 +106,6 @@ class Framework
     def initialize
         super
 
-        @rpc = RPC.new
         @audited_page_count = 0
 
         @page_queue_filter = Support::Filter::Set.new(hasher: :persistent_hash )
@@ -131,7 +126,6 @@ class Framework
 
     def statistics
         {
-            rpc:                @rpc.statistics,
             audited_page_count: @audited_page_count
         }
     end
@@ -228,8 +222,6 @@ class Framework
     def dump( directory )
         FileUtils.mkdir_p( directory )
 
-        rpc.dump( "#{directory}/rpc/" )
-
         %w(element_pre_check_filter page_queue_filter url_queue_filter
             audited_page_count page_paths_filter
             dom_analysis_filter
@@ -240,8 +232,6 @@ class Framework
 
     def self.load( directory )
         framework = new
-
-        framework.rpc = RPC.load( "#{directory}/rpc/" )
 
         %w(element_pre_check_filter page_queue_filter url_queue_filter
             page_paths_filter dom_analysis_filter
@@ -257,8 +247,6 @@ class Framework
     end
 
     def clear
-        rpc.clear
-
         @element_pre_check_filter.clear
 
         @dom_analysis_filter.clear

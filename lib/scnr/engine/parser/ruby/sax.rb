@@ -35,7 +35,7 @@ class SAX < Ox::Sax
     def attr( name, value )
         return if !@current_node.respond_to?( :attributes )
 
-        @current_node.attributes[name] = value
+        @current_node.attributes[name.to_s.downcase] = value
     end
 
     def text( value )
