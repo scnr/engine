@@ -233,6 +233,12 @@ class Connection < Raktr::Connection
             @tunnel.close_without_callback
             @tunnel = nil
         end
+
+        @body.clear
+        @raw_request.clear
+        @request = nil
+
+        @parser.reset!
     end
 
     def on_flush
