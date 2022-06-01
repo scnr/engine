@@ -161,9 +161,7 @@ class Base
     end
 
     def get_unique_filename
-        # Should be unique enough...
-        ("#{self.class.disk_directory}/#{self.class.name}_#{object_id}_" <<
-            @filename_counter.to_s).gsub( '::', '_' )
+        "#{self.class.disk_directory}/#{object_id}.#{@filename_counter}"
     ensure
         @filename_counter += 1
     end
