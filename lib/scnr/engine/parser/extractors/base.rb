@@ -21,7 +21,7 @@ class Base
 
     def initialize( options = {} )
         @html           = options[:html]
-        @downcased_html = @html.downcase if @html
+        @downcased_html = options[:downcased_html]
         @parser         = options[:parser]
     end
 
