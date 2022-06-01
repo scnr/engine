@@ -26,6 +26,8 @@ class CategorizedQueue < Base
         @categories ||= {}
         @waiting      = []
         @mutex        = Mutex.new
+
+        @push_counter = 0
     end
 
     def categories
@@ -43,12 +45,13 @@ class CategorizedQueue < Base
         end
 
         synchronize do
-            h = obj.hash
+            k = @push_counter.to_s
             @categories[obj.category] ||= []
-            @categories[obj.category] << h
+            @categories[obj.category] << k
 
-            @db[h.to_s] = serialize( obj )
+            @db[k] = serialize( obj )
 
+            @push_counter += 1
             begin
                 t = @waiting.shift
                 t.wakeup if t
@@ -87,14 +90,7 @@ class CategorizedQueue < Base
                         category = categories.pop
                     end
 
-                    return unserialize( @db.shift.last )
-
-                    ap @categories
-                    ap category
-                    ap @db.size
-                    return unserialize(
-                      @db.delete( @categories[category].shift.to_s ).tap { |s| ap s }
-                    )
+                    return unserialize( @db.delete( @categories[category].shift ) )
                 end
             end
         end

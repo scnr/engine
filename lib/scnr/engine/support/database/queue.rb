@@ -32,6 +32,8 @@ class Queue < Base
 
         @waiting = []
         @mutex   = Mutex.new
+
+        @push_counter = 0
     end
 
     # @note Defaults to {DEFAULT_MAX_BUFFER_SIZE}.
@@ -46,8 +48,10 @@ class Queue < Base
     #   Object to add to the queue.
     def <<( obj )
         synchronize do
-            @db[obj.hash.to_s] = serialize( obj )
+            k = @push_counter.to_s
+            @db[k] = serialize( obj )
 
+            @push_counter += 1
             begin
                 t = @waiting.shift
                 t.wakeup if t
