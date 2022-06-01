@@ -150,6 +150,7 @@ module Data
 
             if page.code != 0
                 grabbed_page = page
+                @retries.delete page.url.hash
                 block.call grabbed_page if block_given?
                 next
             end
