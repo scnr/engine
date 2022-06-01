@@ -113,7 +113,7 @@ class Trainer
         end
 
         return if !analyze_response?( response )
-        @trainings_per_url[response.url] += 1
+        @trainings_per_url[response.url.hash] += 1
 
         thread_pool.post do
             analyze response
@@ -195,7 +195,7 @@ class Trainer
 
     def within_scope?( response )
         skip_message = nil
-        if @trainings_per_url[response.url] >= MAX_TRAININGS_PER_URL
+        if @trainings_per_url[response.url.hash] >= MAX_TRAININGS_PER_URL
             skip_message = "Reached maximum trainings (#{MAX_TRAININGS_PER_URL})"
         elsif response.scope.redundant?
             skip_message = 'Matched redundancy filters'
