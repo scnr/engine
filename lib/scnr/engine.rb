@@ -51,6 +51,10 @@ module Engine
             GC.start( full_mark: false )
         end
 
+        def collect_objects
+            GC.start
+        end
+
         def null_device
             Gem.win_platform? ? 'NUL' : '/dev/null'
         end

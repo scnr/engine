@@ -174,6 +174,8 @@ module Audit
 
         @current_url = nil
 
+        SCNR::Engine.collect_objects
+
         ran
     end
 
