@@ -246,9 +246,6 @@ class Client
 
             true
         end
-
-    ensure
-        SCNR::Engine.collect_young_objects
     end
 
     # @note Cookies or new callbacks set as a result of the block won't affect

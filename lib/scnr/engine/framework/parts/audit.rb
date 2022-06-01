@@ -169,12 +169,10 @@ module Audit
             print_status "Processing timeout-analysis candidates for: #{page.dom.url}"
             print_info   '-------------------------------------------'
             SCNR::Engine::Check::Auditor.timeout_audit_run
-            http_run = true
+            ran = true
         end
 
         @current_url = nil
-
-        SCNR::Engine.collect_objects
 
         ran
     end
