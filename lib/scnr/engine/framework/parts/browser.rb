@@ -85,7 +85,7 @@ module Browser
             ) do
                 # The page queue is getting low, give preference to crawl jobs
                 # so that the framework doesn't just sit on its ass.
-                if page_queue.size < page_queue.max_buffer_size * 5
+                if page_queue.size < 50
                     :crawl
                 end
             end

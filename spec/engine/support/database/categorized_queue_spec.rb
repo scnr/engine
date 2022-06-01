@@ -21,7 +21,7 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
 
     subject { described_class.new {} }
 
-    let(:sample_size) { 2 * subject.max_buffer_size }
+    let(:sample_size) { 200 }
 
     it 'maintains stability and consistency under load' do
         subject
@@ -50,21 +50,7 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
         expect(consumed.sort).to eq((0...entries).map { |i| 'a' * i })
     end
 
-    describe "#{described_class}::DEFAULT_MAX_BUFFER_SIZE" do
-        it 'returns 100' do
-            expect(described_class::DEFAULT_MAX_BUFFER_SIZE).to eq(100)
-        end
-    end
-
     describe '#initialize' do
-        describe ':max_buffer_size' do
-            it 'sets #max_buffer_size' do
-                expect(
-                    described_class.new( max_buffer_size: 1 ){}.max_buffer_size
-                ).to eq 1
-            end
-        end
-
         describe ':dumper' do
             it 'defaults to Marshal'
 
@@ -93,21 +79,6 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
 
                 expect( described_class.new( &prefer ).prefer ).to be prefer
             end
-        end
-    end
-
-    describe '#max_buffer_size' do
-        context 'by default' do
-            it "returns #{described_class}::DEFAULT_MAX_BUFFER_SIZE" do
-                expect(subject.max_buffer_size).to eq(described_class::DEFAULT_MAX_BUFFER_SIZE)
-            end
-        end
-    end
-
-    describe '#max_buffer_size=' do
-        it 'sets #max_buffer_size' do
-            subject.max_buffer_size = 10
-            expect(subject.max_buffer_size).to eq(10)
         end
     end
 
@@ -151,15 +122,6 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
             subject.push Item.new( :stuff )
             expect(subject.pop).to eq(Item.new( :stuff ))
         end
-
-        it 'increments .disk_space' do
-            sz = described_class.disk_space
-
-            subject.max_buffer_size = 0
-            subject.push Item.new( :stuff )
-
-            expect(described_class.disk_space).to be > sz
-        end
     end
 
     describe '#enq' do
@@ -201,16 +163,6 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
             expect(subject.pop.data).to eq 2
             expect(subject.pop.data).to eq 3
             expect(subject.pop.data).to eq 1
-        end
-
-        it 'decrements .disk_space' do
-            subject.max_buffer_size = 0
-            subject.push Item.new( "stuff" )
-
-            sz = described_class.disk_space
-            subject.pop
-
-            expect(described_class.disk_space).to be < sz
         end
 
         context 'when the block specified category is empty' do
@@ -257,41 +209,6 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
         end
     end
 
-    describe '#free_buffer_size' do
-        it 'returns the size of the available buffer' do
-            (subject.max_buffer_size - 2).times { |i| subject << Item.new( i ) }
-            expect(subject.free_buffer_size).to eq(2)
-        end
-    end
-
-    describe '#buffer_size' do
-        it 'returns the size of the in-memory entries' do
-            expect(subject.buffer_size).to eq(0)
-
-            (subject.max_buffer_size - 1).times { |i| subject << Item.new( i ) }
-            expect(subject.buffer_size).to eq(subject.max_buffer_size - 1)
-
-            subject.clear
-
-            sample_size.times { |i| subject << Item.new( i ) }
-            expect(subject.buffer_size).to eq(subject.max_buffer_size)
-        end
-    end
-
-    describe '#disk_size' do
-        it 'returns the size of the disk entries' do
-            expect(subject.buffer_size).to eq(0)
-
-            (subject.max_buffer_size + 1).times { |i| subject << Item.new( i ) }
-            expect(subject.disk_size).to eq(1)
-
-            subject.clear
-
-            sample_size.times { |i| subject << Item.new( i ) }
-            expect(subject.disk_size).to eq(sample_size - subject.max_buffer_size)
-        end
-    end
-
     describe '#num_waiting' do
         it 'returns the amount of threads waiting to pop' do
             expect(subject.num_waiting).to eq(0)
@@ -311,16 +228,6 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
             subject.clear
             expect(subject.size).to eq(0)
             expect((subject.pop( true ) rescue nil)).to eq(nil)
-        end
-
-        it 'decrements .disk_space' do
-            subject.max_buffer_size = 0
-            subject.push Item.new( "stuff" )
-
-            sz = described_class.disk_space
-            subject.clear
-
-            expect(described_class.disk_space).to be < sz
         end
     end
 

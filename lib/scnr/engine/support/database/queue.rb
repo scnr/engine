@@ -6,6 +6,8 @@
     web site for more information on licensing and terms of use.
 =end
 
+require 'gdbm'
+
 module SCNR::Engine
 module Support::Database
 
@@ -22,29 +24,12 @@ module Support::Database
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class Queue < Base
 
-    # Default {#max_buffer_size}.
-    DEFAULT_MAX_BUFFER_SIZE = 100
-
-    # @return   [Integer]
-    #   How many entries to keep in memory before starting to off-load to disk.
-    attr_accessor :max_buffer_size
-
-    # @return   [Array<Object>]
-    #   Objects stored in the memory buffer.
-    attr_reader :buffer
-
-    # @return   [Array<String>]
-    #   Paths to files stored to disk.
-    attr_reader :disk
-
     # @see SCNR::Engine::Database::Base#initialize
     def initialize( options = {} )
         super( options )
 
-        @max_buffer_size = options[:max_buffer_size] || DEFAULT_MAX_BUFFER_SIZE
+        @db = GDBM.new( "#{self.class.disk_directory}/#{object_id}.db" )
 
-        @disk    = []
-        @buffer  = []
         @waiting = []
         @mutex   = Mutex.new
     end
@@ -61,11 +46,7 @@ class Queue < Base
     #   Object to add to the queue.
     def <<( obj )
         synchronize do
-            if @buffer.size < max_buffer_size
-                @buffer << obj
-            else
-                @disk << dump( obj )
-            end
+            @db[obj.hash.to_s] = serialize( obj )
 
             begin
                 t = @waiting.shift
@@ -83,13 +64,12 @@ class Queue < Base
     def pop( non_block = false )
         synchronize do
             loop do
-                if internal_empty?
+                if @db.empty?
                     raise ThreadError, 'queue empty' if non_block
                     @waiting.push Thread.current
                     @mutex.sleep
                 else
-                    return @buffer.shift if !@buffer.empty?
-                    return load_and_delete_file( @disk.shift )
+                    return unserialize( @db.shift.last )
                 end
             end
         end
@@ -100,40 +80,22 @@ class Queue < Base
     # @return   [Integer]
     #   Size of the queue, the number of objects it currently holds.
     def size
-        buffer_size + disk_size
+        @db.size
     end
     alias :length :size
-
-    def free_buffer_size
-        max_buffer_size - buffer_size
-    end
-
-    def buffer_size
-        @buffer.size
-    end
-
-    def disk_size
-        @disk.size
-    end
 
     # @return   [Bool]
     #   `true` if the queue if empty, `false` otherwise.
     def empty?
         synchronize do
-            internal_empty?
+            @db.empty?
         end
     end
 
     # Removes all objects from the queue.
     def clear
         synchronize do
-            @buffer.clear
-
-            while !@disk.empty?
-                path = @disk.pop
-                next if !path
-                delete_file path
-            end
+            @db.clear
         end
     end
 
@@ -142,10 +104,6 @@ class Queue < Base
     end
 
     private
-
-    def internal_empty?
-        @buffer.empty? && @disk.empty?
-    end
 
     def synchronize( &block )
         @mutex.synchronize( &block )

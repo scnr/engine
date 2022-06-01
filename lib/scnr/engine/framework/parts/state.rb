@@ -40,7 +40,6 @@ module State
             SCNR::Engine::Data.clear
 
             SCNR::Engine::Snapshot.reset
-            SCNR::Engine::Support::Database::Base.reset
             SCNR::Engine::Platform::Manager.reset
             SCNR::Engine::Check::Auditor.reset
             ElementFilter.reset
