@@ -67,10 +67,13 @@ class DOMExploration < Job
     end
 
     def to_s
+        super << " for #{@resource&.url}"
+    end
+
+    def inspect
         "#<#{self.class}:#{object_id} @resource=#{@resource} " <<
             "time=#{@time} timed_out=#{timed_out?}>"
     end
-    alias :inspect :to_s
 
 end
 

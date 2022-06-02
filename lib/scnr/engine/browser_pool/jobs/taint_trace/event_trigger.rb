@@ -38,6 +38,10 @@ class EventTrigger < DOMExploration::EventTrigger
     end
 
     def to_s
+        super << "for #{@resource.url} #{@element} with taint #{@taint}"
+    end
+
+    def inspect
         "#<#{self.class}:#{object_id} @resource=#{@resource} " +
           "@taint=#{@taint.inspect} @injector=#{@injector.inspect} " +
             "@event=#{@event.inspect} @element=#{@element.inspect} " +

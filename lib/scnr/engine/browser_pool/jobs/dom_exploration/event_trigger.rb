@@ -48,6 +48,10 @@ class EventTrigger < DOMExploration
     end
 
     def to_s
+        super << " #{@event} #{@element}"
+    end
+
+    def inspect
         "#<#{self.class}:#{object_id} @resource=#{@resource} " +
             "@event=#{@event.inspect} @element=#{@element.inspect} " <<
             "time=#{@time} timed_out=#{timed_out?}>"

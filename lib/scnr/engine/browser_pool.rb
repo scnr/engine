@@ -168,7 +168,8 @@ class BrowserPool
         @done_signal.clear
 
         synchronize do
-            print_debug "Queueing: #{job}"
+            print_status "Queued #{job}"
+            print_debug "#{job.inspect}"
 
             self.class.notify_on_queue job
 
@@ -224,7 +225,8 @@ class BrowserPool
     #   {Worker} states.
     def job_done( job )
         synchronize do
-            print_debug "Job done: #{job}"
+            print_status "Done #{job}"
+            print_debug "#{job.inspect}"
 
             State.browser_pool.pending_job_counter -= 1
             @pending_jobs[job.id] -= 1
@@ -269,7 +271,8 @@ class BrowserPool
         return if job_done? result.job
 
         synchronize do
-            print_debug "Got job result: #{result}"
+            print_status "Got #{result}"
+            print_debug "#{result.inspect}"
 
             self.class.notify_on_result result
 

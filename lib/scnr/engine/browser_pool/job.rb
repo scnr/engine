@@ -198,6 +198,10 @@ class Job
         hash == other.hash
     end
 
+    def to_s
+        "#{self.class.to_s.split( '::' ).last} with ID #{@id}"
+    end
+
     protected
 
     def remove_resources
