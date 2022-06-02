@@ -108,12 +108,27 @@ class Framework
 
         @audited_page_count = 0
 
-        @page_queue_filter = Support::Filter::Set.new(hasher: :persistent_hash )
-        @page_paths_filter = Support::Filter::Set.new(hasher: :paths_hash )
-        @dom_analysis_filter = Support::Filter::Set.new(hasher: :transitions_hash )
-        @url_queue_filter  = Support::Filter::Set.new(hasher: :persistent_hash )
+        @page_queue_filter = Support::Filter::Bloom.new(
+          size:   10_000_000,
+          hasher: :persistent_hash
+        )
+        @page_paths_filter = Support::Filter::Set.new(
+          size:   10_000_000,
+          hasher: :paths_hash
+        )
+        @dom_analysis_filter = Support::Filter::Bloom.new(
+          size:   10_000_000,
+          hasher: :transitions_hash
+        )
+        @url_queue_filter  = Support::Filter::Bloom.new(
+          size:   10_000_000,
+          hasher: :persistent_hash
+        )
 
-        @element_pre_check_filter = Support::Filter::Set.new(hasher: :coverage_and_trace_hash )
+        @element_pre_check_filter = Support::Filter::Bloom.new(
+          size:   10_000_000,
+          hasher: :coverage_and_trace_hash
+        )
 
         @state_machine = StateMachine.new
     end

@@ -82,24 +82,16 @@ class Base
         self
     end
 
-    def ==( other )
-        hash == other.hash
-    end
-
-    def hash
-        @collection.hash
-    end
-
     def dup
         self.class.new( @options.dup ).merge self
     end
 
-    def _dump( _ )
-        Marshal.dump( to_rpc_data )
+    def save( location )
+        fail 'Not implemented'
     end
 
-    def self._load( data )
-        from_rpc_data Marshal.load( data )
+    def self._load( location )
+        fail 'Not implemented'
     end
 
     def collection=( c )

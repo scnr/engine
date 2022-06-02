@@ -56,75 +56,27 @@ shared_examples_for 'filter' do
         end
     end
 
-    describe '#size' do
-        it 'returns the size' do
-            bf = described_class.new
-            expect(bf.size).to eq(0)
-            bf << '1'
-            expect(bf.size).to eq(1)
-            bf << '1'
-            expect(bf.size).to eq(1)
-            bf << '2'
-            expect(bf.size).to eq(2)
-        end
-    end
-
     describe '#clear' do
         it 'empties the list' do
             bf = described_class.new
             bf << '1'
             bf << '2'
-            expect(bf.size).to eq(2)
             bf.clear
-            expect(bf.size).to eq(0)
+            expect(bf.include?( '1' )).to be_falsey
+            expect(bf.include?( '2' )).to be_falsey
         end
     end
 
-    describe '#==' do
-        context 'when 2 lists are equal' do
-            it 'returns true' do
-                new = described_class.new
+    describe '#merge' do
+        it 'merges 2 sets' do
+            new = described_class.new
 
-                subject << 'test'
-                new     << 'test'
+            subject << 'test'
+            new     << 'test2'
 
-                expect(subject).to eq(new)
-            end
-        end
-
-        context 'when 2 lists are not equal' do
-            it 'returns false' do
-                new = described_class.new
-
-                subject << 'test'
-                new     << 'test2'
-
-                expect(subject).not_to eq(new)
-            end
-        end
-    end
-
-    describe '#hash' do
-        context 'when 2 lists are equal' do
-            it 'returns the same value' do
-                new = described_class.new
-
-                subject << 'test'
-                new     << 'test'
-
-                expect(subject.hash).to eq(new.hash)
-            end
-        end
-
-        context 'when 2 lists are not equal' do
-            it 'returns different values' do
-                new = described_class.new
-
-                subject << 'test'
-                new     << 'test2'
-
-                expect(subject.hash).not_to eq(new.hash)
-            end
+            subject.merge new
+            expect(subject).to include 'test'
+            expect(subject).to include 'test2'
         end
     end
 
@@ -133,11 +85,12 @@ shared_examples_for 'filter' do
             subject << 'test'
             copy = subject.dup
 
-            expect(copy).to eq(subject)
-
             copy << 'test2'
 
-            expect(copy).not_to eq(subject)
+            expect(copy.include?('test')).to be_truthy
+            expect(copy.include?('test2')).to be_truthy
+            expect(subject.include?('test2')).to be_falsey
         end
     end
+
 end

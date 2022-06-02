@@ -53,6 +53,8 @@ Gem::Specification.new do |s|
     s.add_dependency 'cuboid',               '~> 0.1.9.1'
     s.add_dependency 'dsel'
 
+    s.add_dependency 'bloomfilter-rb'
+
     s.add_dependency 'webrick',              '1.7.0'
 
     # Rust extension helpers.

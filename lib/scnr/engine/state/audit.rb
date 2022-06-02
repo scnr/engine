@@ -24,7 +24,10 @@ class Audit
     extend ::Forwardable
 
     def initialize
-        @collection = Support::Filter::Set.new( hasher: :persistent_hash )
+        @collection = Support::Filter::Bloom.new(
+          size:   10_000_000,
+          hasher: :persistent_hash
+        )
     end
 
     def statistics
@@ -33,7 +36,7 @@ class Audit
         }
     end
 
-    [:<<, :merge, :include?, :clear, :empty?, :any?, :size, :hash, :==].each do |method|
+    [:<<, :merge, :include?, :clear, :empty?, :any?, :size].each do |method|
         def_delegator :collection, method
     end
 

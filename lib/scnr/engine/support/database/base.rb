@@ -52,6 +52,14 @@ class Base
             @options[:loader].call( source )
     end
 
+    def save( location )
+        fail 'Not implemented'
+    end
+
+    def self._load( location )
+        fail 'Not implemented'
+    end
+
 end
 
 end

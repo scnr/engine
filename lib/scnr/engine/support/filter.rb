@@ -9,3 +9,4 @@
 lib = SCNR::Engine::Options.paths.support + 'filter/'
 require lib + 'base'
 require lib + 'set'
+require lib + 'bloom'

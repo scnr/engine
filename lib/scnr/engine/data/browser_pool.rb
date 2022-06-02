@@ -18,7 +18,7 @@ class BrowserPool
     attr_reader :job_queue
 
     def initialize
-        @job_queue = Support::Database::CategorizedQueue.new( max_buffer_size: 10 )
+        @job_queue = Support::Database::CategorizedQueue.new
     end
 
     def statistics

@@ -50,7 +50,10 @@ class BrowserPool
         @pending_job_counter = 0
         @job_id              = 0
 
-        @skip_states = Support::Filter::Set.new( hasher: :persistent_hash )
+        @skip_states = Support::Filter::Bloom.new(
+          size:   10_000_000,
+          hasher: :persistent_hash
+        )
 
         @queued_job_count    = 0
         @completed_job_count = 0

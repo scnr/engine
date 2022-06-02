@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SCNR::Engine::Support::Filter::Set do
+describe SCNR::Engine::Support::Filter::Bloom do
     it_behaves_like 'filter'
 
 end

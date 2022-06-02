@@ -37,7 +37,10 @@ class Issues
 
         # We also use this Set for deduplication in case #do_not_store has been
         # called.
-        @digests = Support::Filter::Set.new(hasher: :digest )
+        @digests = Support::Filter::Bloom.new(
+          size:   50_000,
+          hasher: :digest
+        )
 
         store
     end

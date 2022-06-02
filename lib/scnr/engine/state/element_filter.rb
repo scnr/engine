@@ -22,8 +22,13 @@ class ElementFilter
 
     def initialize
         TYPES.each do |type|
-            instance_variable_set "@#{type}",
-                                  Support::Filter::Set.new(hasher: :persistent_hash )
+            instance_variable_set(
+              "@#{type}",
+              Support::Filter::Bloom.new(
+                size:   10_000_000,
+                hasher: :persistent_hash
+              )
+            )
         end
     end
 

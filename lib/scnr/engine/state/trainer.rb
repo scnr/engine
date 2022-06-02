@@ -15,7 +15,10 @@ class Trainer
     attr_reader :seen_responses_filter
 
     def initialize
-        @seen_responses_filter = Support::Filter::Set.new(hasher: :persistent_hash )
+        @seen_responses_filter = Support::Filter::Bloom.new(
+          size:   10_000_000,
+          hasher: :persistent_hash
+        )
     end
 
     # @param    [String]  key
