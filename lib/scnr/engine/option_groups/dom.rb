@@ -16,18 +16,10 @@ class DOM < SCNR::Engine::OptionGroup
     ENGINES        = [:none, :chrome, :firefox]
     DEFAULT_ENGINE = :chrome
 
-    SCHEDULING         = [:continuous, :batch]
-    DEFAULT_SCHEDULING = :batch
-
     # @note Default is {#DEFAULT_ENGINE}.
     #
     # @return   [Hash]
     attr_accessor :engine
-
-    # @note Default is {#DEFAULT_SCHEDULING}.
-    #
-    # @return   [Hash]
-    attr_accessor :scheduling
 
     # @return   [Hash]
     #   Data to be set in the browser's `localStorage`.
@@ -46,6 +38,16 @@ class DOM < SCNR::Engine::OptionGroup
     #   Amount of {BrowserPool::Worker} to keep in the pool and put to work.
     attr_accessor :pool_size
 
+    # @note Default is `50`.
+    #
+    # @return    [Integer]
+    #   Maximum amount of {BrowserPool::Job jobs} to keep in the
+    #   {BrowserPool browser pool} queue.
+    #
+    #   More means better scheduling and better performance, less means
+    #   less RAM consumption.
+    attr_accessor :job_queue_size
+
     # @return   [Integer]
     #   Maximum allowed time for jobs in seconds.
     attr_accessor :job_timeout
@@ -60,7 +62,7 @@ class DOM < SCNR::Engine::OptionGroup
 
     set_defaults(
         engine:              DEFAULT_ENGINE,
-        scheduling:          DEFAULT_SCHEDULING,
+        job_queue_size:      50,
         local_storage:       {},
         session_storage:     {},
         wait_for_elements:   {},
