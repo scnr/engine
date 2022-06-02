@@ -43,11 +43,14 @@ class TaintTrace < DOMExploration
     end
 
     def to_s
+        super << " #{@resource.url} with taint #{@taint}"
+    end
+
+    def inspect
         "#<#{self.class}:#{object_id} @resource=#{@resource} " <<
             "@taint=#{@taint.inspect} @injector=#{@injector.inspect} " <<
             "time=#{@time} timed_out=#{timed_out?}>"
     end
-    alias :inspect :to_s
 
     private
 

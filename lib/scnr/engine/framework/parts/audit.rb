@@ -159,10 +159,9 @@ module Audit
 
         notify_after_page_audit( page )
 
-        # Makes it easier on the GC but it is important that it be called
-        # **after** all the callbacks have been executed because they may need
-        # access to the cached data and there's no sense in re-parsing.
-        page.clear_cache
+        if use_browsers? && Options.dom.batch_scheduling?
+            browser_pool.wait
+        end
 
         if SCNR::Engine::Check::Auditor.has_timeout_candidates?
             print_line
@@ -171,6 +170,11 @@ module Audit
             SCNR::Engine::Check::Auditor.timeout_audit_run
             ran = true
         end
+
+        # Makes it easier on the GC but it is important that it be called
+        # **after** all the callbacks have been executed because they may need
+        # access to the cached data and there's no sense in re-parsing.
+        page.clear_cache
 
         @current_url = nil
 

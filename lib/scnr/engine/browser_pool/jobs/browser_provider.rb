@@ -26,7 +26,7 @@ class BrowserProvider < Job
         browser.master.callback_for( self ).call *[browser, @args].flatten.compact
     end
 
-    def to_s
+    def inspect
         "#<#{self.class}:#{object_id} " <<
             "callback=#{browser.master.callback_for( self ) if browser && browser.master} " <<
             "time=#{@time} timed_out=#{timed_out?}>"
