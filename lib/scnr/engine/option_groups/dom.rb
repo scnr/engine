@@ -16,18 +16,10 @@ class DOM < SCNR::Engine::OptionGroup
     ENGINES        = [:none, :chrome, :firefox]
     DEFAULT_ENGINE = :chrome
 
-    SCHEDULING         = [:continuous, :batch]
-    DEFAULT_SCHEDULING = :batch
-
     # @note Default is {#DEFAULT_ENGINE}.
     #
     # @return   [Hash]
     attr_accessor :engine
-
-    # @note Default is {#DEFAULT_SCHEDULING}.
-    #
-    # @return   [Hash]
-    attr_accessor :scheduling
 
     # @return   [Hash]
     #   Data to be set in the browser's `localStorage`.
@@ -60,7 +52,6 @@ class DOM < SCNR::Engine::OptionGroup
 
     set_defaults(
         engine:              DEFAULT_ENGINE,
-        scheduling:          DEFAULT_SCHEDULING,
         local_storage:       {},
         session_storage:     {},
         wait_for_elements:   {},
@@ -79,27 +70,6 @@ class DOM < SCNR::Engine::OptionGroup
 
         wait_for_timers:     false
     )
-
-    def scheduling=( s )
-        return @scheduling = defaults[:scheduling] if !s
-
-        s = s.to_sym
-
-        if !SCHEDULING.include?( s )
-            fail ArgumentError,
-                 "Unknown scheduling: #{s}. Supported values are: #{SCHEDULING.join( ', ' )}"
-        end
-
-        @scheduling = s
-    end
-
-    def batch_scheduling?
-        @scheduling == :batch
-    end
-
-    def continuous_scheduling?
-        @scheduling == :continuous
-    end
 
     def wait_for_timers?
         !!@wait_for_timers

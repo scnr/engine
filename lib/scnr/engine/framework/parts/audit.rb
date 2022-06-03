@@ -159,10 +159,6 @@ module Audit
 
         notify_after_page_audit( page )
 
-        if use_browsers? && Options.dom.batch_scheduling?
-            browser_pool.wait
-        end
-
         if SCNR::Engine::Check::Auditor.has_timeout_candidates?
             print_line
             print_status "Processing timeout-analysis candidates for: #{page.dom.url}"
@@ -177,6 +173,9 @@ module Audit
         page.clear_cache
 
         @current_url = nil
+
+        GC.start
+        GC.compact
 
         ran
     end
