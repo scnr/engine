@@ -67,8 +67,10 @@ class DOMExploration < Job
     end
 
     def to_s
-        if @resource.respond_to? :url
-            super << " for #{@resource&.url}"
+        if @resource.respond_to? :dom
+            super << " for #{@resource.dom.url}"
+        elsif @resource.respond_to? :url
+            super << " for #{@resource.url}"
         else
             super << " for #{@resource}"
         end
