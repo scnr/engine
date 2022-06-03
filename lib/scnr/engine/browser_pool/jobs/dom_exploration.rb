@@ -67,11 +67,15 @@ class DOMExploration < Job
     end
 
     def to_s
-        super << " for #{@resource&.url}"
+        if @resource.respond_to? :url
+            super << " for #{@resource&.url}"
+        else
+            super << " for #{@resource}"
+        end
     end
 
     def inspect
-        "#<#{self.class}:#{object_id} @resource=#{@resource} " <<
+        "#<#{self.class}:#{object_id} @resource=#{@resource.inspect} " <<
             "time=#{@time} timed_out=#{timed_out?}>"
     end
 
