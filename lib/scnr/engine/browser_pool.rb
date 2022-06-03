@@ -117,11 +117,6 @@ class BrowserPool
         @mutex       = Monitor.new
         @done_signal = Queue.new
 
-        @slots = Queue.new
-        SCNR::Engine::Options.dom.job_queue_size.times do
-            @slots << nil
-        end
-
         initialize_workers
     end
 
@@ -171,8 +166,6 @@ class BrowserPool
         fail_if_job_done job
 
         @done_signal.clear
-        @slots.pop
-
         synchronize do
             print_status "Queued #{job}"
             print_debug "#{job.inspect}"
@@ -251,8 +244,6 @@ class BrowserPool
                 @done_signal << nil
             end
         end
-    ensure
-        @slots << nil
     end
 
     # @param    [Job]  job
