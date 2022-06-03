@@ -38,16 +38,6 @@ class DOM < SCNR::Engine::OptionGroup
     #   Amount of {BrowserPool::Worker} to keep in the pool and put to work.
     attr_accessor :pool_size
 
-    # @note Default is `50`.
-    #
-    # @return    [Integer]
-    #   Maximum amount of {BrowserPool::Job jobs} to keep in the
-    #   {BrowserPool browser pool} queue.
-    #
-    #   More means better scheduling and better performance, less means
-    #   less RAM consumption.
-    attr_accessor :job_queue_size
-
     # @return   [Integer]
     #   Maximum allowed time for jobs in seconds.
     attr_accessor :job_timeout
@@ -62,7 +52,6 @@ class DOM < SCNR::Engine::OptionGroup
 
     set_defaults(
         engine:              DEFAULT_ENGINE,
-        job_queue_size:      50,
         local_storage:       {},
         session_storage:     {},
         wait_for_elements:   {},
@@ -81,27 +70,6 @@ class DOM < SCNR::Engine::OptionGroup
 
         wait_for_timers:     false
     )
-
-    def scheduling=( s )
-        return @scheduling = defaults[:scheduling] if !s
-
-        s = s.to_sym
-
-        if !SCHEDULING.include?( s )
-            fail ArgumentError,
-                 "Unknown scheduling: #{s}. Supported values are: #{SCHEDULING.join( ', ' )}"
-        end
-
-        @scheduling = s
-    end
-
-    def batch_scheduling?
-        @scheduling == :batch
-    end
-
-    def continuous_scheduling?
-        @scheduling == :continuous
-    end
 
     def wait_for_timers?
         !!@wait_for_timers
