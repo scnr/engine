@@ -12,10 +12,6 @@ describe SCNR::Engine::Data::Framework do
     describe '#statistics' do
         let(:statistics) { subject.statistics }
 
-        it "includes #{described_class::RPC}#statistics" do
-            expect(statistics[:rpc]).to eq(subject.rpc.statistics)
-        end
-
         it 'includes the #sitemap size' do
             subject.add_page_to_sitemap page
 
@@ -40,12 +36,6 @@ describe SCNR::Engine::Data::Framework do
         it 'includes the #url_queue_total_size' do
             subject.push_to_url_queue page
             expect(statistics[:url_queue_total_size]).to eq(subject.url_queue_total_size)
-        end
-    end
-
-    describe '#rpc' do
-        it "returns an instance of #{described_class::RPC}" do
-            expect(subject.rpc).to be_kind_of described_class::RPC
         end
     end
 
@@ -165,11 +155,6 @@ describe SCNR::Engine::Data::Framework do
     end
 
     describe '#dump' do
-        it 'stores #rpc to disk' do
-            subject.dump( dump_directory )
-            expect(described_class::RPC.load( "#{dump_directory}/rpc" )).to be_kind_of described_class::RPC
-        end
-
         it 'stores #sitemap to disk' do
             subject.sitemap[page.url] = page.code
             subject.dump( dump_directory )
@@ -227,11 +212,6 @@ describe SCNR::Engine::Data::Framework do
     end
 
     describe '.load' do
-        it 'loads #rpc from disk' do
-            subject.dump( dump_directory )
-            expect(described_class.load( dump_directory ).rpc).to be_kind_of described_class::RPC
-        end
-
         it 'loads #sitemap from disk' do
             subject.sitemap[page.url] = page.code
             subject.dump( dump_directory )
@@ -286,7 +266,7 @@ describe SCNR::Engine::Data::Framework do
     end
 
     describe '#clear' do
-        %w(rpc sitemap page_queue url_queue).each do |method|
+        %w(sitemap page_queue url_queue).each do |method|
             it "clears ##{method}" do
                 expect(subject.send(method)).to receive(:clear)
                 subject.clear

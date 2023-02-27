@@ -343,7 +343,6 @@ describe SCNR::Engine::Issue do
             issue_h = issue.to_h
 
             dom_h = issue.page.dom.to_h
-            dom_h.delete(:skip_states)
             dom_h[:transitions] = dom_h[:transitions].map do |t|
                 h = t.to_hash
                 h.delete(:time)
@@ -351,7 +350,6 @@ describe SCNR::Engine::Issue do
             end
 
             referring_page_dom_h = issue.referring_page.dom.to_h
-            referring_page_dom_h.delete(:skip_states)
             referring_page_dom_h[:transitions] =
                 referring_page_dom_h[:transitions].map do |t|
                     h = t.to_hash

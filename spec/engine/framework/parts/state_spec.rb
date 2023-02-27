@@ -10,7 +10,6 @@ describe SCNR::Engine::Framework::Parts::State do
             it 'aborts when it is exceeded' do
                 timeout = 5
                 SCNR::Engine::Options.timeout.duration = timeout
-                SCNR::Engine::Options.paths.checks     = fixtures_path + '/signature_check/'
 
                 SCNR::Engine::Framework.safe do |f|
                     SCNR::Engine::Options.url = web_server_url_for :framework_multi
@@ -32,7 +31,6 @@ describe SCNR::Engine::Framework::Parts::State do
                     timeout = 5
                     SCNR::Engine::Options.timeout.duration = timeout
                     SCNR::Engine::Options.timeout.suspend  = true
-                    SCNR::Engine::Options.paths.checks     = fixtures_path + '/signature_check/'
 
                     SCNR::Engine::Framework.safe do |f|
                         SCNR::Engine::Options.url = web_server_url_for :framework_multi
@@ -82,8 +80,6 @@ describe SCNR::Engine::Framework::Parts::State do
 
     describe '#abort!' do
         it 'aborts the system' do
-            SCNR::Engine::Options.paths.checks  = fixtures_path + '/signature_check/'
-
             SCNR::Engine::Framework.safe do |f|
                 SCNR::Engine::Options.url = web_server_url_for :framework_multi
                 SCNR::Engine::Options.audit.elements :links
@@ -123,8 +119,6 @@ describe SCNR::Engine::Framework::Parts::State do
 
     describe '#suspend!' do
         it 'suspends the system' do
-            SCNR::Engine::Options.paths.checks = fixtures_path + '/signature_check/'
-
             snapshot = nil
             SCNR::Engine::Framework.safe do |f|
                 SCNR::Engine::Options.url = web_server_url_for :framework_multi
@@ -194,7 +188,6 @@ describe SCNR::Engine::Framework::Parts::State do
         context "when #{SCNR::Engine::OptionGroups::Paths}#snapshots" do
             context 'is a directory' do
                 it 'stores the snapshot under it' do
-                    SCNR::Engine::Options.paths.checks  = fixtures_path + '/signature_check/'
                     SCNR::Engine::Options.snapshot.path = Dir.tmpdir
 
                     snapshot = nil
@@ -224,7 +217,6 @@ describe SCNR::Engine::Framework::Parts::State do
 
             context 'is a file path' do
                 it 'stores the snapshot there' do
-                    SCNR::Engine::Options.paths.checks    = fixtures_path + '/signature_check/'
                     SCNR::Engine::Options.snapshot.path = "#{Dir.tmpdir}/snapshot"
 
                     snapshot = nil
@@ -256,8 +248,6 @@ describe SCNR::Engine::Framework::Parts::State do
 
     describe '#restore!' do
         it 'restores a suspended scan' do
-            SCNR::Engine::Options.paths.checks  = fixtures_path + '/signature_check/'
-
             logged_issues = 0
             snapshot = nil
             SCNR::Engine::Framework.safe do |f|
@@ -326,29 +316,6 @@ describe SCNR::Engine::Framework::Parts::State do
                 options_hash.delete :timeout
 
                 expect(opts).to eq(options_hash.merge( checks: ['signature'] ))
-            end
-        end
-
-        it 'restores BrowserPool skip states' do
-            enable_dom
-
-            snapshot = nil
-            SCNR::Engine::Framework.safe do |f|
-                SCNR::Engine::Options.url = url + '/with_ajax'
-                SCNR::Engine::Options.audit.elements :links, :forms, :cookies
-
-                f.checks.load :signature
-
-                t = Thread.new { f.run }
-
-                sleep 0.1 while f.browser_pool.done?
-                snapshot = f.suspend!
-
-                t.join
-            end
-
-            SCNR::Engine::Framework.restore!( snapshot ) do |f|
-                expect(f.browser_pool_job_skip_states).to be_any
             end
         end
 

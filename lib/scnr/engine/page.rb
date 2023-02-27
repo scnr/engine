@@ -150,7 +150,6 @@ class Page
     #   An instantiated {Parser}.
     def initialize( options )
         fail ArgumentError, 'Options cannot be empty.' if options.empty?
-        options = options.dup
 
         @cache = {}
 
@@ -166,7 +165,7 @@ class Page
         @metadata ||= {}
 
         options.each do |k, v|
-            send( "#{k}=", try_dup( v ) )
+            send( "#{k}=", v )
         end
 
         @dom = DOM.new( (options[:dom] || {}).merge( page: self ) )
@@ -326,15 +325,20 @@ class Page
 
     # @return   [Array<Element::Base>]
     #   All page elements.
-    def elements
-        ELEMENTS.map { |type| send( type ) }.flatten
+    def elements( except = [] )
+        except = Set.new( except )
+        ELEMENTS.map do |type|
+            next if except.include?( type )
+            send( type )
+        end.flatten.compact
     end
 
     # @return   [Array<Element::Base>]
     #   All page elements that are within the scope of the scan.
-    def elements_within_scope
+    def elements_within_scope( except = [] )
+        except = Set.new( except )
         ELEMENTS.map do |type|
-            next if !Options.audit.element? type
+            next if !Options.audit.element?( type ) || except.include?( type )
             send( type ).select { |e| e.scope.in? }
         end.flatten.compact
     end
@@ -383,15 +387,23 @@ class Page
         @cache.clear
 
         # If we're dealing with binary data remove it before storing.
-        if !text?
+        if text?
+            if @response
+                @response = @response.dup
+                @response.body = Browser::Javascript.remove_env_from_html( @response.body )
+            end
+
+            if @body
+                self.body = Browser::Javascript.remove_env_from_html( @body )
+            end
+        else
             response.body = nil
             self.body     = nil
         end
 
         @cookie_jar.clear if @cookie_jar
 
-        @dom.digest      = nil
-        @dom.skip_states.clear
+        @dom.digest = nil
 
         self
     end
@@ -401,11 +413,11 @@ class Page
     def has_script?
         return @has_javascript if !@has_javascript.nil?
 
-        if !response.headers.content_type.to_s.start_with?( 'text/html' ) || !text?
+        if !html? || !text?
             return @has_javascript = false
         end
 
-        dbody = body.downcase
+        dbody = self.body.downcase
 
         # First check, quick and simple.
         if dbody.optimized_include?( '<script' ) ||
@@ -460,6 +472,11 @@ class Page
     def text?
         return false if !response
         response.text?
+    end
+
+    def html?
+        return false if !response
+        response.html?
     end
 
     # @return   [String]

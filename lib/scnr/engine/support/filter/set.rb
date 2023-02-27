@@ -5,6 +5,7 @@
     redistribution and commercial restrictions. Please see the SCNR::Engine
     web site for more information on licensing and terms of use.
 =end
+
 require 'set'
 
 module SCNR::Engine
@@ -18,6 +19,7 @@ class Set < Base
     # @param    (see Base#initialize)
     def initialize(*)
         super
+        # @collection = Rust::Support::Filter::Set.new
         @collection = ::Set.new
     end
 

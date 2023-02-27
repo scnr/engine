@@ -19,13 +19,6 @@ module Snapshots
     # @!method on_new_page_with_sink( &block )
     advertise :on_new_page_with_sink
 
-    # @return   [Support::Filter::Set]
-    #   States that have been visited and should be skipped.
-    #
-    # @see #skip_state
-    # @see #skip_state?
-    attr_reader :skip_states
-
     # @return   [ParseProfile]
     attr_accessor :parse_profile
 
@@ -61,9 +54,6 @@ module Snapshots
         # pages with sink (Page::DOM#sink) data as populated by Javascript#flush_sink.
         @page_snapshots_with_sinks = []
 
-        # Keeps track of resources which should be skipped -- like already fired
-        # events and clicked links etc.
-        @skip_states = Support::Filter::Set.new(hasher: :persistent_hash )
         @transitions = []
     end
 
@@ -159,8 +149,7 @@ module Snapshots
         Page::DOM.new(
             url:         d_url,
             transitions: @transitions.dup,
-            digest:      @javascript.dom_digest,
-            skip_states: skip_states.dup
+            digest:      @javascript.dom_digest
         )
     end
 
@@ -200,9 +189,6 @@ module Snapshots
             end
         end
 
-        r = r.dup
-        javascript.remove_env_from_html!( r.body )
-
         page                 = r.to_page
         page.dom.url         = d_url
         page.dom.transitions = @transitions.dup
@@ -214,11 +200,7 @@ module Snapshots
         return page if parse_profile.disabled?
 
         if parse_profile.body
-            page.body = source
-        end
-
-        if parse_profile.cookies
-            page.dom.cookies = self.cookies
+            page.body = self.real_source
         end
 
         if parse_profile.digest
@@ -236,10 +218,6 @@ module Snapshots
 
         # TODO: Go through the stackframes of the traces and verify line
         # numbers with method calls in the page source, fail if they don't match.
-
-        if parse_profile.skip_states
-            page.dom.skip_states = skip_states.dup
-        end
 
         return page if !parse_profile.elements
 
@@ -350,7 +328,7 @@ module Snapshots
 
                 # Safegued against pages which generate an inf number of DOM
                 # states regardless of UI interactions.
-                transition_id ="#{page.dom.url}:#{page.dom.transitions.map(&:hash)}"
+                transition_id ="#{page.dom.url}:#{page.dom.transitions_hash}"
                 transition_id_seen = skip_state?( transition_id )
                 skip_state transition_id
                 next page.clear_cache if transition_id_seen
@@ -499,6 +477,8 @@ module Snapshots
         page.response.request = request
 
         @captured_pages << page if store_pages?
+
+        page.clear_cache
         notify_on_new_page( page )
     rescue => e
         print_error "Could not capture: #{request.url}"
@@ -526,15 +506,11 @@ module Snapshots
     end
 
     def skip_state?( state )
-        self.skip_states.include? state
+        SCNR::Engine::State.browser_pool.skip_state? state
     end
 
     def skip_state( state )
-        self.skip_states << state
-    end
-
-    def update_skip_states( states )
-        self.skip_states.merge states
+        SCNR::Engine::State.browser_pool.skip_state state
     end
 
 end

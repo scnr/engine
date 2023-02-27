@@ -206,26 +206,16 @@ class Worker < SCNR::Engine::Browser
         clear_observers
     end
 
-    # @return   [Support::Filter::Set]
-    #   States that have been visited and should be skipped, for the given
-    #   {#job}.
-    #
-    # @see #skip_state
-    # @see #skip_state?
-    def skip_states
-        @job.skip_states
-    end
-
     def skip_state?( state )
-        @job.skip_states.include? state
+        master.skip_state? state
     end
 
     def skip_state( state )
-        @job.skip_states << state
+        master.skip_state state
     end
 
     def update_skip_states( states )
-        @job.skip_states.merge states
+        master.update_skip_states states
     end
 
     def start

@@ -39,6 +39,10 @@ class SinkTrace < Job
         end
     end
 
+    def to_s
+        super << " #{self.args.first.url}"
+    end
+
 end
 end
 end

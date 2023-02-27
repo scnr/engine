@@ -7,7 +7,6 @@
 =end
 
 require 'msgpack'
-require_relative 'framework/rpc'
 
 module SCNR::Engine
 class Data
@@ -30,9 +29,6 @@ class Framework
     class Error < Data::Error
     end
 
-    # @return     [RPC]
-    attr_accessor :rpc
-
     # @return     [Hash<String, Integer>]
     #   List of crawled URLs with their HTTP codes.
     attr_reader   :sitemap
@@ -52,8 +48,6 @@ class Framework
     def initialize
         super
 
-        @rpc = RPC.new
-
         @sitemap = {}
 
         @page_queue = Support::Database::Queue.new( max_buffer_size: 10 )
@@ -67,7 +61,6 @@ class Framework
 
     def statistics
         {
-            rpc:                   @rpc.statistics,
             sitemap:               @sitemap.size,
             page_queue:            @page_queue.size,
             page_queue_total_size: @page_queue_total_size,
@@ -81,6 +74,7 @@ class Framework
     # @param    [Page]  page
     #   Page to push to the {#page_queue}.
     def push_to_page_queue( page )
+        page.clear_cache
         notify_on_page( page )
 
         @page_queue << page
@@ -122,8 +116,6 @@ class Framework
     def dump( directory )
         FileUtils.mkdir_p( directory )
 
-        rpc.dump( "#{directory}/rpc/" )
-
         page_queue_directory = "#{directory}/page_queue/"
 
         FileUtils.rm_rf( page_queue_directory )
@@ -152,7 +144,6 @@ class Framework
     def self.load( directory )
         framework = new
 
-        framework.rpc = RPC.load( "#{directory}/rpc/" )
         framework.sitemap.merge! Marshal.load( IO.binread( "#{directory}/sitemap" ) )
 
         Dir["#{directory}/page_queue/*"].each do |page_file|
@@ -172,8 +163,6 @@ class Framework
     end
 
     def clear
-        rpc.clear
-
         @sitemap.clear
 
         @page_queue.clear

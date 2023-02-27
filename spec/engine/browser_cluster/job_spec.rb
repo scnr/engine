@@ -166,15 +166,6 @@ describe SCNR::Engine::BrowserPool::Job do
         end
     end
 
-    describe '#clean_copy' do
-        subject { JobCleanCopyTest.new }
-
-        it 'clears #skip_states' do
-            subject.skip_states << '1'
-            expect(subject.clean_copy.skip_states).to be_empty
-        end
-    end
-
     describe '#dup' do
         subject { JobDupTest.new( never_ending: true, my_data: 'stuff', args: args, category: :stuff ) }
 
@@ -197,14 +188,6 @@ describe SCNR::Engine::BrowserPool::Job do
         it 'preserves #category' do
             dup = subject.dup
             expect(dup.category).to eq :stuff
-        end
-
-        it 'dups #skip_states' do
-            subject.skip_states << '1'
-
-            dup = subject.dup
-            expect(dup.skip_states).to eq subject.skip_states
-            expect(dup.skip_states.object_id).to_not eq subject.skip_states.object_id
         end
 
         it 'preserves #timed_out' do
@@ -251,14 +234,6 @@ describe SCNR::Engine::BrowserPool::Job do
 
         it 'preserves #category' do
             expect(subject.category).to eq :stuff
-        end
-
-        it 'preserves #skip_states' do
-            subject.skip_states << '1'
-
-            forwarded = subject.forward
-            expect(forwarded.skip_states).to eq subject.skip_states
-            expect(forwarded.skip_states.object_id).to eq subject.skip_states.object_id
         end
 
         it 'preserves #args' do
@@ -310,13 +285,6 @@ describe SCNR::Engine::BrowserPool::Job do
         it 'preserves #category' do
             forwarded = subject.forward_as( JobForwardAsTest )
             expect(forwarded.category).to eq :stuff
-        end
-
-        it 'clears #skip_states' do
-            subject.skip_states << '1'
-
-            forwarded = subject.forward_as( JobForwardAsTest )
-            expect(forwarded.skip_states).to be_empty
         end
 
         it 'preserves #args' do

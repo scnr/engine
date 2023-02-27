@@ -6,7 +6,6 @@
     web site for more information on licensing and terms of use.
 =end
 
-require_relative 'framework/rpc'
 require 'forwardable'
 
 module SCNR::Engine
@@ -86,9 +85,6 @@ class Framework
         InvalidStatusMessage = Cuboid::State::Application::Error::InvalidStatusMessage
     end
 
-    # @return     [RPC]
-    attr_accessor :rpc
-
     # @return     [Support::Filter::Set]
     attr_reader   :page_queue_filter
 
@@ -104,19 +100,13 @@ class Framework
     # @return     [Support::Filter::Set]
     attr_reader   :dom_analysis_filter
 
-    # @return     [Set]
-    attr_reader   :browser_skip_states
-
     # @return     [Integer]
     attr_accessor :audited_page_count
 
     def initialize
         super
 
-        @rpc = RPC.new
         @audited_page_count = 0
-
-        @browser_skip_states = Support::Filter::Set.new(hasher: :persistent_hash )
 
         @page_queue_filter = Support::Filter::Set.new(hasher: :persistent_hash )
         @page_paths_filter = Support::Filter::Set.new(hasher: :paths_hash )
@@ -136,9 +126,7 @@ class Framework
 
     def statistics
         {
-            rpc:                @rpc.statistics,
-            audited_page_count: @audited_page_count,
-            browser_states:     @browser_skip_states.size
+            audited_page_count: @audited_page_count
         }
     end
 
@@ -211,11 +199,6 @@ class Framework
         @url_queue_filter << url
     end
 
-    # @param    [Support::Filter::Set]  states
-    def update_browser_skip_states( states )
-        @browser_skip_states.merge states
-    end
-
     # @param    [#coverage_and_trace_hash]  e
     #
     # @return    [Bool]
@@ -239,10 +222,8 @@ class Framework
     def dump( directory )
         FileUtils.mkdir_p( directory )
 
-        rpc.dump( "#{directory}/rpc/" )
-
         %w(element_pre_check_filter page_queue_filter url_queue_filter
-            browser_skip_states audited_page_count page_paths_filter
+            audited_page_count page_paths_filter
             dom_analysis_filter
         ).each do |attribute|
             IO.binwrite( "#{directory}/#{attribute}", Marshal.dump( send(attribute) ) )
@@ -252,10 +233,8 @@ class Framework
     def self.load( directory )
         framework = new
 
-        framework.rpc = RPC.load( "#{directory}/rpc/" )
-
         %w(element_pre_check_filter page_queue_filter url_queue_filter
-            browser_skip_states page_paths_filter dom_analysis_filter
+            page_paths_filter dom_analysis_filter
         ).each do |attribute|
             path = "#{directory}/#{attribute}"
             next if !File.exist?( path )
@@ -268,8 +247,6 @@ class Framework
     end
 
     def clear
-        rpc.clear
-
         @element_pre_check_filter.clear
 
         @dom_analysis_filter.clear
@@ -277,7 +254,6 @@ class Framework
         @page_paths_filter.clear
         @url_queue_filter.clear
 
-        @browser_skip_states.clear
         @audited_page_count = 0
 
         @state_machine = StateMachine.new

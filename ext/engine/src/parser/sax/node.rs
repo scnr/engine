@@ -99,11 +99,11 @@ impl Handle {
     }
 
     pub fn nodes_by_name<F>( &self, tag_name: &str, cb: F ) where F: Fn( &Handle ) {
-        let ln = &tag_name.to_lowercase();
+        let ln = tag_name.to_lowercase();
 
         self.traverse( |handle| {
             if let Enum::Element { ref name, .. } = handle.borrow().node {
-                if name != ln { return }
+                if name.to_string().to_lowercase()  != ln { return }
                 cb( handle )
             }
         })
@@ -118,8 +118,8 @@ impl Handle {
         self.traverse( |handle| {
             if let Enum::Element { ref attributes, .. } = handle.borrow().node {
                 for attribute in attributes {
-                    if attribute.name.local == ln &&
-                        attribute.value.to_string().to_lowercase() == lv {
+                    if attribute.name.local.to_lowercase() == ln &&
+                        attribute.value.to_lowercase() == lv {
 
                         cb( handle );
                         return

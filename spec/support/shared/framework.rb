@@ -2,9 +2,9 @@ shared_examples_for 'framework' do
 
     before( :each ) do
         SCNR::Engine::Options.url = url
-
         SCNR::Engine::Options.paths.reporters = fixtures_path + '/reporters/manager_spec/'
         SCNR::Engine::Options.paths.checks    = fixtures_path + '/signature_check/'
+        SCNR::Engine::Framework.unsafe.reset
     end
     after(:each) { subject.reset }
 

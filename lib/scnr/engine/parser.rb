@@ -464,12 +464,15 @@ class Parser
     #   Paths.
     def run_extractors
         begin
+            downcased_body = self.body&.downcase
+
             unsanitized_paths = Set.new
             self.class.extractors.available.each do |name|
                 exception_jail false do
                     unsanitized_paths.merge self.class.extractors[name].new(
-                        parser: self,
-                        html:   body
+                        parser:         self,
+                        html:           self.body,
+                        downcased_html: downcased_body
                     ).run.flatten
                 end
             end

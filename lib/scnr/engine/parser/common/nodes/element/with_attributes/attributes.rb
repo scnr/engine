@@ -20,11 +20,11 @@ class Attributes < Hash
     end
 
     def []( name )
-        super name.to_s.downcase
+        super name
     end
 
     def []=( name, value )
-        super name.to_s.downcase.freeze, value.freeze
+        super name.freeze, value.freeze
     end
 
     def update( h )

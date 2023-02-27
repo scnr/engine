@@ -55,14 +55,18 @@ class DOM < SCNR::Engine::OptionGroup
         local_storage:       {},
         session_storage:     {},
         wait_for_elements:   {},
-        pool_size:           4,
-
+        pool_size:           [
+          [
+            (Cuboid::System.platform.cpu_count/2).to_i, 10
+          ].min,
+          1
+        ].max,
 
         # Each event may have effects, like a page loading one.
         # Few transitions of clicks and such and we're there.
-        job_timeout:         60,
+        job_timeout:         120,
 
-        worker_time_to_live: 250,
+        worker_time_to_live: 1000,
 
         wait_for_timers:     false
     )

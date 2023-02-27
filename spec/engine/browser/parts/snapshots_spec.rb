@@ -678,7 +678,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
             expect(state.url).to eq dom.url
             expect(state.digest).to eq dom.digest
             expect(state.transitions).to eq dom.transitions
-            expect(state.skip_states).to eq dom.skip_states
             expect(state.data_flow_sinks).to be_empty
             expect(state.execution_flow_sinks).to be_empty
         end
@@ -732,21 +731,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
             expect(page.dom.transitions).to eq(transitions_from_array([
                                                                           { page: :load }
                                                                       ]))
-        end
-
-        it "assigns the proper #{SCNR::Engine::Page::DOM}#skip_states" do
-            subject.load( url )
-            pages = subject.load( url + '/explore' ).trigger_events.
-                page_snapshots
-
-            page = pages.last
-            expect(Set.new( page.dom.skip_states.collection.to_a )).to be_subset Set.new( subject.skip_states.collection.to_a )
-        end
-
-        it "assigns the proper #{SCNR::Engine::Page::DOM}#cookies" do
-            subject.load "#{url}/dom-cookies-names"
-
-            expect(subject.to_page.dom.cookies).to eq subject.cookies
         end
 
         it "assigns the proper #{SCNR::Engine::Page::DOM} sink data" do
@@ -1068,9 +1052,9 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                 page = subject.to_page
 
                 expect(page.code).to eq(0)
-                expect(page.url).to  eq('http://google.com/')
+                expect(page.url).to  eq('http://www.google.com/')
                 expect(page.body).to be_empty
-                expect(page.dom.url).to eq('http://google.com/')
+                expect(page.dom.url).to eq('http://www.google.com/')
             end
         end
 
@@ -1083,7 +1067,6 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                 it "does not set #{SCNR::Engine::Page::DOM}#digest"
                 it "does not set #{SCNR::Engine::Page::DOM}#execution_flow_sinks"
                 it "does not set #{SCNR::Engine::Page::DOM}#data_flow_sinks"
-                it "does not set #{SCNR::Engine::Page::DOM}#skip_states"
 
                 it "does not set #{SCNR::Engine::Page}#body"
                 it "does not set #{SCNR::Engine::Page}#ui_inputs"
@@ -1110,12 +1093,7 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                 it "sets #{SCNR::Engine::Page::DOM}#data_flow_sinks"
             end
 
-            context 'allows :skip_states' do
-                it "sets #{SCNR::Engine::Page::DOM}#skip_states"
-            end
-
             context 'allows :elements' do
-                it "sets #{SCNR::Engine::Page}#skip_states"
                 it "sets #{SCNR::Engine::Page}#ui_inputs"
                 it "sets #{SCNR::Engine::Page}#ui_forms"
             end

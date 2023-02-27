@@ -90,7 +90,6 @@ module Navigation
                 Navigation.notify_before_load resource, options, self
 
                 @transitions = resource.transitions.dup
-                update_skip_states resource.skip_states
 
                 @add_transitions = false if @transitions.any?
                 resource.restore *[self, options[:take_snapshot]].compact
@@ -147,7 +146,6 @@ module Navigation
                                options[:update_transitions] : true
 
         @last_url = SCNR::Engine::URI( url ).to_s
-        self.class.add_asset_domain @last_url
 
         ensure_open_window
 

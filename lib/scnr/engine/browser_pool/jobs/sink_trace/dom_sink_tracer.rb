@@ -46,6 +46,10 @@ class DOMSinkTracer < Job
         cb.call browser, *args
     end
 
+    def to_s
+        super << " for #{@page.url} #{@element}"
+    end
+
     def skip?(*)
         false
     end

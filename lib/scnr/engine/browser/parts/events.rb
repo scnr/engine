@@ -104,7 +104,7 @@ module Events
 
         count = 1
         each_element_with_events do |locator, events|
-            state = "#{url}:#{locator.tag_name}:#{locator.attributes}:#{events.keys.sort}"
+            state = "#{@job&.id}:#{url}:#{locator.tag_name}:#{locator.attributes}:#{events.keys.sort}"
             next if skip_state?( state )
             skip_state state
 

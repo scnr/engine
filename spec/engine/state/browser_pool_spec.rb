@@ -58,6 +58,16 @@ describe SCNR::Engine::State::BrowserPool do
             expect(Marshal.load(IO.read( "#{dump_directory}/job_callbacks" ))).to eq({ 1 => [ProcToMethod, :proc_to_method] })
         end
 
+        it 'stores #skip_states to disk' do
+            subject.skip_state 'test'
+
+            subject.dump( dump_directory )
+
+            s = SCNR::Engine::Support::Filter::Set.new( hasher: :persistent_hash )
+            s << 'test'
+            expect(Marshal.load(IO.read( "#{dump_directory}/skip_states" ))).to eq(s)
+        end
+
         %w(pending_job_counter job_id queued_job_count completed_job_count
             time_out_count total_job_time).each do |type|
             it "stores ##{type} to disk" do
@@ -90,6 +100,17 @@ describe SCNR::Engine::State::BrowserPool do
             expect(described_class.load( dump_directory).job_callbacks).to eq job_callbacks
         end
 
+        it 'restores #skip_states from disk' do
+            subject.skip_state 'test'
+
+            subject.dump( dump_directory )
+
+            s = SCNR::Engine::Support::Filter::Set.new( hasher: :persistent_hash )
+            s << 'test'
+
+            expect(described_class.load( dump_directory ).skip_states).to eq s
+        end
+
         %w(pending_job_counter job_id queued_job_count completed_job_count
             time_out_count total_job_time).each do |type|
             it "restores ##{type} to disk" do
@@ -110,6 +131,13 @@ describe SCNR::Engine::State::BrowserPool do
                 subject.clear
                 expect(subject.send(type)).to be_empty
             end
+        end
+
+        it 'clears #skip_states' do
+            subject.skip_state 'test'
+
+            subject.clear
+            expect(subject.skip_states).to be_empty
         end
 
         %w(pending_job_counter job_id queued_job_count completed_job_count

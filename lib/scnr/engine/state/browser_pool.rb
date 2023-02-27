@@ -27,6 +27,9 @@ class BrowserPool
     # @return    [Integer]
     attr_accessor :job_id
 
+    # @return     [Support::Filter::Set]
+    attr_accessor :skip_states
+
     # @return    [Integer]
     attr_accessor :total_job_time
 
@@ -47,10 +50,30 @@ class BrowserPool
         @pending_job_counter = 0
         @job_id              = 0
 
+        @skip_states = Support::Filter::Set.new( hasher: :persistent_hash )
+
         @queued_job_count    = 0
         @completed_job_count = 0
         @time_out_count      = 0
         @total_job_time      = 0.0
+    end
+
+    def skip_state?( state )
+        synchronize do
+            @skip_states.include? state
+        end
+    end
+
+    def skip_state( state )
+        synchronize do
+            @skip_states << state
+        end
+    end
+
+    def update_skip_states( states )
+        synchronize do
+            @skip_states.merge states
+        end
     end
 
     def add_to_total_job_time( time )
@@ -79,7 +102,8 @@ class BrowserPool
             total_job_time:      @total_job_time,
             time_out_count:      @time_out_count,
             completed_job_count: @completed_job_count,
-            queued_job_count:    @queued_job_count
+            queued_job_count:    @queued_job_count,
+            skip_states_count:   @skip_states.size
         }
     end
 
@@ -87,7 +111,7 @@ class BrowserPool
         FileUtils.mkdir_p( directory )
 
         %w(pending_jobs pending_job_counter job_id total_job_time time_out_count
-            completed_job_count queued_job_count).each do |attribute|
+            skip_states completed_job_count queued_job_count).each do |attribute|
             IO.binwrite( "#{directory}/#{attribute}", Marshal.dump( send(attribute) ) )
         end
 
@@ -114,7 +138,7 @@ class BrowserPool
         end
 
         %w(pending_job_counter job_id total_job_time time_out_count
-            completed_job_count queued_job_count).each do |attribute|
+            skip_states completed_job_count queued_job_count).each do |attribute|
             path = "#{directory}/#{attribute}"
             next if !File.exist?( path )
 
@@ -127,6 +151,7 @@ class BrowserPool
     def clear
         @job_callbacks.clear
         @pending_jobs.clear
+        @skip_states.clear
 
         @pending_job_counter = 0
         @job_id              = 0

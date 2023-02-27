@@ -15,25 +15,50 @@ module Parts
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 module Browser
 
-    def Browser.handle_browser_page=( handler )
-        @handle_browser_page = handler
-    end
+    class <<self
 
-    def Browser.handle_browser_page( *args )
-        @handle_browser_page.call( *args )
-    end
+        def synchronize( &block )
+            (@mutex ||= Mutex.new).synchronize( &block )
+        end
 
-    def Browser.apply_dom_metadata=( handler )
-        @apply_dom_metadata = handler
-    end
+        def handle_browser_page( result, * )
+            synchronize do
+                Parts::Data.push_to_page_queue(
+                  result.is_a?( Page ) ? result : result.page
+                )
+            end
+        end
 
-    def Browser.apply_dom_metadata( *args )
-        @apply_dom_metadata.call( *args )
-    end
+        def apply_dom_metadata( browser, dom )
+            bp = nil
 
-    def Browser.set_job_to_crawl( job )
-        job.category = :crawl
+            begin
+                browser.parse_profile = SCNR::Engine::Browser::ParseProfile.except(
+                  :execution_flow_sinks, :data_flow_sinks
+                )
+                bp = browser.load( dom ).to_page
+            rescue Selenium::WebDriver::Error::WebDriverError,
+              Watir::Exception::Error => e
+                print_debug "Could not apply metadata to '#{dom.url}'" <<
+                              " because: #{e} [#{e.class}"
+                return
+            end
+
+            # Request timeout or some other failure...
+            return if bp.code == 0
+
+            Framework.browser_pool.queue(
+              BrowserPool::Jobs::SinkTrace.new( args: [bp] ),
+              method(:handle_browser_page)
+            )
+        end
+
+        def set_job_to_crawl( job )
+            job.category = :crawl
+        end
+
     end
+    Browser.synchronize {}
 
     # @return   [BrowserPool, nil]
     #   A lazy-loaded browser cluster or `nil` if
@@ -48,17 +73,6 @@ module Browser
         # that only one thread gets to this code at a time.
         synchronize do
             state.set_status_message :browser_pool_startup
-
-            # We need class-level methods as browser-cluster callbacks so work
-            # around that limitation.
-            #
-            # Obviously this won't work when multiple Frameworks are running
-            # in the same process, but you shouldn't do that anyways.
-            Browser.handle_browser_page = method(:handle_browser_page )
-            @handle_browser_page_cb = Browser.method(:handle_browser_page )
-
-            Browser.apply_dom_metadata = method(:apply_dom_metadata )
-            @apply_dom_metadata_cb = Browser.method(:apply_dom_metadata )
 
             @browser_pool = BrowserPool.new(
                 size: Options.dom.pool_size,
@@ -86,11 +100,6 @@ module Browser
         @browser_pool && !browser_pool.done?
     end
 
-    # @private
-    def browser_pool_job_skip_states
-        browser_job.skip_states
-    end
-
     def use_browsers?
         Options.dom.enabled? && Options.scope.dom_depth_limit > 0
     end
@@ -104,18 +113,6 @@ module Browser
 
         @browser_pool = nil
         @browser_job     = nil
-    end
-
-    def browser_job_update_skip_states( states )
-        browser_job.skip_states = states
-    end
-
-    def handle_browser_page( result, * )
-        synchronize do
-            push_to_page_queue(
-              result.is_a?( Page ) ? result : result.page
-            )
-        end
     end
 
     # Passes the `page` to {BrowserPool#queue} and then pushes
@@ -142,7 +139,7 @@ module Browser
 
         browser_pool.queue(
             browser_job.forward( resource: page.dom.state ),
-            @handle_browser_page_cb
+            Browser.method(:handle_browser_page)
         )
 
         true
@@ -162,31 +159,7 @@ module Browser
         dom.page = nil # Help out the GC.
 
         @tap ||= Browser.method(:set_job_to_crawl)
-        browser_pool.with_browser_and_tap @tap, dom, @apply_dom_metadata_cb
-    end
-
-    def apply_dom_metadata( browser, dom )
-        bp = nil
-
-        begin
-            browser.parse_profile = SCNR::Engine::Browser::ParseProfile.except(
-                :execution_flow_sinks, :data_flow_sinks
-            )
-            bp = browser.load( dom ).to_page
-        rescue Selenium::WebDriver::Error::WebDriverError,
-            Watir::Exception::Error => e
-            print_debug "Could not apply metadata to '#{dom.url}'" <<
-                            " because: #{e} [#{e.class}"
-            return
-        end
-
-        # Request timeout or some other failure...
-        return if bp.code == 0
-
-        browser_pool.queue(
-            BrowserPool::Jobs::SinkTrace.new( args: [bp] ),
-            @handle_browser_page_cb
-        )
+        browser_pool.with_browser_and_tap @tap, dom, Browser.method(:apply_dom_metadata )
     end
 
     def browser_job
@@ -200,6 +173,9 @@ module Browser
             parse_profile: SCNR::Engine::Browser::ParseProfile.except(
                 :execution_flow_sinks, :data_flow_sinks
             ),
+            # Special and constant ID in order to maintain states when
+            # suspending/restoring.
+            id:            Float::INFINITY,
             category:      :crawl,
             never_ending:  true
         )

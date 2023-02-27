@@ -22,6 +22,10 @@ class Result
         options.each { |k, v| send( "#{k}=", v ) }
     end
 
+    def to_s
+        "#{self.class.to_s.split( '::' ).last(2).join( '::' )} for job #{@job.id}"
+    end
+
 end
 
 end

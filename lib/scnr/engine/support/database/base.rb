@@ -101,10 +101,10 @@ class Base
             @options[:dumper].call( obj, io )
     end
 
-    def unserialize( source )
+    def unserialize( io )
         @options[:loader].respond_to?( :load ) ?
-            @options[:loader].load( source ) :
-            @options[:loader].call( source )
+            @options[:loader].load( io ) :
+            @options[:loader].call( io )
     end
 
     private
@@ -161,9 +161,7 @@ class Base
     end
 
     def get_unique_filename
-        # Should be unique enough...
-        ("#{self.class.disk_directory}/#{self.class.name}_#{object_id}_" <<
-            @filename_counter.to_s).gsub( '::', '_' )
+        "#{self.class.disk_directory}/#{object_id}.#{@filename_counter}"
     ensure
         @filename_counter += 1
     end

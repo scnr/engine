@@ -193,7 +193,8 @@ class Client
         :total_responses_per_second, :burst_response_time_sum,
         :burst_response_count, :burst_responses_per_second,
         :burst_average_response_time, :total_average_response_time,
-        :max_concurrency, :original_max_concurrency].
+        :max_concurrency, :original_max_concurrency, :cookie_jar_size,
+        :headers_size].
            inject({}) { |h, k| h[k] = send(k); h }
     end
 
@@ -202,8 +203,16 @@ class Client
         State.http.cookie_jar
     end
 
+    def cookie_jar_size
+        State.http.cookie_jar.size
+    end
+
     def headers
         State.http.headers
+    end
+
+    def headers_size
+        State.http.headers.size
     end
 
     # Runs all queued requests

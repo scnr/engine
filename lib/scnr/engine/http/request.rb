@@ -648,6 +648,10 @@ class Request < Message
         end
     end
 
+    def do_not_manipulate_cookies!
+        @do_not_manipulate_cookies = true
+    end
+
     private
 
     def set_response_data( typhoeus_response )
@@ -670,27 +674,29 @@ class Request < Message
 
         headers.each { |k, v| headers[k] = Header.encode( v ) if v }
 
-        final_cookies_hash = self.cookies
-        final_raw_cookies  = self.raw_cookies
+        if !@do_not_manipulate_cookies
+            final_cookies_hash = self.cookies
+            final_raw_cookies  = self.raw_cookies
 
-        if headers['Cookie']
-            final_raw_cookies_set = Set.new( final_raw_cookies.map(&:name) )
-            final_raw_cookies |= Cookie.from_string( url, headers['Cookie'] ).reject do |c|
-                final_cookies_hash.include?( c.name ) ||
-                  final_raw_cookies_set.include?( c.name )
+            if headers['Cookie']
+                final_raw_cookies_set = Set.new( final_raw_cookies.map(&:name) )
+                final_raw_cookies |= Cookie.from_string( url, headers['Cookie'] ).reject do |c|
+                    final_cookies_hash.include?( c.name ) ||
+                      final_raw_cookies_set.include?( c.name )
+                end
             end
+
+            headers['Cookie'] = final_cookies_hash.
+              map { |k, v| "#{Cookie.encode( k )}=#{Cookie.encode( v )}" }.join( ';' )
+
+            if !headers['Cookie'].empty? && final_raw_cookies.any?
+                headers['Cookie'] += ';'
+            end
+
+            headers['Cookie'] += final_raw_cookies.map { |c| c.to_s }.join( ';' )
+
+            headers.delete( 'Cookie' ) if headers['Cookie'].empty?
         end
-
-        headers['Cookie'] = final_cookies_hash.
-          map { |k, v| "#{Cookie.encode( k )}=#{Cookie.encode( v )}" }.join( ';' )
-
-        if !headers['Cookie'].empty? && final_raw_cookies.any?
-            headers['Cookie'] += ';'
-        end
-
-        headers['Cookie'] += final_raw_cookies.map { |c| c.to_s }.join( ';' )
-
-        headers.delete( 'Cookie' ) if headers['Cookie'].empty?
 
         headers
     end

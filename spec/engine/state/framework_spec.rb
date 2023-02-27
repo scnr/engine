@@ -88,21 +88,9 @@ describe SCNR::Engine::State::Framework do
     describe '#statistics' do
         let(:statistics) { subject.statistics }
 
-        it 'includes #rpc statistics' do
-            expect(statistics[:rpc]).to eq(subject.rpc.statistics)
-        end
-
         it 'includes #audited_page_count' do
             subject.audited_page_count += 1
             expect(statistics[:audited_page_count]).to eq(subject.audited_page_count)
-        end
-
-        it 'includes amount of #browser_skip_states' do
-            set = SCNR::Engine::Support::Filter::Set.new
-            set << 1 << 2 << 3
-            subject.update_browser_skip_states( set )
-
-            expect(statistics[:browser_states]).to eq(subject.browser_skip_states.size)
         end
     end
 
@@ -115,12 +103,6 @@ describe SCNR::Engine::State::Framework do
     describe '#url_queue_filter' do
         it "returns an instance of #{SCNR::Engine::Support::Filter::Set}" do
             expect(subject.url_queue_filter).to be_kind_of SCNR::Engine::Support::Filter::Set
-        end
-    end
-
-    describe '#rpc' do
-        it "returns an instance of #{described_class::RPC}" do
-            expect(subject.rpc).to be_kind_of described_class::RPC
         end
     end
 
@@ -699,29 +681,7 @@ describe SCNR::Engine::State::Framework do
         end
     end
 
-    describe '#browser_skip_states' do
-        it "returns a #{SCNR::Engine::Support::Filter::Set}" do
-            expect(subject.browser_skip_states).to be_kind_of SCNR::Engine::Support::Filter::Set
-        end
-    end
-
-    describe '#update_browser_skip_states' do
-        it 'updates #browser_skip_states' do
-            expect(subject.browser_skip_states).to be_empty
-
-            set = SCNR::Engine::Support::Filter::Set.new
-            set << 1 << 2 << 3
-            subject.update_browser_skip_states( set )
-            expect(subject.browser_skip_states).to eq(set)
-        end
-    end
-
     describe '#dump' do
-        it 'stores #rpc to disk' do
-            subject.dump( dump_directory )
-            expect(described_class::RPC.load( "#{dump_directory}/rpc" )).to be_kind_of described_class::RPC
-        end
-
         it 'stores #dom_analysis_filter to disk' do
             subject.dom_analysis_filter << page.dom
 
@@ -761,26 +721,9 @@ describe SCNR::Engine::State::Framework do
             d << url
             expect(Marshal.load( IO.read( "#{dump_directory}/url_queue_filter" ) )).to eq(d)
         end
-
-        it 'stores #browser_skip_states to disk' do
-            stuff = 'stuff'
-            subject.browser_skip_states << stuff
-
-            subject.dump( dump_directory )
-
-            set = SCNR::Engine::Support::Filter::Set.new( hasher: :persistent_hash )
-            set << stuff
-
-            expect(Marshal.load( IO.read( "#{dump_directory}/browser_skip_states" ) )).to eq(set)
-        end
     end
 
     describe '.load' do
-        it 'loads #rpc from disk' do
-            subject.dump( dump_directory )
-            expect(described_class.load( dump_directory ).rpc).to be_kind_of described_class::RPC
-        end
-
         it 'loads #element_pre_check_filter from disk' do
             subject.element_pre_check_filter << element
 
@@ -832,21 +775,10 @@ describe SCNR::Engine::State::Framework do
             set << url
             expect(described_class.load( dump_directory ).url_queue_filter).to eq(set)
         end
-
-        it 'loads #browser_skip_states from disk' do
-            stuff = 'stuff'
-            subject.browser_skip_states << stuff
-
-            subject.dump( dump_directory )
-
-            set = SCNR::Engine::Support::Filter::Set.new(hasher: :persistent_hash)
-            set << stuff
-            expect(described_class.load( dump_directory ).browser_skip_states).to eq(set)
-        end
     end
 
     describe '#clear' do
-        %w(rpc element_pre_check_filter browser_skip_states page_queue_filter
+        %w(element_pre_check_filter page_queue_filter
             url_queue_filter page_paths_filter dom_analysis_filter
         ).each do |method|
             it "clears ##{method}" do

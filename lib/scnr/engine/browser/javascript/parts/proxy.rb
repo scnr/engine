@@ -21,8 +21,14 @@ module Proxy
     ENV_SCRIPT_DATA_START = 'scnr_engine_start_'
     ENV_SCRIPT_DATA_END   = '_scnr_engine_end'
 
-    def env_script_url( proto )
-        "#{proto}://#{ENV_SCRIPT_URL}"
+    def self.included( base )
+        base.extend ClassMethods
+    end
+
+    module ClassMethods
+        def env_script_url( proto )
+            "#{proto}://#{ENV_SCRIPT_URL}"
+        end
     end
 
     # @param    [HTTP::Request]     request
@@ -37,7 +43,7 @@ module Proxy
     # @see ENV_SCRIPT_URL
     def serve( request, response )
         without_query, query = request.url.split( '?', 2 )
-        return false if without_query != env_script_url( request.parsed_url.scheme )
+        return false if without_query != self.class.env_script_url( request.parsed_url.scheme )
 
         parent_url = @browser.last_url
 
@@ -70,7 +76,7 @@ module Proxy
     # @see ENV_SCRIPT_URL
     def inject( response )
         # Don't intercept our own stuff!
-        return if response.url.start_with?( env_script_url( response.parsed_url.scheme ) )
+        return if response.url.start_with?( self.class.env_script_url( response.parsed_url.scheme ) )
         # HTML but already has the JS env.
         return if has_js_env?( response )
 
@@ -83,12 +89,12 @@ module Proxy
         # can be tracked.
         #
         # This is necessary because new files can be required dynamically.
-        if javascript?( response )
+        if response.javascript?
 
             response.body.insert 0, "#{env_update_function};"
             response.body << ";#{env_update_function};"
 
-        elsif html?( response )
+        elsif self.class.html?( response )
 
             # Perform an update before each script runs.
             response.body.gsub!(
@@ -108,8 +114,8 @@ module Proxy
                 response.parsed_url.without_query
             )
 
-            env_script = "<script #{dom_monitor_no_digest_attribute}=\"true\" " <<
-                "src=\"#{env_script_url( response.parsed_url.scheme )}?#{ENV_SCRIPT_DATA_START}" <<
+            env_script = "<script #{self.class.dom_monitor_no_digest_attribute}=\"true\" " <<
+                "src=\"#{self.class.env_script_url( response.parsed_url.scheme )}?#{ENV_SCRIPT_DATA_START}" <<
                 "#{encoded_cookie_taint_url}#{ENV_SCRIPT_DATA_END}\"></script>"
 
             # Include our JS env.

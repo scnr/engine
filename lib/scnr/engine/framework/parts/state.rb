@@ -176,8 +176,6 @@ module State
     def restore!( ses )
         Snapshot.load ses
 
-        browser_job_update_skip_states state.browser_skip_states
-
         checks.load  SCNR::Engine::Options.checks
         plugins.load SCNR::Engine::Options.plugins.keys
 
@@ -350,10 +348,7 @@ module State
     # with pages with lots of elements.
     def pre_audit_element_filter( page )
         unique_elements  = {}
-        page.elements.each do |e|
-            next if !SCNR::Engine::Options.audit.element?( e.type )
-            next if e.is_a?( Cookie ) || e.is_a?( Header )
-
+        page.elements_within_scope( [:cookies, :headers] ).each do |e|
             new_element               = false
             unique_elements[e.type] ||= []
 
@@ -436,10 +431,6 @@ module State
         options.plugins = plugins.loaded.
             inject({}) { |h, name| h[name.to_s] =
                 options.plugins[name.to_s] || {}; h }
-
-        if browser_pool_job_skip_states
-            state.browser_skip_states.merge browser_pool_job_skip_states
-        end
 
         state.set_status_message :suspending_plugins
         @plugins.suspend

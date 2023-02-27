@@ -37,8 +37,8 @@ impl Node {
             if let node::Enum::Element { ref attributes, .. } = handle.borrow().node {
                 for attribute in attributes {
                     hash.store(
-                        RString::new_utf8( &attribute.name.local.to_string() ),
-                        RString::new_utf8( &attribute.value.to_string() )
+                        RString::new_utf8( &attribute.name.local.to_lowercase() ),
+                        RString::new_utf8( &attribute.value )
                     );
                 }
             }
