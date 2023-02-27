@@ -4,7 +4,7 @@ version = "1.0.0"
 authors = ["Tasos Laskos <tasos.laskos@gmail.com>"]
 
 [dependencies]
-#rutie = "0.9.0"
+rutie = "0.8.4"
 regex = "0.2.1"
 lazy_static = "1.4.0"
 #clippy = "*"
@@ -16,8 +16,8 @@ tendril = "0.4.0"
 #[dependencies.ruru]
 #git = "https://github.com/d-unseductable/ruru.git"
 
-[dependencies.rutie]
-git = "https://github.com/danielpclark/rutie.git"
+#[dependencies.rutie]
+#git = "https://github.com/danielpclark/rutie.git"
 
 #[dependencies.clippy]
 #git = "https://github.com/rust-lang-nursery/rust-clippy.git"
