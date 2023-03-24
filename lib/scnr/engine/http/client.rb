@@ -388,9 +388,6 @@ class Client
             end
 
             on_headers    = options.delete(:on_headers)
-            on_body       = options.delete(:on_body)
-            on_body_line  = options.delete(:on_body_line)
-            on_body_lines = options.delete(:on_body_lines)
 
             request = Request.new( options.merge(
                 url:         url,
@@ -401,18 +398,6 @@ class Client
 
             if on_headers
                 request.on_headers( &on_headers )
-            end
-
-            if on_body
-                request.on_body( &on_body )
-            end
-
-            if on_body_line
-                request.on_body_line( &on_body_line )
-            end
-
-            if on_body_lines
-                request.on_body_lines( &on_body_lines )
             end
 
             if block_given?

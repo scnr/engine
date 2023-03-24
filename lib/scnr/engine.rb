@@ -98,7 +98,7 @@ module Engine
                     library_path << 'dylib'
                 end
 
-                if File.exists?( library_path )
+                if File.exist?( library_path )
                     Fiddle::Function.new(
                         Fiddle::dlopen( library_path )['initialize'],
                         [],

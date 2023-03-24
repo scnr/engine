@@ -43,7 +43,8 @@ class TaintTrace < DOMExploration
     end
 
     def to_s
-        super << " #{@resource.url} with taint #{@taint}"
+        super << " #{@resource.respond_to?( :url ) ? @resource.url : @resource} " <<
+            "with taint #{@taint}"
     end
 
     def inspect

@@ -64,7 +64,7 @@ class Trainer
 
         HTTP::Client.on_complete do |response|
             next if unhook?
-            next if response.request.buffered? || !response.request.train?
+            next if !response.request.train?
 
             if response.redirect?
                 reference_url = @page ? @page.url : Options.url
@@ -73,8 +73,6 @@ class Trainer
                 HTTP::Client.get( redirect_url ) { |res| push res }
                 next
             end
-
-            next if response.request.buffered?
 
             push response
         end

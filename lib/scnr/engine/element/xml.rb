@@ -20,8 +20,6 @@ class XML < Base
 
     include SCNR::Engine::Element::Capabilities::WithSinks
     include SCNR::Engine::Element::Capabilities::Auditable
-    include SCNR::Engine::Element::Capabilities::Auditable::Buffered
-    include SCNR::Engine::Element::Capabilities::Auditable::LineBuffered
     include SCNR::Engine::Element::Capabilities::Submittable
     include SCNR::Engine::Element::Capabilities::Analyzable
     include SCNR::Engine::Element::Capabilities::WithSource

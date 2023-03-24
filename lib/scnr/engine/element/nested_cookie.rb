@@ -21,8 +21,6 @@ class NestedCookie < Base
     include SCNR::Engine::Element::Capabilities::Inputtable
     include SCNR::Engine::Element::Capabilities::Mutable
     include SCNR::Engine::Element::Capabilities::Auditable
-    include SCNR::Engine::Element::Capabilities::Auditable::Buffered
-    include SCNR::Engine::Element::Capabilities::Auditable::LineBuffered
     include SCNR::Engine::Element::Capabilities::Analyzable
     include SCNR::Engine::Element::Capabilities::WithSource
 

@@ -33,9 +33,6 @@ class LinkTemplate < Base
     include Capabilities::Inputtable
     include Capabilities::Auditable
 
-    include SCNR::Engine::Element::Capabilities::Auditable::Buffered
-    include SCNR::Engine::Element::Capabilities::Auditable::LineBuffered
-
     # @return   [Regexp]
     #   Regular expressions with named captures, serving as templates used to
     #   identify and manipulate inputs in {#action}.

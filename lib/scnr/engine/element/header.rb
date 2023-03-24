@@ -22,8 +22,6 @@ class Header < Base
     # Generic element capabilities.
     include SCNR::Engine::Element::Capabilities::WithSinks
     include SCNR::Engine::Element::Capabilities::Auditable
-    include SCNR::Engine::Element::Capabilities::Auditable::Buffered
-    include SCNR::Engine::Element::Capabilities::Auditable::LineBuffered
     include SCNR::Engine::Element::Capabilities::Submittable
     include SCNR::Engine::Element::Capabilities::Inputtable
     include SCNR::Engine::Element::Capabilities::Analyzable

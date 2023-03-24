@@ -19,7 +19,7 @@ end
 Factory.define :html_response do
     SCNR::Engine::HTTP::Response.new(
         url:     'http://test.com',
-        body:    Faker::Lorem.paragraph( 3 ),
+        body:    Faker::Lorem.paragraph,
         time:    1.2,
         request: Factory.create( :request ),
         headers: {

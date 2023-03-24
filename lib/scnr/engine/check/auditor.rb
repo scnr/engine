@@ -648,19 +648,6 @@ module Auditor
         end
     end
 
-    # Calls {Engine::Element::Capabilities::Auditable::Buffered#buffered_audit}
-    # for every element.
-    #
-    # Uses {#each_candidate_element} to decide which elements to audit.
-    #
-    # @see Engine::Element::Capabilities::Auditable::Buffered#buffered_audit
-    def buffered_audit( payloads, opts = {}, &block )
-        each_candidate_element do |e|
-            e.buffered_audit( payloads, opts, &block )
-            audited( e.coverage_id )
-        end
-    end
-
     # Provides easy access to element auditing using simple signature analysis
     # and automatically logs results.
     #

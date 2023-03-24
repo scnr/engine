@@ -95,6 +95,7 @@ Gem::Specification.new do |s|
 
     # HTTP client.
     s.add_dependency 'typhoeus',            '1.4.0'
+    # s.add_dependency 'ethon',               '0.15.0'
 
     # Fallback URI parsing and encoding utilities.
     s.add_dependency 'addressable',         '2.5.2'

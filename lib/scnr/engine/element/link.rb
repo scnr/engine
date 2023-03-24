@@ -33,9 +33,6 @@ class Link < Base
     include Capabilities::Submittable
     include Capabilities::Auditable
 
-    include SCNR::Engine::Element::Capabilities::Auditable::Buffered
-    include SCNR::Engine::Element::Capabilities::Auditable::LineBuffered
-
     # @param    [Hash]    options
     # @option   options [String]    :url
     #   URL of the page which includes the link.
