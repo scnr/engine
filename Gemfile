@@ -13,6 +13,7 @@ end
 group :spec do
     gem 'simplecov', require: false, group: :test
 
+    gem 'thin'
     gem 'sinatra'
     gem 'sinatra-contrib'
 

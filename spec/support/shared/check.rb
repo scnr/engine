@@ -25,11 +25,12 @@ shared_examples_for 'check' do
     before( :each ) do
         options.reset
         options.url                        = url
+        options.http.request_timeout       = 3000
         options.audit.parameter_names      = true
         options.audit.with_raw_payloads    = true
         options.audit.with_extra_parameter = true
         options.device.user_agent          = 'scnr_engine_user'
-        options.dom.update( options.dom .defaults )
+        options.dom.update( options.dom.defaults )
 
         framework.reset
 
