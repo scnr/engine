@@ -166,7 +166,7 @@ class Request < Message
         @raw_parameters  ||= []
         @timeout         ||= Options.http.request_timeout
         @failed_retries  ||= FAILED_RETRY_LIMIT
-        @failed_retry    ||= true
+        @failed_retry      = true if @failed_retry.nil?
         @mode            ||= :async
         @parameters      ||= {}
         @cookies         ||= {}
@@ -687,8 +687,6 @@ class Request < Message
                   typhoeus_response.code == 0
                     @failed_retries -= 1
 
-                    print_debug "[RETRY #{@failed_retries}/#{FAILED_RETRY_LIMIT}] Request failed: \n#{self}"
-
                     HTTP::Client.queue self
 
                     next
@@ -711,11 +709,21 @@ class Request < Message
         # Set #on_complete so that the #response will be set.
         on_complete {}
 
+        @failed_retry = false
         treq = self.to_typhoeus
 
         hydra = (Thread.current[:client_run_hydra] ||= Typhoeus::Hydra.new)
-        hydra.queue treq
-        hydra.run
+
+        FAILED_RETRY_LIMIT.times do |i|
+            hydra.queue treq
+            hydra.run
+
+            return self.response if self.response.ok?
+
+            next if FAILED_RETRY_LIMIT == i + 1
+
+            self.response = nil
+        end
 
         self.response
     end

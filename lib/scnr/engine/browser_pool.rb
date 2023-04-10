@@ -390,6 +390,10 @@ class BrowserPool
         self.class.increment_completed_job_count
     end
 
+    def increment_failed_count
+        self.class.increment_failed_count
+    end
+
     def increment_time_out_count
         self.class.increment_time_out_count
     end
@@ -411,6 +415,10 @@ class BrowserPool
         State.browser_pool.increment_completed_job_count
     end
 
+    def self.increment_failed_count
+        State.browser_pool.increment_failed_count
+    end
+
     def self.increment_time_out_count
         State.browser_pool.increment_time_out_count
     end
@@ -421,6 +429,10 @@ class BrowserPool
 
     def self.time_out_count
         State.browser_pool.time_out_count
+    end
+
+    def self.failed_count
+        State.browser_pool.failed_count
     end
 
     def self.queued_job_count
@@ -441,7 +453,8 @@ class BrowserPool
             total_job_time:      total_job_time,
             queued_job_count:    queued_job_count,
             completed_job_count: completed_job_count,
-            time_out_count:      time_out_count
+            time_out_count:      time_out_count,
+            failed_count:        failed_count
         }
     end
 

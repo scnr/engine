@@ -10,7 +10,7 @@ describe SCNR::Engine::BrowserPool do
     end
     let(:job_options) do
         {
-            resource: SCNR::Engine::HTTP::Client.get( url + 'explore', mode: :sync ),
+            resource: SCNR::Engine::HTTP::Client.get( url + 'explore', mode: :sync ).deep_clone,
             args:     args
         }
     end

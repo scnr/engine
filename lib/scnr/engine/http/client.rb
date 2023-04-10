@@ -682,7 +682,16 @@ class Client
                 @time_out_count += 1
             end
 
-            if response.return_code != :ok
+            if !response.ok?  && response.request.failed_retry
+                # ap '*' * 88
+                # ap response.request.performer.class
+                # if response.request.performer.is_a? Element::Base
+                #     ap response.request.performer.to_h
+                # end
+                # ap request.response.return_code
+                # puts request
+
+                print_debug_level_3 "Failed request: #{response.request.id}"
                 @failed_count += 1
             end
 

@@ -100,6 +100,8 @@ class Worker < SCNR::Engine::Browser
                 print_debug "[RETRY #{retries}/#{TRIES}] Job failed: #{@job}"
                 retry
             end
+
+            master.increment_failed_count
         # This can be thrown by a Selenium call somewhere down the line,
         # catch it here and retry the entire job.
         rescue Timeout::Error => e
@@ -116,6 +118,7 @@ class Worker < SCNR::Engine::Browser
             print_debug_exception e
 
             master.increment_time_out_count
+            master.increment_failed_count
         end
 
         decrease_time_to_live

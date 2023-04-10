@@ -42,6 +42,9 @@ class BrowserPool
     # @return    [Integer]
     attr_accessor :time_out_count
 
+    # @return    [Integer]
+    attr_accessor :failed_count
+
     def initialize
         super()
 
@@ -55,6 +58,7 @@ class BrowserPool
         @queued_job_count    = 0
         @completed_job_count = 0
         @time_out_count      = 0
+        @failed_count        = 0
         @total_job_time      = 0.0
     end
 
@@ -84,6 +88,10 @@ class BrowserPool
         synchronize { @time_out_count += 1 }
     end
 
+    def increment_failed_count
+        synchronize { @failed_count += 1 }
+    end
+
     def increment_completed_job_count
         synchronize { @completed_job_count += 1 }
     end
@@ -101,6 +109,7 @@ class BrowserPool
             pending_job_counter: @pending_job_counter,
             total_job_time:      @total_job_time,
             time_out_count:      @time_out_count,
+            failed_count:        @failed_count,
             completed_job_count: @completed_job_count,
             queued_job_count:    @queued_job_count,
             skip_states_count:   @skip_states.size
@@ -110,7 +119,7 @@ class BrowserPool
     def dump( directory )
         FileUtils.mkdir_p( directory )
 
-        %w(pending_jobs pending_job_counter job_id total_job_time time_out_count
+        %w(pending_jobs pending_job_counter job_id total_job_time time_out_count failed_count
             skip_states completed_job_count queued_job_count).each do |attribute|
             IO.binwrite( "#{directory}/#{attribute}", Marshal.dump( send(attribute) ) )
         end
