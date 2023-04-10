@@ -105,8 +105,15 @@ class Client
     attr_reader :burst_response_time_sum
 
     # @return   [Integer]
+    #   Sum of the web application response times (of the current burst).
+    attr_reader :burst_app_time_sum
+
+    # @return   [Integer]
     #   Amount of responses received for the running requests (of the current burst).
     attr_reader :burst_response_count
+
+    attr_accessor :size_upload_sum
+    attr_accessor :size_download_sum
 
     # @return   [Soft404]
     attr_reader :soft_404
@@ -163,7 +170,12 @@ class Client
         @time_out_count = 0
 
         @total_response_time_sum = 0
+        @total_app_time_sum      = 0
+        @burst_app_time_sum      = 0
         @total_runtime           = 0
+
+        @size_download_sum = 0
+        @size_upload_sum   = 0
 
         @queue_size = 0
 
@@ -190,11 +202,13 @@ class Client
     #   *  {#original_max_concurrency}
     def statistics
        [:request_count, :response_count, :time_out_count,
-        :total_responses_per_second, :burst_response_time_sum,
-        :burst_response_count, :burst_responses_per_second,
-        :burst_average_response_time, :total_average_response_time,
-        :max_concurrency, :original_max_concurrency, :cookie_jar_size,
-        :headers_size].
+        :total_responses_per_second, :burst_response_count,
+        :burst_responses_per_second, :burst_average_response_time,
+        :total_average_response_time, :max_concurrency, :original_max_concurrency,
+        :cookie_jar_size, :headers_size,
+        :total_average_app_time, :burst_average_app_time,
+        :size_download_sum, :size_upload_sum,
+        :download_bps, :upload_bps].
            inject({}) { |h, k| h[k] = send(k); h }
     end
 
@@ -297,7 +311,7 @@ class Client
     # @return   [Float]
     #   Average response time for all requests.
     def total_average_response_time
-        return 0 if @response_count == 0
+        return 0.0 if @response_count == 0
         @total_response_time_sum / Float( @response_count )
     end
 
@@ -306,7 +320,14 @@ class Client
         if @async_response_count > 0 && total_runtime > 0
             return @async_response_count / Float( total_runtime )
         end
-        0
+        0.0
+    end
+
+    def total_average_app_time
+        if @async_response_count > 0 && total_runtime > 0
+            return @total_app_time_sum / Float( @response_count )
+        end
+        0.0
     end
 
     # @return   [Float]
@@ -319,8 +340,16 @@ class Client
     # @return   [Float]
     #   Average response time for the running requests (i.e. the current burst).
     def burst_average_response_time
-        return 0 if @burst_response_count == 0
+        return 0.0 if @burst_response_count == 0
         @burst_response_time_sum / Float( @burst_response_count )
+    end
+
+    # @return   [Float]
+    def burst_average_app_time
+        if @async_response_count > 0 && burst_runtime > 0
+            return @burst_app_time_sum / Float( @burst_response_count )
+        end
+        0.0
     end
 
     # @return   [Float]
@@ -329,7 +358,21 @@ class Client
         if @async_burst_response_count > 0 && burst_runtime > 0
             return @async_burst_response_count / burst_runtime
         end
-        0
+        0.0
+    end
+
+    def download_bps
+        if @size_download_sum > 0 && total_runtime > 0
+            return @size_download_sum / total_runtime
+        end
+        0.0
+    end
+
+    def upload_bps
+        if @size_upload_sum > 0 && total_runtime > 0
+            return @size_upload_sum / total_runtime
+        end
+        0.0
     end
 
     # @param   [Integer]   concurrency
@@ -523,6 +566,7 @@ class Client
 
     def reset_burst_info
         @burst_response_time_sum = 0
+        @burst_app_time_sum      = 0
         @burst_response_count    = 0
         @async_burst_response_count = 0
         @burst_runtime           = 0
@@ -590,12 +634,22 @@ class Client
                 @async_burst_response_count += 1
             end
 
-            response_time = response.timed_out? ?
-                request.timeout / 1_000.0 :
-                response.time
+            if response.timed_out?
+                response_time = request.timeout / 1_000.0
+                app_time      = response_time
+            else
+                response_time = response.time
+                app_time      = response.app_time
+            end
 
             @burst_response_time_sum += response_time
             @total_response_time_sum += response_time
+
+            @burst_app_time_sum += app_time
+            @total_app_time_sum += app_time
+
+            @size_download_sum += response.size_download
+            @size_upload_sum   += response.size_upload
 
             if response.request.fingerprint? &&
                 Platform::Manager.fingerprint?( response )

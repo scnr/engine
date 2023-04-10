@@ -63,6 +63,9 @@ class Response < Message
     #   Approximate time the web application took to process the {#request}.
     attr_accessor :app_time
 
+    attr_accessor :size_upload
+    attr_accessor :size_download
+
     attr_accessor :status_line
 
     def initialize( options = {} )
@@ -276,6 +279,8 @@ class Response < Message
             app_time:       (response.timed_out? ? response.time :
                 response.start_transfer_time - response.pretransfer_time).to_f,
             total_time:     response.total_time.to_f,
+            size_upload:    response.options[:size_upload].to_f,
+            size_download:  response.options[:size_download].to_f,
             return_code:    return_code,
             return_message: return_message
         ))
