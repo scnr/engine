@@ -100,6 +100,8 @@ class Client
     #   Amount of timed-out requests.
     attr_reader :time_out_count
 
+    attr_reader :failed_count
+
     # @return   [Integer]
     #   Sum of the response times for the running requests (of the current burst).
     attr_reader :burst_response_time_sum
@@ -168,6 +170,7 @@ class Client
         @async_response_count = 0
         @response_count = 0
         @time_out_count = 0
+        @failed_count   = 0
 
         @total_response_time_sum = 0
         @total_app_time_sum      = 0
@@ -201,7 +204,7 @@ class Client
     #   *  {#max_concurrency}
     #   *  {#original_max_concurrency}
     def statistics
-       [:request_count, :response_count, :time_out_count,
+       [:request_count, :response_count, :time_out_count, :failed_count,
         :total_responses_per_second, :burst_response_count,
         :burst_responses_per_second, :burst_average_response_time,
         :total_average_response_time, :max_concurrency, :original_max_concurrency,
@@ -677,6 +680,10 @@ class Client
             if response.timed_out? && response.request.failed_retry
                 print_debug_level_4 "Request timed-out! -- ID# #{response.request.id}"
                 @time_out_count += 1
+            end
+
+            if response.return_code != :ok
+                @failed_count += 1
             end
 
             print_debug_level_4 '------------'
