@@ -689,7 +689,6 @@ class Request < Message
 
                     print_debug "[RETRY #{@failed_retries}/#{FAILED_RETRY_LIMIT}] Request failed: \n#{self}"
 
-                    sleep 0.1 * (FAILED_RETRY_LIMIT - @failed_retries)
                     HTTP::Client.queue self
 
                     next
