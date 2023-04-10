@@ -24,7 +24,7 @@ class Request < Message
     # Default redirect limit, RFC says 5 max.
     REDIRECT_LIMIT = 5
 
-    FAILED_RETRY_LIMIT = 6
+    FAILED_RETRY_LIMIT = 10
 
     # Supported modes of operation.
     MODES = [
@@ -689,6 +689,7 @@ class Request < Message
 
                     print_debug "[RETRY #{@failed_retries}/#{FAILED_RETRY_LIMIT}] Request failed: \n#{self}"
 
+                    sleep 0.1 * (FAILED_RETRY_LIMIT - @failed_retries)
                     HTTP::Client.queue self
 
                     next

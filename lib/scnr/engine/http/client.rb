@@ -674,7 +674,7 @@ class Client
                 print_debug_level_4 "Parsed headers: #{response.headers}"
             end
 
-            if response.timed_out?
+            if response.timed_out? && response.request.failed_retry
                 print_debug_level_4 "Request timed-out! -- ID# #{response.request.id}"
                 @time_out_count += 1
             end
