@@ -79,14 +79,14 @@ class Worker < SCNR::Engine::Browser
 
         print_debug "Started: #{@job}"
 
-        time = Time.now
+        retries = TRIES
         begin
-
+            @time = Time.now
             Timeout.timeout Options.dom.job_timeout do
                 @job.configure_and_run( self )
             end
 
-            @job.time = Time.now - time
+            @job.time = Time.now - @time
 
         rescue Selenium::WebDriver::Error::WebDriverError,
             Watir::Exception::Error => e
@@ -94,11 +94,23 @@ class Worker < SCNR::Engine::Browser
             print_debug "Job error: #{@job}"
             print_debug_exception e
 
+            if retries >= 0
+                retries -= 1
+
+                print_debug "[RETRY #{retries}/#{TRIES}] Job failed: #{@job}"
+                retry
+            end
         # This can be thrown by a Selenium call somewhere down the line,
         # catch it here and retry the entire job.
         rescue Timeout::Error => e
+            if retries >= 0
+                retries -= 1
 
-            @job.timed_out!( Time.now - time )
+                print_debug "[RETRY #{retries}/#{TRIES}] Job timed-out: #{@job}"
+                retry
+            end
+
+            @job.timed_out!( Time.now - @time )
 
             print_debug "Job timed-out: #{@job}"
             print_debug_exception e

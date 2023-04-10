@@ -317,6 +317,7 @@ module Timeout
         options[:submit] = {
             response_max_size: 0,
             timeout:           timeout_from_options( options ),
+            failed_retry:      false
         }
 
         if debug_level_2?
@@ -381,7 +382,11 @@ module Timeout
             print_verbose "  * Request timeout: #{timeout}"
             print_verbose "  * Payload:         #{payload.inspect}"
 
-            submit( response_max_size: 0, timeout: timeout ) do |response|
+            submit(
+              response_max_size:   0,
+              timeout:             timeout,
+              failed_retry:        false
+            ) do |response|
                 if !response.timed_out? || response.partial?
                     print_info "* Verification failed, got response in #{response.time} seconds."
                     next

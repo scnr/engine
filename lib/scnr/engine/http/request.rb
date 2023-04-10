@@ -24,6 +24,8 @@ class Request < Message
     # Default redirect limit, RFC says 5 max.
     REDIRECT_LIMIT = 5
 
+    FAILED_RETRY_LIMIT = 6
+
     # Supported modes of operation.
     MODES = [
         # Asynchronous (non-blocking) (Default)
@@ -44,6 +46,9 @@ class Request < Message
     # @return   [Integer]
     #   Timeout in milliseconds.
     attr_accessor :timeout
+
+    # @return   [Boolean]
+    attr_accessor :failed_retry
 
     # @return   [Bool]
     #   Follow `Location` headers.
@@ -158,12 +163,14 @@ class Request < Message
         @on_body_lines = []
         @on_complete   = []
 
-        @raw_parameters ||= []
-        @timeout        ||= Options.http.request_timeout
-        @mode           ||= :async
-        @parameters     ||= {}
-        @cookies        ||= {}
-        @raw_cookies    ||= []
+        @raw_parameters  ||= []
+        @timeout         ||= Options.http.request_timeout
+        @failed_retries  ||= FAILED_RETRY_LIMIT
+        @failed_retry    ||= true
+        @mode            ||= :async
+        @parameters      ||= {}
+        @cookies         ||= {}
+        @raw_cookies     ||= []
     end
 
     def raw_parameters=( names )
@@ -676,6 +683,17 @@ class Request < Message
 
         if on_complete.any?
             typhoeus_request.on_complete do |typhoeus_response|
+                if @failed_retry && @failed_retries >= 0 &&
+                  typhoeus_response.code == 0
+                    @failed_retries -= 1
+
+                    print_debug "[RETRY #{@failed_retries}/#{FAILED_RETRY_LIMIT}] Request failed: \n#{self}"
+
+                    HTTP::Client.queue self
+
+                    next
+                end
+
                 set_response_data typhoeus_response
 
                 on_complete.each do |b|

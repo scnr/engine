@@ -43,6 +43,8 @@ describe SCNR::Engine::HTTP::Request do
         expect(subject).to eq(SCNR::Engine::RPC::Serializer.deep_clone( subject ))
     end
 
+    it "retries #{described_class::FAILED_RETRY_LIMIT} times on request failure"
+
     describe '#to_rpc_data' do
         let(:data) { subject.to_rpc_data }
 

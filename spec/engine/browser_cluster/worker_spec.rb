@@ -66,6 +66,8 @@ describe SCNR::Engine::BrowserPool::Worker do
             expect(profile).to eq(pp)
         end
 
+        it "retries #{described_class::TRIES} times on job failure"
+
         context 'before running the job' do
             context 'when the engine is dead' do
                 it 'spawns a new one' do
