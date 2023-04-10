@@ -13,18 +13,16 @@ class SCNR::Engine::Plugins::AutoThrottle < SCNR::Engine::Plugin::Base
 
     # Will decrease concurrency if the average response time for each burst is
     # above this threshold.
-    #
-    # One second per response does not exactly say healthy server.
-    THRESHOLD = 1
+    THRESHOLD = 0.7
 
     # Easy on the throttle.
     STEP_UP   = 1
 
     # Hard on the breaks.
-    STEP_DOWN = -2
+    STEP_DOWN = -3
 
     # Don't drop bellow this.
-    MIN_CONCURRENCY = 2
+    MIN_CONCURRENCY = 1
 
     def prepare
         http = framework.http
