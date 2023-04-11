@@ -125,6 +125,7 @@ class Request < Message
     attr_accessor :fingerprint
     attr_accessor :train
     attr_accessor :update_cookies
+    attr_accessor :do_not_manipulate_cookies
 
     # @private
     attr_accessor :response_body_buffer
@@ -718,7 +719,7 @@ class Request < Message
             hydra.queue treq
             hydra.run
 
-            return self.response if self.response.ok?
+            return self.response if self.response.ok? || !@failed_retry
 
             next if FAILED_RETRY_LIMIT == i + 1
 

@@ -79,7 +79,11 @@ class Connection < Raktr::Connection
                     url:     sanitize_url( @parser.request_url, headers ),
                     method:  method,
                     body:    @body,
-                    headers: SCNR::Engine::HTTP::Client.headers.to_h.merge( headers )
+                    mode: :sync,
+                    headers: SCNR::Engine::HTTP::Client.headers.to_h.merge( headers ),
+                    fingerprint: false,
+                    update_cookies: false,
+                    do_not_manipulate_cookies: true
                 )
             )
         end
@@ -152,9 +156,8 @@ class Connection < Raktr::Connection
     end
 
     def self.bridge( connection, raktr, request )
-        request.do_not_manipulate_cookies!
-        request.failed_retry = false
         response = request.run
+        HTTP::Client.global_on_complete response
 
         if connection.closed?
             print_debug_level_3 '-- Connection closed, will not respond.'

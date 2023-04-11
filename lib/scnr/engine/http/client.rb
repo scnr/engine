@@ -549,6 +549,80 @@ class Client
         s << '>'
     end
 
+    def global_on_complete( response )
+        request = response.request
+
+        synchronize do
+            @response_count       += 1
+            @burst_response_count += 1
+
+            if request.asynchronous?
+                @async_response_count       += 1
+                @async_burst_response_count += 1
+            end
+
+            if response.timed_out?
+                response_time = request.timeout / 1_000.0
+                app_time      = response_time
+            else
+                response_time = response.time
+                app_time      = response.app_time
+            end
+
+            @burst_response_time_sum += response_time
+            @total_response_time_sum += response_time
+
+            @burst_app_time_sum += app_time
+            @total_app_time_sum += app_time
+
+            @size_download_sum += response.size_download
+            @size_upload_sum   += response.size_upload
+
+            if response.request.fingerprint? &&
+              Platform::Manager.fingerprint?( response )
+
+                # Force a fingerprint by converting the Response to a Page object.
+                response.to_page
+            end
+
+            notify_on_complete( response )
+
+            parse_and_set_cookies( response ) if request.update_cookies?
+
+            if debug_level_3?
+                print_debug_level_4 '------------'
+                print_debug_level_4 "Got response for request ID#: #{response.request.id}\n#{response.request}"
+                print_debug_level_4 "Performer: #{response.request.performer.inspect}"
+                print_debug_level_4 "Status: #{response.code}"
+                print_debug_level_4 "Code: #{response.return_code}"
+                print_debug_level_4 "Message: #{response.return_message}"
+                print_debug_level_4 "URL: #{response.url}"
+                print_debug_level_4 "Headers:\n#{response.headers_string}"
+                print_debug_level_4 "Parsed headers: #{response.headers}"
+            end
+
+            if response.timed_out? && response.request.failed_retry
+                print_debug_level_4 "Request timed-out! -- ID# #{response.request.id}"
+                @time_out_count += 1
+            end
+
+            if !response.ok?  && response.request.failed_retry
+                # ap '*' * 88
+                # ap response.request.performer.class
+                # if response.request.performer.is_a? Element::Base
+                #     ap response.request.performer.to_h
+                # end
+                # ap request.response.return_code
+                # puts request
+
+                print_debug_level_3 "Failed request: #{response.request.id}"
+                @failed_count += 1
+            end
+
+            print_debug_level_4 '------------'
+        end
+    end
+
     private
 
     def run_and_update_statistics
@@ -623,80 +697,6 @@ class Client
 
     def queue_size
         synchronize { @queue_size }
-    end
-
-    def global_on_complete( response )
-        request = response.request
-
-        synchronize do
-            @response_count       += 1
-            @burst_response_count += 1
-
-            if request.asynchronous?
-                @async_response_count       += 1
-                @async_burst_response_count += 1
-            end
-
-            if response.timed_out?
-                response_time = request.timeout / 1_000.0
-                app_time      = response_time
-            else
-                response_time = response.time
-                app_time      = response.app_time
-            end
-
-            @burst_response_time_sum += response_time
-            @total_response_time_sum += response_time
-
-            @burst_app_time_sum += app_time
-            @total_app_time_sum += app_time
-
-            @size_download_sum += response.size_download
-            @size_upload_sum   += response.size_upload
-
-            if response.request.fingerprint? &&
-                Platform::Manager.fingerprint?( response )
-
-                # Force a fingerprint by converting the Response to a Page object.
-                response.to_page
-            end
-
-            notify_on_complete( response )
-
-            parse_and_set_cookies( response ) if request.update_cookies?
-
-            if debug_level_3?
-                print_debug_level_4 '------------'
-                print_debug_level_4 "Got response for request ID#: #{response.request.id}\n#{response.request}"
-                print_debug_level_4 "Performer: #{response.request.performer.inspect}"
-                print_debug_level_4 "Status: #{response.code}"
-                print_debug_level_4 "Code: #{response.return_code}"
-                print_debug_level_4 "Message: #{response.return_message}"
-                print_debug_level_4 "URL: #{response.url}"
-                print_debug_level_4 "Headers:\n#{response.headers_string}"
-                print_debug_level_4 "Parsed headers: #{response.headers}"
-            end
-
-            if response.timed_out? && response.request.failed_retry
-                print_debug_level_4 "Request timed-out! -- ID# #{response.request.id}"
-                @time_out_count += 1
-            end
-
-            if !response.ok?  && response.request.failed_retry
-                # ap '*' * 88
-                # ap response.request.performer.class
-                # if response.request.performer.is_a? Element::Base
-                #     ap response.request.performer.to_h
-                # end
-                # ap request.response.return_code
-                # puts request
-
-                print_debug_level_3 "Failed request: #{response.request.id}"
-                @failed_count += 1
-            end
-
-            print_debug_level_4 '------------'
-        end
     end
 
     def client_initialize
