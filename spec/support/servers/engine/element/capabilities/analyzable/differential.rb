@@ -2,7 +2,7 @@ require 'sinatra'
 require 'sinatra/contrib'
 require 'sinatra/streaming'
 
-class Timeout < Sinatra::Application
+class DTimeout < Sinatra::Application
 
 helpers Sinatra::Streaming
 

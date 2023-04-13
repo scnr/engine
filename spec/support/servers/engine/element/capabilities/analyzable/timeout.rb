@@ -1,6 +1,6 @@
 require 'sinatra'
 
-class Timeout < Sinatra::Application
+class STimeout < Sinatra::Application
 
 get '/' do
     'Stuff'

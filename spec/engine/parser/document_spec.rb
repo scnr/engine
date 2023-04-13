@@ -90,7 +90,7 @@ describe SCNR::Engine::Parser::Document do
                     end
 
                     let(:expected) do
-                        "<!DOCTYPE html>\n<form>\n    <!-- My comment -->\n</form>\n\n"
+                        "<!DOCTYPE html>\n<html>\n    <form>\n        <span>\n            <!-- My comment -->\n        </span>\n    </form>\n</html>\n\n"
                     end
 
                     it 'preserves the hierarchy' do
@@ -113,7 +113,7 @@ describe SCNR::Engine::Parser::Document do
                     end
 
                     let(:expected) do
-                        "<!DOCTYPE html>\n<form>\n    <!-- My comment -->\n    <!-- My other comment -->\n</form>\n\n"
+                        "<!DOCTYPE html>\n<html>\n    <form>\n        <p>\n        </p>\n        <!-- My comment -->\n        <div>\n        </div>\n        <!-- My other comment -->\n    </form>\n</html>\n\n"
                     end
 
                     it 'preserves the sequence' do
@@ -131,7 +131,7 @@ describe SCNR::Engine::Parser::Document do
                     end
 
                     let(:expected) do
-                        "<!DOCTYPE html>\n<!-- My comment -->\n\n"
+                        "<!DOCTYPE html>\n<html>\n    <!-- My comment -->\n</html>\n\n"
                     end
 
                     it 'includes it' do
@@ -149,7 +149,7 @@ describe SCNR::Engine::Parser::Document do
                     end
 
                     let(:expected) do
-                        "<!DOCTYPE html>\n\n"
+                        "<!DOCTYPE html>\n<html>\n</html>\n\n"
                     end
 
                     it 'ignores it' do
@@ -188,7 +188,7 @@ describe SCNR::Engine::Parser::Document do
                     end
 
                     let(:expected) do
-                        "<!DOCTYPE html>\n\n"
+                        "<!DOCTYPE html>\n<html>\n</html>\n\n"
                     end
 
                     it 'ignores it' do

@@ -130,7 +130,7 @@ The following:
 
 Will result in:
 
-    http://testfire.net/ http testfire.net 80 post 0 2 3.906482517 cleanup
+    http://testfire.net/ http testfire.net.rb 80 post 0 2 3.906482517 cleanup
 
 _Will not work over RPC._
 },

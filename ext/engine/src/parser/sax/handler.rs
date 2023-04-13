@@ -91,7 +91,7 @@ fn allow( parent_name: &LocalName, kind: &str, name: &LocalName, attributes: &[A
             return false
         }
 
-        return false
+        return true
     }
 
     false
