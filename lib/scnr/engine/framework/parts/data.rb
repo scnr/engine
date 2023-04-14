@@ -50,9 +50,6 @@ module Data
         end
     end
 
-    # How many times to request a page upon failure.
-    PAGE_MAX_TRIES = 5
-    
     # @return   [Data::Framework]
     def data
         SCNR::Engine::Data.framework
@@ -139,8 +136,6 @@ module Data
                performer:      self
            }
         ) do |page|
-            @retries[page.url.hash] ||= 0
-
             if (location = page.response.headers.location)
                 [location].flatten.each do |l|
                     print_info "Scheduled #{page.code} redirection: #{page.url} => #{l}"
@@ -155,17 +150,9 @@ module Data
                 next
             end
 
-            if @retries[page.url.hash] >= PAGE_MAX_TRIES
-                @failures << page.url
+            @failures << page.url
 
-                print_error "Giving up trying to audit: #{page.url}"
-                print_error "Couldn't get a response after #{PAGE_MAX_TRIES}" +
-                                " tries: #{page.response.return_message}."
-            else
-                print_bad "Retrying for: #{page.url} [#{page.response.return_message}]"
-                @retries[page.url.hash] += 1
-                url_queue << page.url
-            end
+            print_error "#{page.response.return_message}: #{page.url}"
 
             grabbed_page = nil
             block.call grabbed_page if block_given?

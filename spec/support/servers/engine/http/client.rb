@@ -8,6 +8,7 @@ require 'sinatra/streaming'
 helpers Sinatra::Streaming
 
 set :logging, false
+set :server, :puma
 
 helpers do
     def simple_protected!

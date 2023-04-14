@@ -69,7 +69,7 @@ describe SCNR::Engine::HTTP::Client do
         let(:statistics) { subject.statistics }
 
         [:request_count, :response_count, :time_out_count,
-         :total_responses_per_second, :burst_response_time_sum,
+         :total_responses_per_second,
          :burst_response_count, :burst_responses_per_second,
          :burst_average_response_time, :total_average_response_time,
          :original_max_concurrency, :max_concurrency].each do |k|

@@ -70,7 +70,7 @@ describe SCNR::Engine::Framework::Parts::Audit do
     context 'when unable to get a response for the given URL' do
         context 'due to a network error' do
             it 'returns an empty sitemap and have failures' do
-                SCNR::Engine::Options.url = 'http://blahaha'
+                SCNR::Engine::Options.url = 'http://blahaha/'
                 SCNR::Engine::Options.scope.restrict_paths = [SCNR::Engine::Options.url]
 
                 subject.checks.load :signature
@@ -88,15 +88,6 @@ describe SCNR::Engine::Framework::Parts::Audit do
                 subject.run
                 expect(subject.failures).to be_any
             end
-        end
-
-        it "retries #{SCNR::Engine::Framework::PAGE_MAX_TRIES} times" do
-            SCNR::Engine::Options.url = f_url + '/fail_4_times'
-            SCNR::Engine::Options.scope.restrict_paths = [SCNR::Engine::Options.url]
-
-            subject.checks.load :signature
-            subject.run
-            expect(subject.failures).to be_empty
         end
     end
 

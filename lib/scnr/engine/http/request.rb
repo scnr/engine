@@ -679,7 +679,7 @@ class Request < Message
     end
 
     def set_typhoeus_callbacks( typhoeus_request )
-        on_complete  = @on_complete.dup
+        on_complete = @on_complete.dup
         clear_callbacks
 
         if on_complete.any?
@@ -688,6 +688,7 @@ class Request < Message
                   typhoeus_response.code == 0
                     @failed_retries -= 1
 
+                    @on_complete = on_complete.dup
                     HTTP::Client.queue self
 
                     next
