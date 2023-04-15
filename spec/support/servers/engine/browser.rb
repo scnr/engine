@@ -73,7 +73,7 @@ get '/cookies/expires' do
     response.set_cookie(
         :with_expiration,
         value:   'bar',
-        expires: Time.parse( '2047-08-01 09:30:12 +0000' )
+        expires: Time.parse( (Time.now.year + 1).to_s + '-01-01 09:30:12 +0000' )
     )
 end
 

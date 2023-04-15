@@ -26,7 +26,7 @@ describe SCNR::Engine::Browser::Parts::Cookies do
             cookie = subject.cookies.last
             expect(cookie.name).to  eq 'with_expiration'
             expect(cookie.value).to eq 'bar'
-            expect(cookie.expires.to_s).to eq Time.parse( '2047-08-01 09:30:11 +0000' ).to_s
+            expect(cookie.expires.to_s).to eq (Time.now.year + 1).to_s + '-01-01 09:30:11 +0000'
         end
 
         # Need a better test, Chrome returns no cookies for '.localhost'
