@@ -114,6 +114,9 @@ of relevant content in the HTML responses.
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
             version:     '0.5.0',
             platforms:   payloads.keys,
+            sink:        {
+              areas: [:active]
+            },
             cost:        calculate_signature_analysis_cost( payloads.values.flatten.size, options ) * 2,
 
             issue:       {

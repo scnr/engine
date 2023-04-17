@@ -65,6 +65,9 @@ class SCNR::Engine::Checks::CodeInjection < SCNR::Engine::Check::Base
 Injects code snippets and assess whether or not execution was successful.
 },
             elements:    ELEMENTS_WITH_INPUTS,
+            sink:        {
+              areas: [:active]
+            },
             cost:        calculate_signature_analysis_cost( payloads.size, options ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
             version:     '0.2.6',

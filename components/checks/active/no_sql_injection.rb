@@ -44,8 +44,7 @@ NoSQL injection check, uses known DB errors to identify vulnerabilities.
 },
             elements:    ELEMENTS_WITH_INPUTS,
             sink:        {
-                areas: [:active],
-                seed:  PAYLOADS.values.join
+                areas: [:active]
             },
             cost:        calculate_signature_analysis_cost( PAYLOADS.values.flatten.size, options ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',

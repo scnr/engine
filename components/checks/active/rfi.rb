@@ -107,6 +107,9 @@ the HTTP response body.
             elements:    ELEMENTS_WITH_INPUTS - [Element::LinkTemplate],
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
             version:     '0.3.4',
+            sink:        {
+              areas: [:active]
+            },
             cost:        calculate_signature_analysis_cost( payloads.size, options ),
 
             issue:       {

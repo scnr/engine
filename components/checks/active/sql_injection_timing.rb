@@ -40,6 +40,9 @@ class SCNR::Engine::Checks::SqlInjectionTiming < SCNR::Engine::Check::Base
             elements:    ELEMENTS_WITH_INPUTS,
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
             version:     '0.3.3',
+            sink:        {
+              areas: [:active]
+            },
             cost:        calculate_timeout_analysis_cost( payloads.values.flatten.size, OPTIONS ),
             platforms:   payloads.keys,
 

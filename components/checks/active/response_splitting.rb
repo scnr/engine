@@ -52,8 +52,7 @@ Injects arbitrary and checks if any of them end up in the response header.
 },
             elements:    ELEMENTS_WITH_INPUTS,
             sink:        {
-                areas: [:header_name],
-                seed:  'X-Test: 1'
+                areas: [:header_name]
             },
             cost:        calculate_audit_cost( 1, OPTIONS ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',

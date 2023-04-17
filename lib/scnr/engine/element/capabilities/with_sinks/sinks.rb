@@ -34,7 +34,7 @@ class Sinks
             @enabled    = Set.new
             @supported  = Set.new
             @max_cost   = 0
-            @extra_seed = ''
+            @extra_seed = Utilities.generate_token
 
             unload_tracers
             load_tracers

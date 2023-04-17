@@ -99,6 +99,9 @@ Injects URLs and checks the `Location` HTTP response header field and/or browser
 URL to determine whether the attack was successful.
 },
             elements:    ELEMENTS_WITH_INPUTS - [Element::LinkTemplate],
+            sink:        {
+              areas: [:active]
+            },
             cost:        calculate_signature_analysis_cost( payloads.size, options ) * 2,
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
             version:     '0.2.5',

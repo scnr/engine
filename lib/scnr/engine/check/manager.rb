@@ -115,7 +115,7 @@ class Manager < SCNR::Engine::Component::Manager
             if check.cost
                 element_type::Capabilities::WithSinks::Sinks.add_to_max_cost check.cost
             else
-                fail Error::MissingCost, 'Checks with :sink need to specify :cost.'
+                fail Error::MissingCost, "#{check}: Checks with :sink need to specify :cost."
             end
 
         end

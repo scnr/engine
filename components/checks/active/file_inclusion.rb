@@ -106,6 +106,9 @@ content or errors in the HTTP response body.
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
             version:     '0.2.0',
             cost:        calculate_signature_analysis_cost( payloads.values.flatten.size, options ) * 2,
+            sink:        {
+              areas: [:active]
+            },
             platforms:   options[:signatures].keys,
 
             issue:       {

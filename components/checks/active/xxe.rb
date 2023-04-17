@@ -65,6 +65,9 @@ processed based on the resulting HTTP response.
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
             version:     '0.1.2',
             platforms:   options[:signatures].keys,
+            sink:        {
+              areas: [:active]
+            },
             cost:        calculate_signature_analysis_cost( payloads.values.flatten.size, options ),
 
             issue:       {

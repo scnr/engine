@@ -45,6 +45,9 @@ Tries to find operating system command injections using timing attacks.
             elements:    ELEMENTS_WITH_INPUTS,
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
             version:     '0.4.0',
+            sink:        {
+              areas: [:active]
+            },
             cost:        calculate_timeout_analysis_cost( payloads.values.flatten.size, OPTIONS ),
             platforms:   payloads.keys,
 

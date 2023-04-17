@@ -39,7 +39,7 @@ class Differential < Base
 
             cost += 1
             cost += Auditable.calculate_cost(
-                [seed, @sinks.class.extra_seed].reject(&:empty?).size, OPTIONS
+                [seed, @sinks.class.extra_seed].flatten.reject(&:empty?).size, OPTIONS
             )
         end
 
@@ -57,7 +57,7 @@ class Differential < Base
         PRECISION.times do |i|
             expected_responses += 1
 
-            [seed, @sinks.class.extra_seed].each do |s|
+            [seed, @sinks.class.extra_seed].flatten.each do |s|
                 next if s.empty?
                 @element.each_mutation( s, OPTIONS ) { expected_responses += 1 }
             end

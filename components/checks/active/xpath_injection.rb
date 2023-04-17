@@ -35,8 +35,7 @@ class SCNR::Engine::Checks::XpathInjection < SCNR::Engine::Check::Base
             description: %q{XPath injection check},
             elements:    ELEMENTS_WITH_INPUTS,
             sink:        {
-                areas: [:active],
-                seed:  PAYLOADS.join
+                areas: [:active]
             },
             cost:        calculate_signature_analysis_cost( PAYLOADS.size, options ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',

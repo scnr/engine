@@ -45,6 +45,9 @@ class SCNR::Engine::Checks::OsCmdInjection < SCNR::Engine::Check::Base
 Tries to find Operating System command injections.
 },
             elements:    ELEMENTS_WITH_INPUTS,
+            sink:        {
+              areas: [:active]
+            },
             cost:        calculate_signature_analysis_cost( payloads.values.flatten.size, options ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
             version:     '0.3.0',

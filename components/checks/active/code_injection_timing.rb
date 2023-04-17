@@ -69,6 +69,9 @@ a time delay.
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
             version:     '0.3.2',
             platforms:   payloads.keys,
+            sink:        {
+              areas: [:active]
+            },
             cost:        calculate_timeout_analysis_cost( payloads.values.flatten.size, OPTIONS ),
 
             issue:       {

@@ -21,7 +21,7 @@ class Fuzz < Base
 
     def cost
         Auditable.calculate_cost(
-            [seed, @sinks.class.extra_seed].reject(&:empty?).size, OPTIONS
+            [seed, @sinks.class.extra_seed].flatten.reject(&:empty?).size, OPTIONS
         )
     end
 
