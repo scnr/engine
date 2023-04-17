@@ -178,3 +178,5 @@ class Framework
 end
 
 end
+
+SCNR::Engine::UnsafeFramework = SCNR::Engine::Framework.unsafe

@@ -168,4 +168,3 @@ require_relative 'engine/framework'
 require_relative 'engine/ext/setup'
 
 SCNR::Engine::UI::OutputInterface.init
-

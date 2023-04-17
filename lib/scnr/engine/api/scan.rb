@@ -1,23 +1,21 @@
 child :scan, :Scan do
     import_many "#{SCNR::Engine::Options.paths.lib}/api/scan/*"
 
-    UnsafeFramework = SCNR::Engine::Framework.unsafe
-
     Kernel.at_exit do
-        UnsafeFramework.clean_up
-        UnsafeFramework.reset
+        SCNR::Engine::UnsafeFramework.clean_up
+        SCNR::Engine::UnsafeFramework.reset
     end
 
     def_before :page do |&block|
-        UnsafeFramework.before_page_audit( &block )
+        SCNR::Engine::UnsafeFramework.before_page_audit( &block )
     end
 
     def_on :page do |&block|
-        UnsafeFramework.on_page_audit( &block )
+        SCNR::Engine::UnsafeFramework.on_page_audit( &block )
     end
 
     def_after :page do |&block|
-        UnsafeFramework.after_page_audit( &block )
+        SCNR::Engine::UnsafeFramework.after_page_audit( &block )
     end
 
     def_run! do |&block|
@@ -33,14 +31,14 @@ child :scan, :Scan do
     end
 
     def_run do
-        UnsafeFramework.checks.load SCNR::Engine::Options.checks
+        SCNR::Engine::UnsafeFramework.checks.load SCNR::Engine::Options.checks
 
-        UnsafeFramework.plugins.load_defaults
-        UnsafeFramework.plugins.load SCNR::Engine::Options.plugins.keys
+        SCNR::Engine::UnsafeFramework.plugins.load_defaults
+        SCNR::Engine::UnsafeFramework.plugins.load SCNR::Engine::Options.plugins.keys
 
-        UnsafeFramework.run
+        SCNR::Engine::UnsafeFramework.run
 
-        [UnsafeFramework.report, UnsafeFramework.statistics]
+        [SCNR::Engine::UnsafeFramework.report, SCNR::Engine::UnsafeFramework.statistics]
     end
 
     def_progress do
@@ -81,12 +79,12 @@ child :scan, :Scan do
     end
 
     def_sitemap do |index = 0|
-        return {} if UnsafeFramework.sitemap.size <= index + 1
-        Hash[UnsafeFramework.sitemap.to_a[index..-1] || {}]
+        return {} if SCNR::Engine::UnsafeFramework.sitemap.size <= index + 1
+        Hash[SCNR::Engine::UnsafeFramework.sitemap.to_a[index..-1] || {}]
     end
 
     def_status do
-        s = UnsafeFramework.state.status
+        s = SCNR::Engine::UnsafeFramework.state.status
         s.nil? ? :nil : s
     end
 
@@ -111,16 +109,16 @@ child :scan, :Scan do
         suspend! suspending? suspended?
         snapshot_path
     ).each do |m|
-        send( "def_#{m}", &proc { UnsafeFramework.send( m ) } )
+        send( "def_#{m}", &proc { SCNR::Engine::UnsafeFramework.send( m ) } )
     end
 
     def_restore! do |snapshot|
-        UnsafeFramework.restore! snapshot
+        SCNR::Engine::UnsafeFramework.restore! snapshot
         nil
     end
 
     def_generate_report do
-        UnsafeFramework.report
+        SCNR::Engine::UnsafeFramework.report
     end
 
 end

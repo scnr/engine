@@ -1,8 +1,6 @@
 child :checks, :Checks do
-    UnsafeFramework = SCNR::Engine::Framework.unsafe
-
     def_on :run do |&block|
-        UnsafeFramework.checks.on_run &block
+        SCNR::Engine::UnsafeFramework.checks.on_run &block
     end
 
     def_as do |shortname, info = {}, &block|
@@ -13,6 +11,6 @@ child :checks, :Checks do
         check.define_method :run, &block
         check.define_singleton_method :info, &proc { info }
 
-        UnsafeFramework.checks[shortname] = check
+        SCNR::Engine::UnsafeFramework.checks[shortname] = check
     end
 end
