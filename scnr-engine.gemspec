@@ -37,7 +37,6 @@ Gem::Specification.new do |s|
     s.files            += Dir.glob( 'profiles/**/**' )
     s.files            += Dir.glob( 'spec/**/**' )
     s.files            += %w(Gemfile Rakefile scnr-engine.gemspec)
-    s.test_files        = Dir.glob( 'spec/**/**' )
 
     # Disable pushes to public servers.
     if s.respond_to?(:metadata)
