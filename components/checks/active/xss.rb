@@ -178,7 +178,7 @@ tainted responses to look for proof of vulnerability.
                           Element::NestedCookie, Element::Header, Element::LinkTemplate],
             sink:        {
                 areas: [:body],
-                seed:  "()\"&%1'-;"
+                seed:  '<test'
             },
             cost:        calculate_audit_cost( payloads.size, options ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
