@@ -292,11 +292,11 @@ class BrowserPool
     #   `true` if there are no resources to analyze and no running workers.
     def done?
         fail_if_shutdown
-        synchronize { State.browser_pool.pending_job_counter == 0 }
+        State.browser_pool.pending_job_counter == 0
     end
 
     def pending_job_counter
-        synchronize { State.browser_pool.pending_job_counter }
+        State.browser_pool.pending_job_counter
     end
 
     # Blocks until all resources have been analyzed.
