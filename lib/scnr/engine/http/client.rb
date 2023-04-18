@@ -349,7 +349,7 @@ class Client
 
     # @return   [Float]
     def burst_average_app_time
-        if @async_response_count > 0 && burst_runtime > 0
+        if @burst_response_count > 0 && burst_runtime > 0
             return @burst_app_time_sum / Float( @burst_response_count )
         end
         0.0
