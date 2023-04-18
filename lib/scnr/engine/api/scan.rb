@@ -89,7 +89,7 @@ child :scan, :Scan do
     end
 
     def_errors do |index = 0|
-        []
+        SCNR::Engine.errors[index..-1]
     end
 
     def_issues do |without = []|
