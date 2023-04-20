@@ -28,6 +28,23 @@ describe SCNR::Engine::Trainer::SinkTracer do
 
                 context 'and have inputs' do
                     context 'and respond to sinks' do
+
+                        context "and #{SCNR::Engine::OptionGroups::Audit}#paranoia" do
+                            context 'is set to' do
+                                context ':low' do
+                                    it 'traces them'
+                                end
+
+                                context ':medium' do
+                                    it 'traces them'
+                                end
+
+                                context ":high" do
+                                    it 'does not trace them'
+                                end
+                            end
+                        end
+
                         context 'and have not already been traced' do
                             it 'traces them' do
                                 subject.process page

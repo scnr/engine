@@ -496,6 +496,9 @@ module Auditor
     end
 
     def compatible_sinks?( element )
+        # Check all elements and inputs.
+        return true if Options.audit.high_paranoia?
+
         # Element does not support sinks, allow it.
         # Probably an Element::Capabilities::DOMOnly.
         return true if !element.respond_to?( :sinks )

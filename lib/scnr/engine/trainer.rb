@@ -131,10 +131,7 @@ class Trainer
         @page = page
 
         ElementFilter.update_from_page page
-
-        if !Options.audit.high_paranoia?
-            @sink_tracer.process @page
-        end
+        @sink_tracer.process @page
 
         @page
     end

@@ -38,4 +38,3 @@ describe SCNR::Engine::Browser::Engines::Firefox do
     end
 
 end
-

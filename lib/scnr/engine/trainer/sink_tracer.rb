@@ -16,7 +16,18 @@ class SinkTracer
 
     include Utilities
 
+    def initialize
+        # Disable sink tracing, we want maximum audit coverage.
+        if Options.audit.high_paranoia?
+            Element::DOM::Capabilities::WithSinks::Sinks.enabled.clear
+            Element::Capabilities::WithSinks::Sinks.enabled.clear
+        end
+    end
+
     def process( page )
+        # We want to audit all elements regardless.
+        return if Options.audit.high_paranoia?
+
         page.elements_within_scope.each do |element|
             next if !element.respond_to?( :sinks ) || element.inputs.empty? ||
                 element.sinks.traced?
