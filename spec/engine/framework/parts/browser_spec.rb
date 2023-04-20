@@ -3,6 +3,10 @@ require 'spec_helper'
 describe SCNR::Engine::Framework::Parts::Browser do
     include_examples 'framework'
 
+    describe '#apply_dom_metadata' do
+      context 'schedules a sink trace'
+    end
+
     describe '#browser_pool' do
         context 'when #use_browsers? is' do
             context 'true' do

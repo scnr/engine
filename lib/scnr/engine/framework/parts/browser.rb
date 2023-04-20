@@ -47,10 +47,13 @@ module Browser
             # Request timeout or some other failure...
             return if bp.code == 0
 
-            Framework.browser_pool.queue(
-              BrowserPool::Jobs::SinkTrace.new( args: [bp] ),
-              method(:handle_browser_page)
-            )
+            # Go over everything, don't try a trace.
+            if !Options.audit.high_paranoia?
+                Framework.browser_pool.queue(
+                  BrowserPool::Jobs::SinkTrace.new( args: [bp] ),
+                  method(:handle_browser_page)
+                )
+            end
         end
 
         def set_job_to_crawl( job )
