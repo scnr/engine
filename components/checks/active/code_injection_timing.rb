@@ -70,7 +70,7 @@ a time delay.
             version:     '0.3.2',
             platforms:   payloads.keys,
             sink:        {
-              areas: [:active]
+              areas: [:blind]
             },
             cost:        calculate_timeout_analysis_cost( payloads.values.flatten.size, OPTIONS ),
 
