@@ -3,7 +3,7 @@
 - `OptionGroups`
     - `Audit`
         - New
-            - `#paranoia` -- Determines the thoroughness of the audit -- mostly affects check payloads.
+            - `#mode` -- Determines the thoroughness of the audit -- mostly affects check payloads.
     - `Scope`
         - `#auto_redundant_paths` -- Set to `15`.
         - `#directory_depth_limit` -- Set to `10`.
@@ -216,14 +216,14 @@
                 - Consolidated platform payloads into one OS command each.
             - `os_cmd_injection_timing`
                 - Optimized payloads.
-                - Added paranoia-adjusted payloads.
+                - Added mode-adjusted payloads.
             - `file_inclusion`
                 - Removed redundant MS Windows payloads.
                 - Optimized mutation generation.
             - `path_traversal` 
                 - Removed redundant MS Windows payloads.
                 - Optimized mutation generation.
-                - Added paranoia-adjusted payloads.
+                - Added mode-adjusted payloads.
             - `rfi` -- Only use straight injection, other formats won't work anyway.
     - Passive
         - `x_frame_options` -- Ignore non-200 pages.

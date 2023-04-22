@@ -48,7 +48,7 @@ module Browser
             return if bp.code == 0
 
             # Go over everything, don't try a trace.
-            if !Options.audit.high_paranoia?
+            if !Options.audit.super_mode?
                 Framework.browser_pool.queue(
                   BrowserPool::Jobs::SinkTrace.new( args: [bp] ),
                   method(:handle_browser_page)

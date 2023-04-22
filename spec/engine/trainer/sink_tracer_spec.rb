@@ -29,7 +29,7 @@ describe SCNR::Engine::Trainer::SinkTracer do
                 context 'and have inputs' do
                     context 'and respond to sinks' do
 
-                        context "and #{SCNR::Engine::OptionGroups::Audit}#paranoia" do
+                        context "and #{SCNR::Engine::OptionGroups::Audit}#mode" do
                             context 'is set to' do
                                 context ':low' do
                                     it 'traces them'

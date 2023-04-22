@@ -26,7 +26,7 @@ class Audit < SCNR::Engine::OptionGroup
         end
     end
 
-    PARANOIA_LEVELS = %w(low medium high super)
+    MODES = %w(quick moderate super)
 
     # @note Default is `true`.
     #
@@ -86,8 +86,8 @@ class Audit < SCNR::Engine::OptionGroup
     # @note Default is `:medium`.
     #
     # @return   [Symbol]
-    #   `:low`. :medium`, :high`, :super`
-    attr_accessor :paranoia
+    #   `:low`. `:medium`, `:high`, `:super`
+    attr_accessor :mode
 
     # @note Default is `false`.
     #
@@ -190,26 +190,26 @@ class Audit < SCNR::Engine::OptionGroup
 
     set_defaults(
         parameter_values:        true,
-        paranoia:                :medium,
+        mode:                    :moderate,
         exclude_vector_patterns: [],
         include_vector_patterns: [],
         link_templates:          []
     )
 
-    PARANOIA_LEVELS.each do |level|
-        define_method "#{level}_paranoia?" do
-            self.paranoia == level.to_sym
+    MODES.each do |level|
+        define_method "#{level}_mode?" do
+            self.mode == level.to_sym
         end
     end
 
-    def paranoia=( level )
-        return @paranoia = defaults[:paranoia] if !level
+    def mode=( level )
+        return @mode = defaults[:mode] if !level
 
-        if !PARANOIA_LEVELS.include? level.to_s
-            fail ArgumentError, "Unknown paranoia level: #{level}"
+        if !MODES.include? level.to_s
+            fail ArgumentError, "Unknown mode level: #{level}"
         end
 
-        @paranoia = level.to_sym
+        @mode = level.to_sym
     end
 
     def with_raw_payloads?
@@ -352,7 +352,7 @@ class Audit < SCNR::Engine::OptionGroup
 
     def to_rpc_data
         d = super
-        d['paranoia'] = d['paranoia'].to_s
+        d['mode'] = d['mode'].to_s
         d
     end
 

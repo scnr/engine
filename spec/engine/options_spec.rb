@@ -279,7 +279,7 @@ describe SCNR::Engine::Options do
                 'url'   => 'http://stuff/',
                 'audit' => {
                     'parameter_values'        => true,
-                    'paranoia'                => 'medium',
+                    'mode'                    => 'moderate',
                     'exclude_vector_patterns' => [],
                     'include_vector_patterns' => [],
                     'link_templates'          => [],

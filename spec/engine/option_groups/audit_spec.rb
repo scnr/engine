@@ -6,116 +6,95 @@ describe SCNR::Engine::OptionGroups::Audit do
 
     %w(with_both_http_methods exclude_vector_patterns include_vector_patterns
         links forms cookies cookies_extensively headers link_templates with_raw_payloads
-        paranoia
+        mode
     ).each do |method|
         it { is_expected.to respond_to method }
         it { is_expected.to respond_to "#{method}=" }
     end
 
-    describe '#paranoia' do
-        it 'returns the paranoia level' do
-            subject.paranoia = :high
-            expect(subject.paranoia).to be :high
+    describe '#mode' do
+        it 'returns the mode level' do
+            subject.mode = :super
+            expect(subject.mode).to be :super
         end
 
-        it 'defaults to :medium' do
-            expect(subject.paranoia).to be :medium
+        it 'defaults to :moderate' do
+            expect(subject.mode).to be :moderate
         end
 
         it 'accepts :super' do
-            subject.paranoia = :super
-            expect(subject.paranoia).to be :super
+            subject.mode = :super
+            expect(subject.mode).to be :super
         end
 
-        it 'accepts :high' do
-            subject.paranoia = :high
-            expect(subject.paranoia).to be :high
+        it 'accepts :moderate' do
+            subject.mode = :moderate
+            expect(subject.mode).to be :moderate
         end
 
-        it 'accepts :medium' do
-            subject.paranoia = :medium
-            expect(subject.paranoia).to be :medium
-        end
-
-        it 'accepts :low' do
-            subject.paranoia = :low
-            expect(subject.paranoia).to be :low
+        it 'accepts :quick' do
+            subject.mode = :quick
+            expect(subject.mode).to be :quick
         end
 
         it 'converts argument to Symbol' do
-            subject.paranoia = 'low'
-            expect(subject.paranoia).to be :low
+            subject.mode = 'quick'
+            expect(subject.mode).to be :quick
         end
 
         describe 'when passed an unknown type' do
             it "raises #{ArgumentError}" do
                 expect do
-                    subject.paranoia = :blah
+                    subject.mode = :blah
                 end.to raise_error ArgumentError
             end
         end
     end
 
-    describe '#low_paranoia?' do
+    describe '#quick_mode?' do
         context 'when set to :low' do
             it 'returns true' do
-                subject.paranoia = :low
-                expect(subject).to be_low_paranoia
+                subject.mode = :quick
+                expect(subject).to be_quick_mode
             end
         end
 
         context 'when set to other' do
             it 'returns false' do
-                subject.paranoia = :medium
-                expect(subject).not_to be_low_paranoia
+                subject.mode = :moderate
+                expect(subject).not_to be_quick_mode
             end
         end
     end
 
-    describe '#medium_paranoia?' do
+    describe '#moderate_mode?' do
         context 'when set to :medium' do
             it 'returns true' do
-                subject.paranoia = :medium
-                expect(subject).to be_medium_paranoia
+                subject.mode = :moderate
+                expect(subject).to be_moderate_mode
             end
         end
 
         context 'when set to other' do
             it 'returns false' do
-                subject.paranoia = :low
-                expect(subject).not_to be_medium_paranoia
+                subject.mode = :quick
+                expect(subject).not_to be_moderate_mode
             end
         end
     end
 
-    describe '#high_paranoia?' do
-        context 'when set to :high' do
-            it 'returns true' do
-                subject.paranoia = :high
-                expect(subject).to be_high_paranoia
-            end
-        end
-
-        context 'when set to other' do
-            it 'returns false' do
-                subject.paranoia = :low
-                expect(subject).not_to be_high_paranoia
-            end
-        end
-    end
-
-    describe '#super_paranoia?' do
+    describe '#super_mode?' do
         context 'when set to :super' do
             it 'returns true' do
-                subject.paranoia = :super
-                expect(subject).to be_super_paranoia
+                subject.mode = :super
+                expect(subject).to be_super_mode
             end
         end
 
         context 'when set to other' do
             it 'returns false' do
-                subject.paranoia = :low
-                expect(subject).not_to be_super_paranoia
+                subject.mode = :quick
+                expect(subject).not_to be_super_mode
             end
         end
     end

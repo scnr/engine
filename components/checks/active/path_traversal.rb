@@ -55,11 +55,11 @@ class SCNR::Engine::Checks::PathTraversal < SCNR::Engine::Check::Base
 
         # Use max traversal only, 99% of the time it's enough because it'll
         # get us to root and then go from there.
-        if Options.audit.low_paranoia? || Options.audit.medium_paranoia?
+        if Options.audit.quick_mode? || Options.audit.moderate_mode?
             return traversals.last
         end
 
-        if Options.audit.high_paranoia?
+        if Options.audit.super_mode?
             # Use all traversals in case we need to get them just right.
             return traversals
         end
@@ -70,10 +70,10 @@ class SCNR::Engine::Checks::PathTraversal < SCNR::Engine::Check::Base
     def self.payloads
         @payloads ||= {}
 
-        paranoia = Options.audit.paranoia
-        return @payloads[paranoia] if @payloads[paranoia]
+        mode = Options.audit.mode
+        return @payloads[mode] if @payloads[mode]
 
-        @payloads[paranoia] = {
+        @payloads[mode] = {
             unix:    [
                 '/proc/self/environ',
                 '/etc/passwd'
@@ -91,11 +91,11 @@ class SCNR::Engine::Checks::PathTraversal < SCNR::Engine::Check::Base
             h
         end
 
-        @payloads[paranoia][:java] = [ '/../../', '../../', ].map do |trv|
+        @payloads[mode][:java] = [ '/../../', '../../', ].map do |trv|
             [ "#{trv}WEB-INF/web.xml", "file://#{trv}WEB-INF/web.xml" ]
         end.flatten
 
-        @payloads[paranoia]
+        @payloads[mode]
     end
 
     def run
