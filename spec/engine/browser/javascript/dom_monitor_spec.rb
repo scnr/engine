@@ -343,7 +343,7 @@ describe SCNR::Engine::Browser::Javascript::DOMMonitor do
     describe '#event_digest' do
         let(:root_url) { SCNR::Engine::Utilities.normalize_url( web_server_url_for( :browser ) ) }
         let(:url) { root_url + '/trigger_events' }
-        let(:empty_event_digest_url) { url + '/event_digest/default' }
+        let(:empty_event_digest_url) { root_url + '/event_digest/default' }
         let(:empty_event_digest) do
             browser.load( empty_event_digest_url )
             subject.event_digest
