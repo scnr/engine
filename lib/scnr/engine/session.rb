@@ -332,6 +332,7 @@ class Session
     def login_from_sequence
         print_debug "Logging in via sequence: #{@login_sequence}"
         @login_sequence.call browser
+        http.cookie_jar.update browser.cookies
     end
 
     def login_from_configuration
@@ -448,7 +449,7 @@ class Session
     end
 
     def refresh_browser
-        return if !has_browser?
+        # return if !has_browser?
 
         shutdown_browser
 
