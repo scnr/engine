@@ -19,12 +19,18 @@ child :plugins, :Plugins do
         SCNR::Engine::UnsafeFramework.plugins.on_done &block
     end
 
-    def_as do |shortname, info = {}, &block|
+    def_as do |shortname, info = {}, m = nil, &block|
         shortname = shortname.to_s
 
         plugin = Class.new( SCNR::Engine::Plugin::Base )
         plugin.shortname = shortname
-        plugin.define_method :run, &block
+
+        if m
+            plugin.define_method :run, m
+        else
+            plugin.define_method :run, &block
+        end
+
         plugin.define_singleton_method :info, &proc { info }
 
         SCNR::Engine::UnsafeFramework.plugins[shortname] = plugin
