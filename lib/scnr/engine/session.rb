@@ -449,7 +449,7 @@ class Session
     end
 
     def refresh_browser
-        # return if !has_browser?
+        return if !has_browser?
 
         shutdown_browser
 
