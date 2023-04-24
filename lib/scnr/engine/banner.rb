@@ -11,11 +11,11 @@ require 'bundler/setup'
 
 module SCNR::Engine
 
-    WEBSITE = 'http://placeholder.com'
+    WEBSITE = 'http://ecsypno.com'
 
     BANNER =<<EOBANNER
 SCNR::Engine - Web Application Security Scanner v#{VERSION}
-   by Placeholder LLC <#{WEBSITE}>
+   by Ecsypno Single Member P.C. <#{WEBSITE}>
 EOBANNER
 
 end

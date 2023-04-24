@@ -189,6 +189,10 @@ class Paths < SCNR::Engine::OptionGroup
         SCNR::Engine.get_long_win32_filename "#{root_path}config/paths.yml"
     end
 
+    def self.activation_file
+        SCNR::Engine::ACTIVATION_FILE
+    end
+
     def self.clear_config_cache
         @config = nil
     end
