@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     s.extensions       += %w(ext/Rakefile ext/engine/Cargo.toml ext/engine/Cargo.lock ext/engine/README.md)
     s.extensions       += Dir.glob( 'ext/engine/src/**/**' )
 
+    s.files            += Dir.glob( 'bin/*' )
     s.files            += Dir.glob( 'ext/engine/target/release/*.so' )
     s.files            += Dir.glob( 'config/**/**' )
     s.files            += Dir.glob( 'gfx/**/**' )
