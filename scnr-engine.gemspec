@@ -30,13 +30,11 @@ Gem::Specification.new do |s|
     s.files            += Dir.glob( 'bin/*' )
     s.files            += Dir.glob( 'ext/engine/target/release/*.so' )
     s.files            += Dir.glob( 'config/**/**' )
-    s.files            += Dir.glob( 'gfx/**/**' )
     s.files            += Dir.glob( 'lib/**/**' )
     s.files            += Dir.glob( 'ui/**/**' )
     s.files            += Dir.glob( 'logs/**/**' )
     s.files            += Dir.glob( 'components/**/**' )
     s.files            += Dir.glob( 'profiles/**/**' )
-    s.files            += Dir.glob( 'spec/**/**' )
     s.files            += %w(Gemfile Rakefile scnr-engine.gemspec)
 
     # Disable pushes to public servers.
