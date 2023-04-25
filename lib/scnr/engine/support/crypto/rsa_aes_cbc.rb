@@ -78,7 +78,7 @@ class RSA_AES_CBC
         aes.decrypt
 
         # unencode and unserialize to get the primitives and ciphertext
-        ap primitives = YAML.safe_load( Base64.decode64( data ) )
+        primitives = YAML.safe_load( Base64.decode64( data ) )
 
         aes.key = rsa.private_decrypt( primitives['key'] )
         aes.iv  = rsa.private_decrypt( primitives['iv'] )

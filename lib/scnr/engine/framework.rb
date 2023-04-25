@@ -86,6 +86,8 @@ class Framework
     # @param   [Block]  block
     #   A block to call after the audit has finished but before running {#reporters}.
     def run( &block )
+        SCNR::Engine.license_guard
+
         prepare
         handle_signals
         return if aborted?

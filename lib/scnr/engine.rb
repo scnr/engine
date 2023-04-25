@@ -39,6 +39,7 @@ require 'fiddle'
 if !defined?( RGLoader )
   module RGLoader
       def self.get_const( c )
+
           case c
 
           # Edition
@@ -144,28 +145,56 @@ WCRc81klYKBHh5FxWwIDAQAB
 
         def license_guard
             return if self.development?
+            fail 'Cannot continue without valid activation.' unless File.exist?( ACTIVATION_FILE )
+            fail 'Could not determine edition.' unless !!self.edition
 
-            exit 2 unless !!self.edition
+            # self.prepare_activation_file
+            # return
 
-            activate!
-            exit 3 if !activated?
+            self.load_activation_info rescue fail 'Corrupted activation file'
+
+            activate! if !activated?
+
+            if activated_on + license_duration <= Time.now
+                fail 'License has expired.'
+            end
+        end
+
+        def load_activation_info
+            @activation_info ||= Marshal.load( crypto.decrypt( IO.binread( ACTIVATION_FILE ) ) )
         end
 
         def activate!
-            IO.binwrite( ACTIVATION_FILE, crypto.encrypt( Time.now.to_i.to_s ).to_yaml )
+            info = {
+              time: Time.now.to_i
+            }
+
+            IO.binwrite( ACTIVATION_FILE, crypto.encrypt( Marshal.dump( info ) ) )
         end
 
         def activated_on
-            return if !File.exist?( ACTIVATION_FILE )
-            @activated ||= Time.at( crypto.decrypt( IO.binread( ACTIVATION_FILE ) ) .to_i )
+            return if !activated?
+            Time.at( @activation_info[:time] )
+        end
+
+        def first_run?
+            @activation_info[:time].nil?
         end
 
         def activated?
-            !!activated_on
+            !!@activation_info[:time]
         end
 
         def crypto
             @crypto ||= Support::Crypto::RSA_AES_CBC.new( PUBLIC_KEY, PRIVATE_KEY )
+        end
+
+        def prepare_activation_file
+            info = {
+              time: nil
+            }
+
+            IO.binwrite( ACTIVATION_FILE, crypto.encrypt( Marshal.dump( info ) ) )
         end
 
         def license_duration
@@ -259,8 +288,6 @@ WCRc81klYKBHh5FxWwIDAQAB
 
 end
 end
-
-SCNR::Engine.license_guard
 
 require_relative 'engine/banner'
 
