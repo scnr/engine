@@ -6,19 +6,19 @@ child :scan, :Scan do
         SCNR::Engine::UnsafeFramework.reset
     end
 
-    def_before :page do |&block|
-        SCNR::Engine::UnsafeFramework.before_page_audit( &block )
+    def_before :page do |cb = nil, &block|
+        SCNR::Engine::UnsafeFramework.before_page_audit( &block_or_method( cb, &block ) )
     end
 
-    def_on :page do |&block|
-        SCNR::Engine::UnsafeFramework.on_page_audit( &block )
+    def_on :page do |cb = nil, &block|
+        SCNR::Engine::UnsafeFramework.on_page_audit( &block_or_method( cb, &block ) )
     end
 
-    def_after :page do |&block|
-        SCNR::Engine::UnsafeFramework.after_page_audit( &block )
+    def_after :page do |cb = nil, &block|
+        SCNR::Engine::UnsafeFramework.after_page_audit( &block_or_method( cb, &block ) )
     end
 
-    def_run! do |&block|
+    def_run! do |cb = nil, &block|
         SCNR::Engine::Framework.safe do |framework|
             framework.checks.load SCNR::Engine::Options.checks
 
@@ -26,7 +26,7 @@ child :scan, :Scan do
             framework.plugins.load SCNR::Engine::Options.plugins.keys
 
             framework.run
-            block.call framework.report, framework.statistics
+            block_or_method( cb, &block ).call framework.report, framework.statistics
         end
     end
 

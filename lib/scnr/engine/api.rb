@@ -15,6 +15,13 @@ module Engine
     end
 
 DSeL::DSL::Nodes::APIBuilder.build :API, namespace: self do
+
+    class DSeL::API::Node
+        def block_or_method( cb, &block )
+            block || method( cb )
+        end
+    end
+
     import_relative_many 'api/*'
 end
 

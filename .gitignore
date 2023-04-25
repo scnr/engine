@@ -1,6 +1,6 @@
 .idea/
 *.gem
-/tmp
+/tmp/*
 /logs/*.log
 /reports/*.ser
 /snapshots/*.ses

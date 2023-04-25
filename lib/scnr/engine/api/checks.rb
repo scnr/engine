@@ -1,6 +1,6 @@
 child :checks, :Checks do
-    def_on :run do |&block|
-        SCNR::Engine::UnsafeFramework.checks.on_run &block
+    def_on :run do |cb = nil, &block|
+        SCNR::Engine::UnsafeFramework.checks.on_run &block_or_method( cb, &block )
     end
 
     def_as do |shortname, info = {}, m = nil, &block|
@@ -10,7 +10,7 @@ child :checks, :Checks do
         check.shortname = shortname
 
         if m
-            check.define_method :run, m
+            check.define_method :run, m.is_a?( Symbol ) ? method( m ) : m
         else
             check.define_method :run, &block
         end

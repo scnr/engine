@@ -31,15 +31,6 @@ Logging {
         $stderr.puts "Error\t\t- #{error}"
     end
 
-    # Forwards any exception raised, even if it has been handled.
-    # on :exception do |exception|
-    #     $stderr.puts exception.to_s
-    #
-    #     exception.backtrace.each do |line|
-    #         $stderr.puts line
-    #     end
-    # end
-
 }
 
 # Provides access to DOM operation points.
@@ -128,7 +119,7 @@ Scan {
 
         set url:    'http://testhtml5.vulnweb.com',
             audit:  {
-              elements: [:links, :forms, :cookies]
+              elements: [:links, :forms, :cookies, :ui_forms, :ui_inputs]
             },
             checks: ['*']
 

@@ -1,22 +1,22 @@
 child :plugins, :Plugins do
-    def_on :initialize do |&block|
-        SCNR::Engine::UnsafeFramework.plugins.on_initialize &block
+    def_on :initialize do |cb = nil, &block|
+        SCNR::Engine::UnsafeFramework.plugins.on_initialize &block_or_method( cb, &block )
     end
 
-    def_on :prepare do |&block|
-        SCNR::Engine::UnsafeFramework.plugins.on_prepare &block
+    def_on :prepare do |cb = nil, &block|
+        SCNR::Engine::UnsafeFramework.plugins.on_prepare &block_or_method( cb, &block )
     end
 
-    def_on :run do |&block|
-        SCNR::Engine::UnsafeFramework.plugins.on_run &block
+    def_on :run do |cb = nil, &block|
+        SCNR::Engine::UnsafeFramework.plugins.on_run &block_or_method( cb, &block )
     end
 
-    def_on :clean_up do |&block|
-        SCNR::Engine::UnsafeFramework.plugins.on_clean_up &block
+    def_on :clean_up do |cb = nil, &block|
+        SCNR::Engine::UnsafeFramework.plugins.on_clean_up &block_or_method( cb, &block )
     end
 
-    def_on :done do |&block|
-        SCNR::Engine::UnsafeFramework.plugins.on_done &block
+    def_on :done do |cb = nil, &block|
+        SCNR::Engine::UnsafeFramework.plugins.on_done &block_or_method( cb, &block )
     end
 
     def_as do |shortname, info = {}, m = nil, &block|
@@ -26,7 +26,7 @@ child :plugins, :Plugins do
         plugin.shortname = shortname
 
         if m
-            plugin.define_method :run, m
+            plugin.define_method :run, m.is_a?( Symbol ) ? method( m ) : m
         else
             plugin.define_method :run, &block
         end
