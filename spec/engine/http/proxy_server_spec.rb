@@ -178,11 +178,7 @@ describe SCNR::Engine::HTTP::ProxyServer do
                     "Accept-Encoding: gzip, deflate\r\n" <<
                     "User-Agent: Typhoeus - https://github.com/typhoeus/typhoeus\r\n" <<
                     "Accept: */*\r\n" <<
-                    "Authorization: Basic Og==\r\n" <<
-                    "Connection: Upgrade, HTTP2-Settings\r\n" <<
                     "Content-Length: 7\r\n" <<
-                    "HTTP2-Settings: AAMAAABkAARAAAAA\r\n" <<
-                    "Upgrade: h2c\r\n" <<
                     "X-Scnr-Engine-Scan-Seed: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
                     "Accept-Language: en-US,en;q=0.8,he;q=0.6\r\n" <<
                     "Content-Type: application/x-www-form-urlencoded\r\n\r\n").split( "\r\n" ).sort

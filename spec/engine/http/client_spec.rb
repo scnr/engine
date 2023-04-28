@@ -599,10 +599,8 @@ describe SCNR::Engine::HTTP::Client do
         it "fills in #{SCNR::Engine::HTTP::Request}#headers_string" do
             host = "#{SCNR::Engine::URI(url).host}:#{SCNR::Engine::URI(url).port}"
             expect(subject.request( url, mode: :sync ).request.headers_string).to eq(
-                "GET / HTTP/1.1\r\nHost: #{host}\r\nAuthorization: " <<
-                    "Basic Og==\r\nAccept-Encoding: gzip, deflate\r\nConnection: " <<
-                    "Upgrade, HTTP2-Settings\r\nUpgrade: h2c\r\nHTTP2-Settings: " <<
-                    "AAMAAABkAARAAAAA\r\nUser-Agent: Mozilla/5.0 (Gecko) SCNR::Engine/v#{SCNR::Engine::VERSION}\r\n" <<
+                "GET / HTTP/1.1\r\nHost: #{host}\r\nAccept-Encoding: gzip, deflate\r\n" <<
+                  "User-Agent: Mozilla/5.0 (Gecko) SCNR::Engine/v#{SCNR::Engine::VERSION}\r\n" <<
                     "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\n" +
                     "Accept-Language: en-US,en;q=0.8,he;q=0.6\r\n" +
                     "X-Scnr-Engine-Scan-Seed: #{SCNR::Engine::Utilities.random_seed}\r\n\r\n"
