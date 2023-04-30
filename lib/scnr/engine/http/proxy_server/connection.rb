@@ -201,8 +201,7 @@ class Connection < Raktr::Connection
         headers['Content-Length'] = response.body.bytesize
 
         if response.text? && headers.content_type
-            headers['Content-Type'] =
-                "#{headers.content_type.split( ';' ).first}; charset=utf-8"
+            headers['Content-Type'] = "#{headers.content_type.split( ';' ).first}"
         end
 
         headers.each do |k, v|

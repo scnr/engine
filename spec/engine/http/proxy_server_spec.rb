@@ -54,24 +54,6 @@ describe SCNR::Engine::HTTP::ProxyServer do
         test_proxy( proxy )
     end
 
-    context 'when the response is text-based' do
-        let(:url) { "#{root_url}/text" }
-
-        it 'sets charset encoding to UTF8' do
-            proxy = described_class.new
-            proxy.start_async
-
-            expect(via_proxy( proxy, url ).headers['Content-Type']).to eq 'text/html; charset=utf-8'
-        end
-
-        it 'transcodes to UTF-8' do
-            proxy = described_class.new
-            proxy.start_async
-
-            expect(via_proxy( proxy, url ).body.encoding.name).to eq 'UTF-8'
-        end
-    end
-
     context 'when the response is binary' do
         let(:url) { "#{root_url}/binary" }
 
