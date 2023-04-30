@@ -12,7 +12,6 @@ describe SCNR::Engine::Component::Options::URL do
         context 'when the value is valid' do
             it 'returns true' do
                 subject.value = 'http://localhost'
-                pending
                 expect(subject.valid?).to be_truthy
             end
         end
@@ -21,7 +20,6 @@ describe SCNR::Engine::Component::Options::URL do
             it 'returns false' do
                 ['http://localhost22', 'localhost', 11, '#$#$c3c43', true].each do |value|
                     subject.value = value
-                    pending
                     expect(subject.valid?).to be_falsey
                 end
             end
