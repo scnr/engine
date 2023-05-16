@@ -461,16 +461,13 @@ module Snapshots
             return
         end
 
-        begin
-            if !el.find { |e| !skip_state?( e ) }
+        if @job
+            if !el.find { |e| !skip_state?( "#{@job.class}#{e.id}" ) }
                 print_debug_level_2 'Ignoring, already seen.'
                 return
             end
 
-            el.each { |e| skip_state e.id }
-        # This could be an orphaned HTTP request, without a job, if running in
-        # BrowserPool::Worker.
-        rescue NoMethodError
+            el.each { |e| skip_state "#{@job.class}#{e.id}" }
         end
 
         page = Page.from_data( elements.merge( url: request.url ) )
