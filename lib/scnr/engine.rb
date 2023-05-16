@@ -36,68 +36,12 @@ require 'pp'
 require 'ap'
 require 'fiddle'
 
-if !defined?( RGLoader )
-  module RGLoader
-      def self.get_const( c )
-
-          case c
-
-          # Edition
-          when 'e'
-              -1
-
-          # Duration (in days)
-          when 'd'
-              9999999
-          end
-      end
-  end
-end
-
 def ap( obj )
     super obj, raw: true
 end
 
 module SCNR
 module Engine
-
-    EDITION_CODES = {
-        -2 => :build,
-        -1 => :development,
-        0  => :trial,
-        1  => :basic,
-        2  => :pro,
-        3  => :enterprise,
-        4  => :reseller
-    }
-
-    ACTIVATION_FILE = File.dirname( __FILE__ ) + '/../../config/scnr.activation'
-    FIRST_RUN_FILE = File.dirname( __FILE__ ) + '/../../config/scnr.fr'
-
-    PRIVATE_KEY = "-----BEGIN RSA PRIVATE KEY-----
-MIICXAIBAAKBgQDk6mpgfJ3O811Dfk19oe7YlVZ+MrLHCMNcTWulMne0Xg2DB9SC
-Y/RhPIT+5Q/AFCntwcbEZ76rlyPHCoqOlQUqMngMih0hnUVAxUbKmXrCNEQRpPa+
-2FDm7pGSPKadvGAGLpANOflA/zhyJvRbXCortpdPWCRc81klYKBHh5FxWwIDAQAB
-AoGBAL6dpC7sFcw6QjLtfUFcEjMvR3KWbN/noCXAIh7RQ3RhzQaLAp4A9YHyjxxh
-SRg8sh1U+lqZuN/RXu1jDbVkyYKij7nRzSDfaFia4vPBD3wgrDA2XNFw6wuFZdkv
-2w5NJboiB5CGlY0kvA1GuCV+NpHU30+arFKUT2jFAHOjzmphAkEA8/x1s2H4MlVC
-fNkjvXKKRQIGFuFEc96fLyG7b7gd3y7gkaSU3rnKW6sHbXnKFwYVyFvReA7z+Ox+
-QsJoXI8mRwJBAPAv/IiaFjNe9vfulkWaYtQuBQNa9n2bXy6lV6pBFuCbX9uyZW6a
-UitX5FdRCpHPqlINdfwsiltVCtiyNFZmok0CQHWBUgJZnZpIG6RbQ247GsKPbfVY
-+om/XvTpDweIKcLSJc+e7x+xZPbvEL212RFrmdQL/H8Q3Ik3BLwMOwzQ2IMCQDYP
-pvicLgkMA+yUMBCkikAVx50UuUxWT1sxbgTtN5gAgNfzVG9LntkQpF2e6REeu8hS
-LU9AOzgJcTKLEcqsuTUCQE8Fcu28ShXNwZtas7JTWkP4AzPK5a+E4f0eekEX1IHf
-R0UuXK923AqjI5zaG1VtCcb02Ql0CU1vmUVW3LMDV3M=
------END RSA PRIVATE KEY-----
-"
-
-    PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDk6mpgfJ3O811Dfk19oe7YlVZ+
-MrLHCMNcTWulMne0Xg2DB9SCY/RhPIT+5Q/AFCntwcbEZ76rlyPHCoqOlQUqMngM
-ih0hnUVAxUbKmXrCNEQRpPa+2FDm7pGSPKadvGAGLpANOflA/zhyJvRbXCortpdP
-WCRc81klYKBHh5FxWwIDAQAB
------END PUBLIC KEY-----
-"
 
     class <<self
 
@@ -141,92 +85,6 @@ WCRc81klYKBHh5FxWwIDAQAB
 
         def has_extension?
             @loaded_extension
-        end
-
-        def license_guard
-            return if self.development?
-            fail 'Cannot continue without valid activation.' unless File.exist?( ACTIVATION_FILE )
-            fail 'Could not determine edition.' unless !!self.edition
-
-            # self.prepare_activation_file
-            # return
-
-            self.load_activation_info rescue fail 'Corrupted activation file'
-
-            activate! if !activated?
-
-            if activated_on + license_duration <= Time.now
-                fail 'License has expired.'
-            end
-        end
-
-        def load_activation_info
-            @activation_info ||= Marshal.load( crypto.decrypt( IO.binread( ACTIVATION_FILE ) ) )
-        end
-
-        def activate!
-            info = {
-              time: Time.now.to_i
-            }
-
-            IO.binwrite( ACTIVATION_FILE, crypto.encrypt( Marshal.dump( info ) ) )
-        end
-
-        def activated_on
-            return if !activated?
-            Time.at( @activation_info[:time] )
-        end
-
-        def first_run?
-            @activation_info[:time].nil?
-        end
-
-        def activated?
-            !!@activation_info[:time]
-        end
-
-        def crypto
-            @crypto ||= Support::Crypto::RSA_AES_CBC.new( PUBLIC_KEY, PRIVATE_KEY )
-        end
-
-        def prepare_activation_file
-            info = {
-              time: nil
-            }
-
-            IO.binwrite( ACTIVATION_FILE, crypto.encrypt( Marshal.dump( info ) ) )
-        end
-
-        def license_duration
-            d = RGLoader.get_const( 'd' )
-            return if !d
-
-            d.to_i
-        end
-
-        def license_file
-            ENV['LICENSE_PATH']
-        end
-
-        def license_sha512
-            Digest::SHA512.hexdigest IO.read( license_file )
-        end
-
-        def edition
-            EDITION_CODES[edition_code]
-        end
-
-        EDITION_CODES.values.each do |e|
-            define_method "#{e}?" do
-                edition == e
-            end
-        end
-
-        def edition_code
-            e = RGLoader.get_const( 'e' )
-            return if !e
-
-            e.to_i
         end
 
         def load_extension
