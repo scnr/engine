@@ -33,6 +33,7 @@ child :plugins, :Plugins do
 
         plugin.define_singleton_method :info, &proc { info }
 
+        SCNR::Engine::UnsafeFramework.plugins.on_load plugin
         SCNR::Engine::UnsafeFramework.plugins[shortname] = plugin
     end
 end

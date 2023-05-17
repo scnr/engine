@@ -17,6 +17,7 @@ child :checks, :Checks do
 
         check.define_singleton_method :info, &proc { info }
 
+        SCNR::Engine::UnsafeFramework.checks.on_load check
         SCNR::Engine::UnsafeFramework.checks[shortname] = check
     end
 end
