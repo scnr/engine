@@ -10,6 +10,7 @@ Encoding.default_external = 'BINARY'
 Encoding.default_internal = 'UTF-8'
 
 require 'rubygems'
+require 'scnr'
 require 'digest'
 
 # require 'oj'
