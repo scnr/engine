@@ -50,7 +50,7 @@ Gem::Specification.new do |s|
 
     s.add_dependency 'scnr'
 
-    s.add_dependency 'cuboid',               '~> 0.1.9.1'
+    s.add_dependency 'cuboid',               '~> 0.2'
     s.add_dependency 'dsel'
 
     s.add_dependency 'webrick',              '1.7.0'
