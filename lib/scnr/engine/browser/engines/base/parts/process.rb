@@ -116,7 +116,8 @@ module Process
                 new_pgroup:   true,
                 stdin:        ri,
                 stdout:       w,
-                stderr:       w
+                stderr:       w,
+                daemonize:    true
             )
 
             w.close
