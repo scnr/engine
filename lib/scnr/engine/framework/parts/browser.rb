@@ -16,6 +16,7 @@ module Parts
 module Browser
 
     class <<self
+        include UI::Output
 
         def synchronize( &block )
             (@mutex ||= Mutex.new).synchronize( &block )
