@@ -303,7 +303,7 @@ class Report
     private
 
     def default_filename
-        "#{SCNR::Engine::URI( url ).host} #{@finish_datetime.to_s.gsub( ':', '_' )}.#{EXTENSION}"
+        "#{SCNR::Engine::URI( url ).host} #{@finish_datetime}.#{EXTENSION}".gsub( ':', '_' ).gsub( ' ', '_' )
     end
 
     # Prepares the hash to be stored in {Report#options}.
