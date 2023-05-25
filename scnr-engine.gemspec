@@ -106,7 +106,7 @@ Gem::Specification.new do |s|
     # Markup parsing, for reports and Element::XML.
     s.add_dependency 'nokogiri'
     # Really fast and lightweight markup parsing, for pages.
-    s.add_dependency 'ox',                  '2.14.14'
+    s.add_dependency 'ox',                  '2.14.16'
 
     # Browser support for DOM/JS/AJAX analysis stuff.
     s.add_dependency 'watir',               '6.19.1'
