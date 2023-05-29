@@ -31,7 +31,7 @@ class Manager < SCNR::Engine::Component::Manager
     # @see Report
     def run( name, report, options = {}, raise = false )
         exception_jail raise do
-            self[name].new( report, prepare_options( name, self[name], options ) ).run
+            self[name].new( report, prepare_options( name, self[name], options ) ).tap(&:run)
         end
     end
 
