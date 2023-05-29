@@ -26,7 +26,9 @@ describe SCNR::Engine::HTTP::Request do
             headers:    { 'Content-Type' => 'test/html' },
             cookies:    { 'cname'=> 'cvalue' },
             username:   'user',
-            password:   'pass'
+            password:   'pass',
+            execution_flow: SCNR::Introspector::ExecutionFlow.new,
+            data_flow:      SCNR::Introspector::DataFlow.new
         }
     end
     subject do

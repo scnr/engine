@@ -167,6 +167,32 @@ class SCNR::Engine::Reporters::Stdout < SCNR::Engine::Reporter::Base
 
         print_info "Signature: #{issue.signature}"     if issue.signature
         print_info "Proof:     #{issue.proof.inspect}" if issue.proof
+        print_line
+
+        if issue.execution_flow && issue.execution_flow.points.any?
+            print_info "Execution trace"
+
+            issue.execution_flow.points.each.with_index do |point, i|
+                print_line "[#{i}] #{point.path}##{point.line_number} #{point.class_name}##{point.method_name} #{point.event}"
+            end
+        end
+        print_line
+        if issue.data_flow && issue.data_flow.sinks.any?
+            print_info "Data trace"
+
+            issue.data_flow.sinks.each.with_index do |sink, i|
+                print_line "[#{i}] #{sink.object}##{sink.method_name} argument ##{sink.tainted_argument_index}: #{sink.tainted_value.inspect}"
+
+                print_line "Arguments:"
+                print_line ::JSON.pretty_generate( sink.arguments )
+
+                print_line "Backtrace:"
+                sink.backtrace.each do |l|
+                    print_line "\t#{l}"
+                end
+                print_line
+            end
+        end
 
         print_line
         print_info "Referring page: #{issue.referring_page.dom.url}"

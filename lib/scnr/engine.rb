@@ -11,6 +11,7 @@ Encoding.default_internal = 'UTF-8'
 
 require 'rubygems'
 require 'scnr'
+require 'scnr/introspector'
 require 'digest'
 
 # require 'oj'

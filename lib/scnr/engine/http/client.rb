@@ -84,6 +84,9 @@ class Client
 
     SEED_HEADER_NAME = 'X-SCNR-Engine-Scan-Seed'
 
+    TRACE_HEADER_NAME = 'X-SCNR-Introspector-Trace'
+    TAINT_HEADER_NAME = 'X-SCNR-Introspector-Taint'
+
     # @return    [Hash]
     #   Default headers for {Request requests}.
     attr_reader :headers
@@ -116,6 +119,8 @@ class Client
 
     attr_accessor :size_upload_sum
     attr_accessor :size_download_sum
+
+    attr_accessor :trace
 
     # @return   [Soft404]
     attr_reader :soft_404
@@ -185,7 +190,14 @@ class Client
         @soft_404.shutdown if @soft_404
         @soft_404 = Soft404.new
 
+        # For when Introspector, trace data and execution flows.
+        @trace = true
+
         self
+    end
+
+    def trace?
+        !!@trace
     end
 
     # @return   [Hash]
@@ -297,6 +309,13 @@ class Client
         set_observers( saved_observers )
 
         ret
+    end
+
+    def with_trace( &block )
+        @trace = true
+        block.call
+    ensure
+        @trace = false
     end
 
     # Aborts the running requests on a best effort basis.
@@ -657,6 +676,11 @@ class Client
     def forward_request( request )
         add_callbacks = !request.id
         request.id    = @request_count
+
+        if trace?
+            request.headers[TAINT_HEADER_NAME] = SCNR::Engine::Utilities.random_seed
+            request.headers[TRACE_HEADER_NAME] = request.id
+        end
 
         if debug_level_3?
             print_debug_level_4 '------------'

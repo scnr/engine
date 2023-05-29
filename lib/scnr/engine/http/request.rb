@@ -130,6 +130,9 @@ class Request < Message
     # @private
     attr_accessor :response_body_buffer
 
+    attr_accessor :execution_flow
+    attr_accessor :data_flow
+
     # @param  [Hash]  options
     #   Request options.
     # @option options [String] :url
@@ -172,6 +175,9 @@ class Request < Message
         @parameters      ||= {}
         @cookies         ||= {}
         @raw_cookies     ||= []
+
+        @execution_flow ||= nil
+        @data_flow      ||= nil
     end
 
     def raw_parameters=( names )
@@ -507,7 +513,9 @@ class Request < Message
             headers_string: headers_string,
             effective_body: effective_body,
             body:           body,
-            method:         method
+            method:         method,
+            execution_flow: execution_flow&.to_rpc_data,
+            data_flow:      data_flow&.to_rpc_data
         }
     end
 
@@ -553,7 +561,7 @@ class Request < Message
     # @return   [Hash]
     #   Data representing this instance that are suitable the RPC transmission.
     def to_rpc_data
-        marshal_dump
+        marshal_dump.merge 'execution_flow' => @execution_flow&.to_rpc_data, 'data_flow' => @data_flow&.to_rpc_data
     end
 
     class <<self
@@ -568,8 +576,16 @@ class Request < Message
                             when 'method', 'mode'
                                 value.to_sym
 
-                            else
-                                value
+                        when 'execution_flow'
+                            next if !value
+                            SCNR::Introspector::ExecutionFlow.from_rpc_data value
+
+                        when 'data_flow'
+                            next if !value
+                            SCNR::Introspector::DataFlow.from_rpc_data value
+
+                        else
+                            value
                         end
 
                 instance.instance_variable_set( "@#{name}", value )
@@ -695,6 +711,7 @@ class Request < Message
                 end
 
                 set_response_data typhoeus_response
+                set_introspector_data( typhoeus_response )
 
                 on_complete.each do |b|
                     exception_jail false do
@@ -705,6 +722,22 @@ class Request < Message
         end
 
         typhoeus_request
+    end
+
+    def set_introspector_data( typhoeus_response )
+        seed = HTTP::Client.headers[HTTP::Client::SEED_HEADER_NAME]
+
+        return if !typhoeus_response.body.optimized_include?( "<!-- #{seed}" )
+
+        body, trace_data = typhoeus_response.body.split( "<!-- #{seed}", 2 )
+        self.response.body = body
+
+        introspector = ::JSON.load( trace_data.split( "#{seed} -->" ).first )
+
+        Platform::Manager.update( typhoeus_response.effective_url, introspector['platforms'] )
+
+        @execution_flow = SCNR::Introspector::ExecutionFlow.from_rpc_data( introspector['execution_flow'] )
+        @data_flow      = SCNR::Introspector::DataFlow.from_rpc_data( introspector['data_flow'] )
     end
 
     def client_run

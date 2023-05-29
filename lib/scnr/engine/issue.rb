@@ -152,7 +152,9 @@ class Issue
             # Needs to happen **AFTER** the push to page queue.
             SCNR::Engine::Options.scope.do_not_crawl
 
-            f.run
+            HTTP::Client.with_trace do
+                f.run
+            end
 
             new_issue = Data.issues[digest]
         end
@@ -163,6 +165,14 @@ class Issue
     ensure
         SCNR::Engine::Options.reset
         SCNR::Engine::Options.set original_options
+    end
+
+    def execution_flow
+        request&.execution_flow
+    end
+
+    def data_flow
+        request&.data_flow
     end
 
     # @return   [HTTP::Response]
