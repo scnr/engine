@@ -734,10 +734,17 @@ class Request < Message
 
         introspector = ::JSON.load( trace_data.split( "#{seed} -->" ).first )
 
-        Platform::Manager.update( typhoeus_response.effective_url, introspector['platforms'] )
+        if introspector['platforms']
+            Platform::Manager.update( typhoeus_response.effective_url, introspector['platforms'] )
+        end
 
-        @execution_flow = SCNR::Introspector::ExecutionFlow.from_rpc_data( introspector['execution_flow'] )
-        @data_flow      = SCNR::Introspector::DataFlow.from_rpc_data( introspector['data_flow'] )
+        if introspector['execution_flow']
+            @execution_flow = SCNR::Introspector::ExecutionFlow.from_rpc_data( introspector['execution_flow'] )
+        end
+
+        if introspector['data_flow']
+            @data_flow = SCNR::Introspector::DataFlow.from_rpc_data( introspector['data_flow'] )
+        end
     end
 
     def client_run
