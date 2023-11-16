@@ -58,13 +58,13 @@ class Connection < Raktr::Connection
 
             print_debug_level_3 "Request received: #{@parser.http_method} #{@parser.request_url}"
 
-            if headers['upgrade']
-                handle_upgrade( headers )
+            if method == :connect
+                handle_connect( headers )
                 next
             end
 
-            if method == :connect
-                handle_connect( headers )
+            if @parser.upgrade?
+                handle_upgrade( headers )
                 next
             end
 
@@ -94,7 +94,8 @@ class Connection < Raktr::Connection
 
         host = (headers['Host'] || @parser.request_url).split( ':', 2 ).first
 
-        @tunnel = raktr.connect( host, 80, Tunnel, @options.merge( client: self ) )
+        # TODO: Remove magic number.
+        @tunnel = raktr.connect( host, 443, Tunnel, @options.merge( client: self ) )
 
         # This is our last HTTP message, from this point on we'll only be
         # tunnelling to the origin server.
