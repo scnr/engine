@@ -313,6 +313,7 @@ class Connection < Raktr::Connection
         SKIP_HEADERS.each do |name|
             headers.delete name
         end
+        headers['Connection'] = 'Close'
         headers
     end
 
