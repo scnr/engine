@@ -45,7 +45,7 @@ class UIInput < Base
             end
         end
 
-        inputs
+        inputs.uniq
     end
 
     def self.in_html?( html )

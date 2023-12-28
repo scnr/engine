@@ -63,7 +63,7 @@ class UIForm < Base
             end
         end
 
-        ui_forms
+        ui_forms.uniq
     end
 
     def self.in_html?( html )
