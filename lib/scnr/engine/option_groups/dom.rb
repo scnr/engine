@@ -14,7 +14,7 @@ module SCNR::Engine::OptionGroups
 class DOM < SCNR::Engine::OptionGroup
 
     ENGINES        = [:none, :chrome, :firefox]
-    DEFAULT_ENGINE = :firefox
+    DEFAULT_ENGINE = :chrome
 
     # @note Default is {#DEFAULT_ENGINE}.
     #
