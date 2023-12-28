@@ -19,7 +19,7 @@ module Cookies
         js_cookies = begin
              # Selenium doesn't tell us if cookies are HttpOnly, so we need to
              # figure this out ourselves, by checking for JS visibility.
-            javascript.run( 'return document.cookie' )
+            javascript.run( 'return document.cookie' ) || ''
 
         # We may not have a page.
         rescue Selenium::WebDriver::Error::WebDriverError
