@@ -265,7 +265,7 @@ module Capabilities::Inputtable
     # @return   [String]
     #   Uniquely identifies the {#inputs}.
     def inputtable_id
-        SCNR::Engine::Element::Capabilities::Inputtable.inputtable_id( inputs, raw_inputs )
+        "#{type}:#{SCNR::Engine::Element::Capabilities::Inputtable.inputtable_id( inputs, raw_inputs )}"
     end
 
     def self.inputtable_id( inputs, raw_inputs )
