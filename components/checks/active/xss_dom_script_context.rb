@@ -20,7 +20,9 @@ class SCNR::Engine::Checks::XssDomScriptContext < SCNR::Engine::Check::Base
             "javascript:#{seed}//",
             "1;#{seed}//",
             "';#{seed}//",
+            "\\';#{seed}//",
             "\";#{seed}//",
+            "\\\";#{seed}//",
             "*/;#{seed}/*"
         ]
     end
@@ -101,7 +103,7 @@ to insert and execute JavaScript code.
                     'OWASP' => 'https://www.owasp.org/index.php/DOM_Based_XSS',
                     'OWASP - Prevention'  => 'https://www.owasp.org/index.php/DOM_based_XSS_Prevention_Cheat_Sheet'
                 },
-                tags:            %w(xss dom injection script),
+                tags:            %w(xss dom injection script dom),
                 cwe:             79,
                 severity:        Severity::HIGH,
                 remedy_guidance: %q{
