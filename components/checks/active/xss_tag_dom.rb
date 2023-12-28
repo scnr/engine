@@ -1,0 +1,166 @@
+=begin
+    Copyright 2020-2023 Tasos Laskos <tasos.laskos@gmail.com>
+
+    This file is part of the SCNR::Engine project and is subject to
+    redistribution and commercial restrictions. Please see the SCNR::Engine
+    web site for more information on licensing and terms of use.
+=end
+
+# DOM XSS in HTML tag.
+# It injects a string and checks if it appears inside any HTML tags.
+#
+# @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
+#
+# @see http://cwe.mitre.org/data/definitions/79.html
+# @see http://ha.ckers.org/xss.html
+# @see http://secunia.com/advisories/9716/
+class SCNR::Engine::Checks::XssDomTag < SCNR::Engine::Check::Base
+
+    ATTRIBUTE_NAME = 'scnr_engine_xss_in_tag'
+    OPTIONS        = {
+        format: [ Format::APPEND ]
+    }
+
+    class SAX
+
+        def initialize( seed )
+            @seed   = seed
+            @landed = false
+        end
+
+        def landed?
+            !!@landed
+        end
+
+        def attr( name, value )
+            name  = name.to_s.downcase
+            value = value.downcase
+
+            return if ATTRIBUTE_NAME != name || value != @seed
+
+            @landed = true
+            fail SCNR::Engine::Parser::SAX::Stop
+        end
+    end
+
+    def self.payloads
+        @payloads ||= ['', '\'', '"'].
+            map { |q| "#{q} #{ATTRIBUTE_NAME}=#{q}#{random_seed}#{q} blah=#{q}" }
+    end
+
+    def run
+        return if !browser_pool
+
+        each_candidate_dom_element do |element|
+            element.audit( self.class.payloads, OPTIONS )
+        end
+    end
+
+    def self.check_and_log( page, element )
+        return if !page.html?
+
+        # If we have no body or it doesn't contain the ATTRIBUTE_NAME under any
+        # context there's no point in parsing the HTML to verify the vulnerability.
+        return if !(page.body =~ /#{ATTRIBUTE_NAME}/i)
+
+        return if !SCNR::Engine::Parser.sax_parse(
+            SAX.new( random_seed ),
+            page.body
+        ).landed?
+
+        log(
+            vector: element,
+            proof:  find_included_payload( page.body.downcase ).to_s,
+            page:   page
+        )
+    end
+
+    def self.find_included_payload( body )
+        self.payloads.each do |payload|
+            return payload if body.include?( payload )
+        end
+        nil
+    end
+
+    def self.info
+        {
+            name:        'DOM XSS in HTML tag',
+            description: %q{Cross-Site Scripting in HTML tag.},
+            elements:    [ DOM_ELEMENTS_WITH_INPUTS ],
+            sink:        {
+                areas: [:body]
+            },
+            cost:        calculate_audit_cost( payloads.size, OPTIONS ),
+            author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
+            version:     '0.1',
+
+            issue:       {
+                name:            %q{DOM Cross-Site Scripting (XSS) in HTML tag},
+                description:     %q{
+Client-side scripts are used extensively by modern web applications.
+They perform from simple functions (such as the formatting of text) up to full
+manipulation of client-side data and Operating System interaction.
+
+Cross Site Scripting (XSS) allows clients to inject scripts into a request and
+have the server return the script to the client in the response. This occurs
+because the application is taking untrusted data (in this example, from the client)
+and reusing it without performing any validation or sanitisation.
+
+If the injected script is returned immediately this is known as body XSS.
+If the injected script is stored by the server and returned to any client visiting
+the affected page, then this is known as persistent XSS (also stored XSS).
+
+Engine has discovered that it is possible to insert content directly into an HTML
+tag. For example `<INJECTION_HERE href=.......etc>` where `INJECTION_HERE`
+represents the location where the Engine payload was detected.
+},
+                references:  {
+                    'Secunia' => 'http://secunia.com/advisories/9716/',
+                    'WASC'    => 'http://projects.webappsec.org/w/page/13246920/Cross%20Site%20Scripting',
+                    'OWASP'   => 'https://www.owasp.org/index.php/XSS_%28Cross_Site_Scripting%29_Prevention_Cheat_Sheet'
+                },
+
+                tags:            %w(xss script tag regexp dom attribute injection dom),
+                cwe:             79,
+                severity:        Severity::HIGH,
+                remedy_guidance: %q{
+To remedy XSS vulnerabilities, it is important to never use untrusted or unfiltered
+data within the code of a HTML page.
+
+Untrusted data can originate not only form the client but potentially a third
+party or previously uploaded file etc.
+
+Filtering of untrusted data typically involves converting special characters to
+their HTML entity encoded counterparts (however, other methods do exist, see references).
+These special characters include:
+
+* `&`
+* `<`
+* `>`
+* `"`
+* `'`
+* `/`
+
+An example of HTML entity encoding is converting `<` to `&lt;`.
+
+Although it is possible to filter untrusted input, there are five locations
+within an HTML page where untrusted input (even if it has been filtered) should
+never be placed:
+
+1. Directly in a script.
+2. Inside an HTML comment.
+3. In an attribute name.
+4. In a tag name.
+5. Directly in CSS.
+
+Each of these locations have their own form of escaping and filtering.
+
+_Because many browsers attempt to implement XSS protection, any manual verification
+of this finding should be conducted using multiple different browsers and browser
+versions._
+}
+            }
+        }
+    end
+
+end
