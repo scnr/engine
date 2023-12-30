@@ -103,7 +103,7 @@ module Audit
             print_info "Identified as: #{page.platforms.to_a.join( ', ' )}"
         end
 
-        if crawl?
+        if crawl? && !page.element_sink_trace_hash
             pushed = push_paths_from_page( page )
             print_info "Analysis resulted in #{pushed.size} usable paths."
         end
@@ -128,7 +128,7 @@ module Audit
 
         # Pass the page to the BrowserPool to explore its DOM and feed
         # resulting pages back to the framework.
-        perform_browser_analysis( page ) if crawl?
+        perform_browser_analysis( page ) if crawl? && !page.element_sink_trace_hash
 
         ran = false
         if checks.any?
