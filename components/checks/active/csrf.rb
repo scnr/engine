@@ -40,6 +40,11 @@
 class SCNR::Engine::Checks::CSRF < SCNR::Engine::Check::Base
 
     def run
+        if !session.can_login?
+            print_info "Can't check during unauthorised scan."
+            return
+        end
+
         print_status 'Looking for CSRF candidates...'
         print_status 'Simulating logged-out user.'
 
@@ -96,7 +101,7 @@ checks them for lack of anti-CSRF tokens.
             elements:    [ Element::Form ],
             cost:        1,
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
-            version:     '0.4',
+            version:     '0.4.1',
 
             issue:       {
                 name:            %q{Cross-Site Request Forgery},
