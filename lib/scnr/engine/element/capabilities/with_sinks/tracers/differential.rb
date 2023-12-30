@@ -66,14 +66,8 @@ class Differential < Base
         PRECISION.times do |i|
             audit_options = OPTIONS
 
-            # Only train from the responses the first time, after that the only
-            # difference will be in the noise.
-            if i == 0
-                audit_options = audit_options.merge( submit: { train: true } )
-            end
-
-            # Get the default signature and train during the first request.
-            @element.submit( audit_options[:submit] || {} ) do |response|
+            # Get the default signature of the first request.
+            @element.submit do |response|
                 defaults << response.body.signature
 
                 gathered_defaults  += 1
