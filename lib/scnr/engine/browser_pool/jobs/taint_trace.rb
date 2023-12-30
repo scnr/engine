@@ -39,7 +39,9 @@ class TaintTrace < DOMExploration
         browser.on_new_page_with_sink { |page| save_result( page: page ) }
 
         browser.load resource, take_snapshot: true
-        browser.trigger_events
+
+        # Also trigger every event on the page, if we're in super audit mode, to see if any trigger the taint.
+        browser.trigger_events if Options.audit.super_mode?
     end
 
     def to_s
