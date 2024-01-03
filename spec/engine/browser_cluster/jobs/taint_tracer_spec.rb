@@ -2,6 +2,10 @@ require 'spec_helper'
 
 describe SCNR::Engine::BrowserPool::Jobs::TaintTrace do
 
+    before do
+        SCNR::Engine::Options.audit.mode = :super
+    end
+
     let(:browser_pool) { SCNR::Engine::BrowserPool.new }
 
     def test_execution_flow( job )

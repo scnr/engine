@@ -480,6 +480,10 @@ describe SCNR::Engine::BrowserPool do
             end
 
             context 'and requires a custom taint injector' do
+                before do
+                    SCNR::Engine::Options.audit.mode = :super
+                end
+
                 let(:injector) { "location.hash = #{taint.inspect}" }
                 let(:url) do
                     SCNR::Engine::Utilities.normalize_url( web_server_url_for( :taint_tracer ) ) +
