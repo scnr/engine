@@ -88,7 +88,9 @@ module URICommon
 
             CACHE[__method__].fetch url do
                 begin
-                    new( url )
+                    url = new( url )
+                    raise if url.to_s.empty?
+                    url
                 rescue => e
                     print_debug "Failed to parse '#{url}'."
                     print_debug "Error: #{e}"
@@ -140,7 +142,7 @@ module URICommon
                 return parsed_ref.to_s if !parsed
 
                 cache[key] = parsed.to_absolute( parsed_ref ).to_s
-            rescue
+            rescue => e
                 cache[key] = :err
                 nil
             end

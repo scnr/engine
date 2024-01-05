@@ -123,6 +123,9 @@ Gem::Specification.new do |s|
     # Used to scrub Markdown for XSS etc.
     s.add_dependency 'loofah',              '2.9.1'
 
+    s.add_development_dependency "rb_sys", "~> 0.9.39"
+    s.add_development_dependency "rake-compiler", "~> 1.2"
+
     s.description = <<DESCRIPTION
 SCNR::Engine is a feature-full, modular, high-performance Ruby framework aimed towards
 helping penetration testers and administrators evaluate the security of web applications.

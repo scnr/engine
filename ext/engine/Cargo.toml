@@ -4,8 +4,9 @@ version = "1.0.0"
 authors = ["Tasos Laskos <tasos.laskos@gmail.com>"]
 
 [dependencies]
-rutie = "0.8.4"
-regex = "0.2.1"
+rutie = { git = "https://github.com/MelianLabs/rutie-rb-sys.git" }
+magnus = "*"
+regex = "1.7.2"
 lazy_static = "1.4.0"
 #clippy = "*"
 fnv = "1.0.5"
@@ -13,14 +14,8 @@ url = "1.6.0"
 html5ever = "0.26.0"
 tendril = "0.4.3"
 
-#[dependencies.ruru]
-#git = "https://github.com/d-unseductable/ruru.git"
-
-#[dependencies.rutie]
-#git = "https://github.com/danielpclark/rutie.git"
-
 #[dependencies.clippy]
 #git = "https://github.com/rust-lang-nursery/rust-clippy.git"
 
 [lib]
-crate-type = ["dylib"]
+crate-type = ["cdylib"]

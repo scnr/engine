@@ -208,43 +208,6 @@ AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
         end
     end
 
-    describe '.fast_parse' do
-        it 'parses a URI and return its components as a hash' do
-            scheme   = 'http'
-            user     = 'user'
-            password = 'password'
-            host     = 'subdomain.domainname.tld'
-            path     = '/some/path'
-            query    = 'param=val&param2=val2'
-
-            uri = "#{scheme}://#{user}:#{password}@#{host}/#{path}?#{query}"
-
-            parsed_uri = described_class.fast_parse( uri )
-
-            expect(parsed_uri[:scheme]).to eq(scheme)
-            expect(parsed_uri[:userinfo]).to eq(user + ':' + password)
-            expect(parsed_uri[:host]).to eq(host)
-            expect(parsed_uri[:path]).to eq(path)
-            expect(parsed_uri[:query]).to eq(query)
-
-            parsed_uri = described_class.fast_parse( "//#{user}:#{password}@#{host}/#{path}?#{query}" )
-
-            expect(parsed_uri[:scheme]).to be_nil
-            expect(parsed_uri[:userinfo]).to eq(user + ':' + password)
-            expect(parsed_uri[:host]).to eq(host)
-            expect(parsed_uri[:path]).to eq(path)
-            expect(parsed_uri[:query]).to eq(query)
-        end
-
-        it 'ignores javascript: URLs' do
-            expect(described_class.fast_parse( 'javascript:stuff()' )).to be_nil
-        end
-
-        it 'ignores fragment-only URLs' do
-            expect(described_class.fast_parse( '#/stuff/here?blah=1' )).to be_nil
-        end
-    end
-
     describe '.to_absolute' do
         let(:reference) do
             'http://test.com/blah/ha?name=val#/!/stuff/?fname=fval'
@@ -417,9 +380,12 @@ AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
             expect(subject.port).to eq 1
         end
 
-        it 'converts it to Fixnum' do
-            subject.port = '1'
-            expect(subject.port).to eq 1
+        context 'when given wrong type' do
+            it 'raises exception' do
+              expect do
+                  subject.port = '1'
+              end.to raise_error
+            end
         end
 
         context 'when given nil' do

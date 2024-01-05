@@ -22,35 +22,10 @@ module SCNR::Engine
 # * Conversion to {URICommon::ClassMethods.to_absolute absolute URLs}.
 #
 # @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
-class URIExt < Rust::URI
+class URIExt
     include URICommon
 
     class <<self
-
-        alias :fast_parse_ext :fast_parse
-        # Performs a parse that is less resource intensive than Ruby's URI lib's
-        # method while normalizing the URL (will also discard the fragment and
-        # path parameters).
-        #
-        # @param    [String]  url
-        #
-        # @return   [Hash]
-        #   URL components (frozen):
-        #
-        #     * `:scheme` -- HTTP or HTTPS
-        #     * `:userinfo` -- `username:password`
-        #     * `:host`
-        #     * `:port`
-        #     * `:path`
-        #     * `:query`
-        def fast_parse( url )
-            if (components = fast_parse_ext( url )).any?
-                components
-            else
-                print_debug "Failed to parse '#{url}'."
-                nil
-            end
-        end
 
         # @private
         def _decode( string )
@@ -66,6 +41,7 @@ class URIExt < Rust::URI
         end
 
         to_absolute_ext!( reference )
+        self
     end
 
 end

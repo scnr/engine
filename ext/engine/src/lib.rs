@@ -1,12 +1,12 @@
 //! Engine native extension, used to give the system a performance boost during known Ruby bottlenecks.
 
-#![feature(plugin)]
-//#![plugin(clippy)]
-
 #![feature(pattern)]
 
 #[macro_use]
 extern crate rutie;
+
+#[macro_use]
+extern crate magnus;
 
 #[macro_use]
 extern crate url;
@@ -38,7 +38,8 @@ pub mod browser;
 pub extern fn initialize() {
     ruby::initialize();
     utilities::initialize();
-    uri::initialize();
+    // uri::initialize();
+    uri::init();
     support::initialize();
     http::initialize();
     parser::initialize();

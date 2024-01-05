@@ -99,7 +99,7 @@ module Engine
                 if linux?
                     library_path << 'so'
                 elsif mac?
-                    library_path << 'dylib'
+                    library_path << 'cdylib'
                 end
 
                 if File.exist?( library_path )
