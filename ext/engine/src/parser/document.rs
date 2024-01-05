@@ -171,7 +171,7 @@ impl Node {
 
 fn _parse( html: &RString, filter: &Boolean ) -> AnyObject {
     let node    = Node::new(
-        Some( parser::parse( html.to_str_unchecked(), filter.to_bool() ) )
+        Some( parser::parse( html.to_str(), filter.to_bool() ) )
     );
 
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
@@ -196,15 +196,15 @@ unsafe_methods!(
     }
 
     fn nodes_by_name( name: RString, cb: Proc ) -> NilClass {
-        _itself.get_data( &*NODE_WRAPPER ).nodes_by_name( name.to_str_unchecked(), &cb );
+        _itself.get_data( &*NODE_WRAPPER ).nodes_by_name( name.to_str(), &cb );
         NilClass::new()
     }
 
     fn nodes_by_attribute_name_and_value( name: RString, value: RString, cb: Proc ) -> NilClass {
         _itself.get_data( &*NODE_WRAPPER ).
             nodes_by_attribute_name_and_value(
-                name.to_str_unchecked(),
-                value.to_str_unchecked(),
+                name.to_str(),
+                value.to_str(),
                 &cb
             );
 

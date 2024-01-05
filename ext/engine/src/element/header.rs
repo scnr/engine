@@ -20,7 +20,7 @@ unsafe_methods!(
     _itself,
 
     fn header_encode( string: RString ) -> RString {
-        RString::new_utf8( &encode( string.to_str_unchecked() ) )
+        RString::new_utf8( &encode( string.to_str() ) )
     }
 );
 

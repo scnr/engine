@@ -26,8 +26,8 @@ unsafe_methods!(
     fn include_ext( needle: RString ) -> Boolean {
         Boolean::new(
             compile_and_match(
-                regex::escape( needle.to_str_unchecked() ),
-                itself.to_str_unchecked()
+                regex::escape( needle.to_str() ),
+                itself.to_str()
             )
         )
     }

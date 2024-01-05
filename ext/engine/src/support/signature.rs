@@ -132,7 +132,7 @@ impl Signature {
 fn _signature_new_ext( data: &RString ) -> AnyObject {
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).get_nested_class( "Support" ).
         get_nested_class( "SignatureExt" ).wrap_data(
-        Signature::new( data.to_str_unchecked() ), &*SIGNATURE_WRAPPER
+        Signature::new( data.to_str() ), &*SIGNATURE_WRAPPER
     )
 }
 
@@ -151,7 +151,7 @@ fn _signature_differences_ext( _itself: &SignatureExt, other: &AnyObject ) -> Fl
 }
 
 fn _signature_push_ext( _itself: &mut SignatureExt, data: &RString ) -> AnyObject {
-    _itself.get_data_mut( &*SIGNATURE_WRAPPER ).push( data.to_str_unchecked() );
+    _itself.get_data_mut( &*SIGNATURE_WRAPPER ).push( data.to_str() );
     _itself.to_any_object()
 }
 
