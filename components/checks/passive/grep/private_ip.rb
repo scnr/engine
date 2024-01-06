@@ -21,12 +21,23 @@ class SCNR::Engine::Checks::PrivateIP < SCNR::Engine::Check::Base
         match_and_log( self.class.regexp )
 
         page.response.headers.each do |k, v|
-            next if !(v =~ self.class.regexp)
-            log(
-                vector: Element::Header.new( url: page.url, inputs: { k => v } ),
-                proof:  v
-            )
+            if v.is_a? Array
+                v.each do |v1|
+                    self.class.match_and_log( page.url, k, v1 )
+                end
+            else
+                self.class.match_and_log( page.url, k, v )
+            end
         end
+    end
+
+    def self.match_and_log( url, name, value )
+        return if !(value =~ self.regexp)
+
+        log(
+          vector: Element::Header.new( url: url, inputs: { name => value } ),
+          proof:  value
+        )
     end
 
     def self.info
