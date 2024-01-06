@@ -479,7 +479,9 @@ class Cookie < Base
 
             ENCODE_CACHE.fetch( str ) do
                 if SCNR::Engine.has_extension?
-                    SCNR::Engine::Rust::Element::Cookie.encode_ext( str )
+                    s = SCNR::Engine::Rust::Element::Cookie.encode_ext( str.gsub( "\0", '+NULL+' ) )
+                    s.gsub!( '%2BNULL%2B', '%00' )
+                    s
                 else
                     encode_ruby( str )
                 end
