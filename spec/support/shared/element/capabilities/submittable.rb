@@ -81,6 +81,10 @@ shared_examples_for 'submittable' do
             end
 
             run
+
+            submitted.delete 'x_scnr_introspector_taint'
+            submitted.delete 'x_scnr_introspector_trace'
+
             expect(submittable.inputs).to eq(submitted)
         end
 
