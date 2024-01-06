@@ -189,6 +189,8 @@ class Parser
     end
 
     def url=( str )
+        return @url = nil if str.nil?
+
         @url = normalize_url( uri_decode( str ) )
         @url = normalize_url( str ) if !@url
         @url.freeze
