@@ -12,7 +12,7 @@ class SCNR::Engine::Checks::Captcha < SCNR::Engine::Check::Base
     CAPTCHA_RX = /.*captcha.*/i
 
     def run
-        return if !page.body =~ CAPTCHA_RX
+        return if !(page.body =~ CAPTCHA_RX)
 
         # since we only care about forms parse the HTML and match forms only
         page.document.nodes_by_name( 'form' ) do |form|
