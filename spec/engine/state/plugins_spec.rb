@@ -41,7 +41,7 @@ describe SCNR::Engine::State::Plugins do
             subject.dump( dump_directory )
 
             results_file = "#{dump_directory}/runtime/distributable"
-            expect(File.exists?( results_file )).to be_truthy
+            expect(File.exist?( results_file )).to be_truthy
             expect(subject.runtime).to eq({
                 distributable: Marshal.load( IO.read( results_file ) )
             })

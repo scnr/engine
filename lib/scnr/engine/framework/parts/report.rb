@@ -89,7 +89,7 @@ module Report
         rescue => e
             print_exception e
         ensure
-            File.delete( outfile ) if outfile && File.exists?( outfile )
+            File.delete( outfile ) if outfile && File.exist?( outfile )
             @reporters.clear
             @reporters.load loaded
         end

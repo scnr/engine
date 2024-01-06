@@ -449,7 +449,7 @@ describe SCNR::Engine::Component::Manager do
     describe '#name_to_path' do
         it 'returns a component\'s path from its name' do
             path = subject.name_to_path( 'wait' )
-            expect(File.exists?( path )).to be_truthy
+            expect(File.exist?( path )).to be_truthy
             expect(File.basename( path )).to eq('wait.rb')
         end
     end
@@ -464,7 +464,7 @@ describe SCNR::Engine::Component::Manager do
     describe '#paths' do
         it 'returns all component paths' do
             paths = subject.paths
-            paths.each { |p| expect(File.exists?( p )).to be_truthy }
+            paths.each { |p| expect(File.exist?( p )).to be_truthy }
             expect(paths.size).to eq(subject.available.size)
         end
     end

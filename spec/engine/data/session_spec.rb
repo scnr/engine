@@ -26,7 +26,7 @@ describe SCNR::Engine::Data::Session do
             subject.dump( dump_directory )
 
             results_file = "#{dump_directory}/configuration"
-            expect(File.exists?( results_file )).to be_truthy
+            expect(File.exist?( results_file )).to be_truthy
             expect(subject.configuration).to eq({ stuff: [1] })
         end
     end

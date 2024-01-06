@@ -41,7 +41,7 @@ describe SCNR::Engine::Data::Plugins do
             subject.dump( dump_directory )
 
             results_file = "#{dump_directory}/results/distributable"
-            expect(File.exists?( results_file )).to be_truthy
+            expect(File.exist?( results_file )).to be_truthy
             expect(subject.results).to eq({
                 distributable: Marshal.load( IO.read( results_file ) )
             })

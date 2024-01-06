@@ -230,7 +230,7 @@ describe SCNR::Engine::Data::Issues do
 
             subject.each do |issue|
                 issue_path = "#{dump_directory}/issue_#{issue.digest}"
-                expect(File.exists?( issue_path )).to be_truthy
+                expect(File.exist?( issue_path )).to be_truthy
 
                 loaded_issue = Marshal.load( IO.binread( issue_path ) )
                 expect(issue).to eq(loaded_issue)

@@ -5,7 +5,7 @@ class SCNR::Engine::Component::Options::Path < SCNR::Engine::Component::Options:
 
     def valid?
         return false if !super
-        File.exists?( effective_value )
+        File.exist?( effective_value )
     end
 
     def type
