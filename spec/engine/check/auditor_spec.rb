@@ -1225,6 +1225,10 @@ describe SCNR::Engine::Check::Auditor do
         end
 
         context 'when tracing the execution-flow' do
+            before do
+              SCNR::Engine::Options.audit.mode = :super
+            end
+
             let(:url) do
                 SCNR::Engine::Utilities.normalize_url( web_server_url_for( :taint_tracer ) )
             end
@@ -1275,6 +1279,9 @@ describe SCNR::Engine::Check::Auditor do
         end
 
         context 'when the block returns' do
+            before do
+                SCNR::Engine::Options.audit.mode = :super
+            end
             let(:url) do
                 SCNR::Engine::Utilities.normalize_url( web_server_url_for( :taint_tracer ) )
             end
