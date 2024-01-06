@@ -103,7 +103,7 @@ impl Handle {
 
         self.traverse( |handle| {
             if let Enum::Element { ref name, .. } = handle.borrow().node {
-                if name.to_string().to_lowercase()  != ln { return }
+                if name.to_string().to_lowercase() != ln { return }
                 cb( handle )
             }
         })
