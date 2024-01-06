@@ -537,6 +537,9 @@ describe SCNR::Engine::BrowserPool do
         end
 
         context 'when tracing the execution-flow' do
+            before do
+                SCNR::Engine::Options.audit.mode = :super
+            end
             let(:url) do
                 SCNR::Engine::Utilities.normalize_url( web_server_url_for( :taint_tracer ) ) +
                     "debug?input=#{subject.javascript_token}TaintTracer.log_execution_flow_sink()"
