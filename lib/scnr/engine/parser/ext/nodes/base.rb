@@ -36,6 +36,7 @@ class Base
             block.call node
             # native.free
         end)
+        nil
     end
 
     def traverse_comments( &block )
@@ -44,19 +45,21 @@ class Base
             block.call node
             # native.free
         end)
+        nil
     end
 
     def nodes_by_name( name, &block )
-        name = name.to_s
-        @native.nodes_by_name name, (proc do |native|
+        @native.nodes_by_name name.to_s, (proc do |native|
             node = Nodes::Base.from_native( native )
             block.call node
             # native.free
         end)
+        nil
     end
 
     def nodes_by_names( *names, &block  )
         names.flatten.each { |n| nodes_by_name( n, &block ) }
+        nil
     end
 
     def nodes_by_attribute_name_and_value( name, value, &block )
@@ -68,6 +71,7 @@ class Base
             block.call node
             # native.free
         end)
+        nil
     end
 
     def hash
