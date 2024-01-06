@@ -38,8 +38,7 @@ pub mod browser;
 pub extern fn initialize() {
     ruby::initialize();
     utilities::initialize();
-    // uri::initialize();
-    uri::init();
+    let _ = uri::initialize();
     support::initialize();
     http::initialize();
     parser::initialize();
