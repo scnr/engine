@@ -1,4 +1,4 @@
-use rutie::{Class, Object, RString, NilClass, AnyObject, Boolean, Proc, Symbol, Hash};
+use rutie::{Class, Object, RString, Boolean, AnyObject, Proc, Symbol, Hash};
 use parser::sax::*;
 
 lazy_static! {
@@ -190,17 +190,17 @@ unsafe_methods!(
         _parse( &html, &filter )
     }
 
-    fn traverse_comments( cb: Proc ) -> NilClass {
+    fn traverse_comments( cb: Proc ) -> Boolean {
         _itself.get_data( &*NODE_WRAPPER ).traverse_comments( &cb );
-        NilClass::new()
+        Boolean::new(true)
     }
 
-    fn nodes_by_name( name: RString, cb: Proc ) -> NilClass {
+    fn nodes_by_name( name: RString, cb: Proc ) -> Boolean {
         _itself.get_data( &*NODE_WRAPPER ).nodes_by_name( name.to_str(), &cb );
-        NilClass::new()
+        Boolean::new(true)
     }
 
-    fn nodes_by_attribute_name_and_value( name: RString, value: RString, cb: Proc ) -> NilClass {
+    fn nodes_by_attribute_name_and_value( name: RString, value: RString, cb: Proc ) -> Boolean {
         _itself.get_data( &*NODE_WRAPPER ).
             nodes_by_attribute_name_and_value(
                 name.to_str(),
@@ -208,12 +208,12 @@ unsafe_methods!(
                 &cb
             );
 
-        NilClass::new()
+        Boolean::new(true)
     }
 
-    fn traverse( cb: Proc ) -> NilClass {
+    fn traverse( cb: Proc ) -> Boolean {
         _itself.get_data( &*NODE_WRAPPER ).traverse( &cb );
-        NilClass::new()
+        Boolean::new(true)
     }
 
     fn is_root() -> Boolean {
@@ -240,9 +240,9 @@ unsafe_methods!(
         _itself.get_data( &*NODE_WRAPPER ).parent()
     }
 
-    fn free() -> NilClass {
+    fn free() -> Boolean {
         _itself.get_data_mut( &*NODE_WRAPPER ).free();
-        NilClass::new()
+        Boolean::new(true)
     }
 
     fn to_html() -> RString {
