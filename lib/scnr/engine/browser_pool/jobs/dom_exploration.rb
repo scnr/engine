@@ -24,7 +24,7 @@ class DOMExploration < Job
     attr_accessor :resource
 
     def initialize( options )
-        self.resource = options.delete(:resource)
+        self.resource = options[:resource]
         super options
     end
 
