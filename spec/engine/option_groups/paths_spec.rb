@@ -21,7 +21,7 @@ describe SCNR::Engine::OptionGroups::Paths do
 
         describe "##{method}" do
             it 'points to an existing directory' do
-                expect(File.exists?( subject.send method )).to be_truthy
+                expect(File.exist?( subject.send method )).to be_truthy
             end
         end
 
