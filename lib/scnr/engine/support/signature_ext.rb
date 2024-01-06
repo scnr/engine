@@ -16,6 +16,10 @@ module Support
 class SignatureExt < Rust::Support::Signature
     include SignatureCommon
 
+    def self.new( string )
+        super string.delete( "\0" )
+    end
+
     alias :old_refine! :refine!
     def refine!( data )
         old_refine! normalize( data )
@@ -24,6 +28,10 @@ class SignatureExt < Rust::Support::Signature
     alias :old_refine :refine
     def refine( data )
         old_refine normalize( data )
+    end
+
+    def <<( data )
+        super data.delete( "\0" )
     end
 
     private
