@@ -114,7 +114,7 @@ class Trainer
         @trainings_per_url[response.url.hash] += 1
 
         thread_pool.post do
-            analyze response
+            exception_jail { analyze response }
         end
 
         true
