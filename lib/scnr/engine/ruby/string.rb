@@ -60,7 +60,8 @@ class String
         return false if empty?
         return false if needle.size > size
 
-        SCNR::Engine.has_extension? ? include_ext?( needle ) : include?( needle )
+        # SCNR::Engine.has_extension? ? include_ext?( needle ) : include?( needle )
+        include?( needle )
     end
 
     # @param    [Regexp]    regexp
