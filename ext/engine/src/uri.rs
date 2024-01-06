@@ -6,8 +6,7 @@ use std::str::pattern::Pattern;
 
 use utilities;
 use url::{Url, percent_encoding};
-use rutie::{Class, Hash as RHash, Fixnum, Object, RString, AnyObject, Symbol, Boolean, NilClass, VM};
-use magnus::{class, define_class, function, method, prelude::*, Error, RClass, RModule};
+use magnus::{class, function, method, prelude::*, Error, RModule};
 use std::collections::HashMap;
 
 use std::hash::{Hash, Hasher};
@@ -730,7 +729,7 @@ impl MutURI {
 }
 
 #[magnus::init]
-pub fn init() -> Result<(), Error> {
+pub fn initialize() -> Result<(), Error> {
     let scnr_ns = class::object().const_get::<_, RModule>("SCNR").unwrap();
     let engine_ns = scnr_ns.const_get::<_, RModule>( "Engine" ).unwrap();
     // let rust_ns = engine_ns.define_class( "Rust", class::object() ).unwrap();
