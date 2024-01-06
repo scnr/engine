@@ -48,7 +48,7 @@ class Parser
 
         def parse( html, options = {} )
             CACHE[__method__].fetch [html, options] do
-                Document.parse( html, !!options[:filter] )
+                Document.parse( html.delete( "\0" ), !!options[:filter] )
             end
         end
 
