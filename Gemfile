@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 # gem 'bootsnap', require: false
 gem 'rake', '11.3.0'
 
-gem 'ethon', github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'
+# gem 'ethon', github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'
 
 group :docs do
     gem 'yard'
