@@ -21,14 +21,14 @@ fn hash_obj<T: Hash>(t: &T) -> u64 {
 }
 
 /// Breaks the given string to an array of tokens (integers for efficiency).
-fn tokenize( data: &str ) -> BTreeSet<i16> {
+fn tokenize( data: String ) -> BTreeSet<i16> {
 
     // Can panic when passed binary data instead of valid UTF-8.
     let result = panic::catch_unwind(|| {
         let mut set = BTreeSet::new();
 
         // Convert to integer hashes and deduplicate.
-        for entry in TOKENIZE_REGEXP.split( data ) {
+        for entry in TOKENIZE_REGEXP.split( &data ) {
             if entry.is_empty() { continue }
 
             // We want small hashes for the tokenization to keep RAM usage low
@@ -60,7 +60,7 @@ pub struct Signature {
 
 impl Signature {
 
-    fn new( data: &str ) -> Self {
+    fn new( data: String ) -> Self {
         Signature {
             tokens: tokenize( data )
         }
@@ -132,7 +132,7 @@ impl Signature {
 fn _signature_new_ext( data: &RString ) -> AnyObject {
     Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).get_nested_class( "Support" ).
         get_nested_class( "SignatureExt" ).wrap_data(
-        Signature::new( data.to_str() ), &*SIGNATURE_WRAPPER
+        Signature::new( data.to_string() ), &*SIGNATURE_WRAPPER
     )
 }
 
