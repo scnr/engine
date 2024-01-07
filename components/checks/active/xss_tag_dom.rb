@@ -86,7 +86,7 @@ class SCNR::Engine::Checks::XssDomTag < SCNR::Engine::Check::Base
         {
             name:        'DOM XSS in HTML tag',
             description: %q{Cross-Site Scripting in HTML tag.},
-            elements:    [ DOM_ELEMENTS_WITH_INPUTS ],
+            elements:    DOM_ELEMENTS_WITH_INPUTS,
             sink:        {
                 areas: [:body]
             },
