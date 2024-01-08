@@ -16,6 +16,12 @@ class Fuzz < Base
     include Component::Output
     extend Component::Output
 
+    class <<self
+        include Support::Mixins::Observable
+        advertise :on_sinks
+    end
+    observe!
+
     OPTIONS = {
         format: [ Element::Capabilities::Mutable::Format::APPEND ],
         silent: true
@@ -54,26 +60,30 @@ class Fuzz < Base
     def self.check_and_log( page, mutation )
         seed = mutation.seed
 
-        mutation.sinks.traced!
-
+        found = false
         # One of the occurrences will be the actual setting of the taint.
         if /#{seed}/i.match? page.body
             mutation.sinks.active!
             mutation.sinks.body!
+            found = true
 
             mutation.sinks.print_message
-            return
         end
 
         ## TODO: Add tests for signals
         if page.dom.has_data_flow_sink_signal? || page.dom.data_flow_sinks.any?
             mutation.sinks.active!
+            found = true
 
             mutation.sinks.print_message
-            return
         end
 
-        mutation.sinks.blind!
+        if found
+            self.notify_on_sinks seed, mutation, page
+        else
+            mutation.sinks.blind!
+        end
+        mutation.sinks.traced!
 
         mutation.sinks.print_message
     end

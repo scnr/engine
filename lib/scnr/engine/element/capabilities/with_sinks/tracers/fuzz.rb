@@ -14,6 +14,12 @@ module Tracers
 
 class Fuzz < Base
 
+    class <<self
+        include Support::Mixins::Observable
+        advertise :on_sinks
+    end
+    observe!
+
     OPTIONS = {
         # Don't print audit messages, we'll handle that ourselves.
         silent: true
@@ -52,25 +58,35 @@ class Fuzz < Base
 
     def self.find_sinks( seed, mutation, response )
         r = /#{seed}/i
+        found = false
 
         if r.match? response.body
             mutation.sinks.body!
+
+            found = true
         end
 
         response.headers.each do |k, v|
             if r.match? k
                 mutation.sinks.header_name!
+                found = true
             end
 
             if v.is_a?( String ) && r.match?( v )
                 mutation.sinks.header_value!
+                found = true
             elsif v.is_a? Array
                 v.each do |hv|
                     if r.match? hv
                         mutation.sinks.header_value!
+                        found = true
                     end
                 end
             end
+        end
+
+        if found
+            self.notify_on_sinks seed, mutation, response
         end
     end
 

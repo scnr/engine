@@ -14,6 +14,12 @@ module Tracers
 
 class Differential < Base
 
+    class <<self
+        include Support::Mixins::Observable
+        advertise :on_sinks
+    end
+    observe!
+
     PRECISION = 2
 
     OPTIONS = {
@@ -81,7 +87,7 @@ class Differential < Base
 
                 next if expected_responses != gathered_responses
 
-                process( defaults, mutations )
+                process( seed, defaults, mutations )
             end
 
             audits = [
@@ -127,7 +133,7 @@ class Differential < Base
 
                     next if expected_responses != gathered_responses
 
-                    process( defaults, mutations )
+                    process( seed, defaults, mutations )
                 end
             end
         end
@@ -139,12 +145,10 @@ class Differential < Base
         @sinks.class.tracers[:fuzz][0].find_sinks( seed, mutation, response )
     end
 
-    def process( defaults, mutations )
+    def process( seed, defaults, mutations )
         default = Support::Signature.refine( defaults )
 
         mutations.values.each do |data|
-            data[:mutation].sinks.traced!
-
             # The input doesn't affect the page at all, mark it as blind so
             # that it'll at least be checked by timing attacks and the like.
             if default == Support::Signature.refine( data[:signatures] )
@@ -155,6 +159,10 @@ class Differential < Base
             else
                 data[:mutation].sinks.active!
             end
+
+            data[:mutation].sinks.traced!
+
+            self.class.notify_on_sinks seed, data[:mutation]
         end
 
         @sinks.print_message
