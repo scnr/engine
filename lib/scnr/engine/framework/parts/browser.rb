@@ -101,7 +101,7 @@ module Browser
     end
 
     def wait_for_browser_pool?
-        @browser_pool && !browser_pool.done?
+        @browser_pool && !browser_pool.shutdown? && !browser_pool.done?
     end
 
     def use_browsers?
@@ -115,8 +115,8 @@ module Browser
 
         @browser_pool.shutdown( false )
 
-        @browser_pool = nil
-        @browser_job     = nil
+        # @browser_pool = nil
+        # @browser_job  = nil
     end
 
     # Passes the `page` to {BrowserPool#queue} and then pushes
