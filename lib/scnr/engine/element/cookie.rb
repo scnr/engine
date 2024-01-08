@@ -109,8 +109,6 @@ class Cookie < Base
         @data[:domain] ||= parsed_uri.host
 
         @default_inputs = self.inputs.dup.freeze
-
-        @created = caller
     end
 
     # Indicates whether the cookie must be only sent over an encrypted channel.
