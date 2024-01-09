@@ -37,6 +37,9 @@ class SCNR::Engine::Plugins::SinkTracer < SCNR::Engine::Plugin::Base
         Element::Capabilities::WithSinks::Sinks.add_to_max_cost Float::INFINITY
         Element::Capabilities::WithSinks::Sinks.enable_all
 
+        Element::DOM::Capabilities::WithSinks::Sinks.add_to_max_cost Float::INFINITY
+        Element::DOM::Capabilities::WithSinks::Sinks.enable_all
+
         check = Class.new( SCNR::Engine::Check::Base )
         check.shortname = 'sink_trace_force'
 
@@ -54,7 +57,7 @@ class SCNR::Engine::Plugins::SinkTracer < SCNR::Engine::Plugin::Base
         check.define_method :run, &proc {}
         check.define_singleton_method :info, &proc {{
           elements: Check::Auditor::DOM_ELEMENTS_WITH_INPUTS,
-          sink:     { areas: Element::Capabilities::WithSinks::Sinks.enabled.to_a }
+          sink:     { areas: Element::DOM::Capabilities::WithSinks::Sinks.enabled.to_a }
         }}
 
         framework.checks[check.shortname] = check
@@ -70,7 +73,7 @@ class SCNR::Engine::Plugins::SinkTracer < SCNR::Engine::Plugin::Base
     end
 
     def prepare_mutation( mutation )
-        mutation.dup.tap { |m| m.auditor = nil }.to_rpc_data
+        mutation.dup.tap { |m| m.auditor = nil }.to_rpc_data.merge 'type' => mutation.type
     end
 
     def prepare_sinks( mutation )

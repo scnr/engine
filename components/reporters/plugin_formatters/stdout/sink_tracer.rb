@@ -26,6 +26,22 @@ class PluginFormatters::SinkTracer < SCNR::Engine::Plugin::Formatter
             next if !sinks_for( result ).include?( 'active' )
 
             print_result( result )
+
+            if result['resource'] && result['resource']['dom'] && (dfs = result['resource']['dom']['data_flow_sinks'])
+                print_line " -- Data flow:"
+                dfs.each.with_index do |df, idx|
+                    print_line "[#{idx+1}] -- #{df['object']}.#{df['function']['name']}( #{df['function']['arguments'].join( ', ')} )"
+                    print_line "[#{idx+1}] ---- Trace"
+                    df['trace'].each do |t|
+                        next if t['url'].include? 'javascript.browser.scnr.engine'
+                        print_line "[#{idx+1}] ------ #{t['function']['name']}() at #{t['url']} line #{t['line']}"
+                    end
+                    print_line "[#{idx+1}] ---- Source:"
+                    print_line df['function']['source']
+                    print_line
+                end
+            end
+
             print_line
         end
 
@@ -47,7 +63,7 @@ class PluginFormatters::SinkTracer < SCNR::Engine::Plugin::Formatter
 
     def print_result( result )
         print_line "`#{result['mutation']['affected_input_name']}` " <<
-          "#{result['mutation']['class'].split( '::' ).last.downcase} via " <<
+          "#{result['mutation']['type']} via " <<
           "#{result['mutation']['method'].upcase} #{result['mutation']['action']}"
         print_line " -- Using: #{result['mutation']['inputs'][result['mutation']['affected_input_name']]}"
     end
