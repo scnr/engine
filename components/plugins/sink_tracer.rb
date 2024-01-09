@@ -65,12 +65,20 @@ class SCNR::Engine::Plugins::SinkTracer < SCNR::Engine::Plugin::Base
           'seed'     => seed,
           'mutation' => prepare_mutation( mutation ),
           'resource' => resource ? resource.to_rpc_data : nil,
-          'sinks'    => mutation.sinks.per_input
+          'sinks'    => prepare_sinks( mutation )
         }
     end
 
     def prepare_mutation( mutation )
         mutation.dup.tap { |m| m.auditor = nil }.to_rpc_data
+    end
+
+    def prepare_sinks( mutation )
+        sinks = {}
+        mutation.sinks.per_input.each do |input, s|
+            sinks[input] = s.map(&:to_s)
+        end
+        sinks
     end
 
     def self.info
