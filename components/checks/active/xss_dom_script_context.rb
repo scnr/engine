@@ -73,7 +73,7 @@ Injects JS taint code and checks to see if it gets executed as proof of vulnerab
 },
             elements:    DOM_ELEMENTS_WITH_INPUTS,
             sink:        {
-                areas: [:active]
+                areas: [:active, :body]
             },
             cost:        calculate_audit_cost( payloads.size, options ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
