@@ -67,13 +67,30 @@ class SCNR::Engine::Plugins::SinkTracer < SCNR::Engine::Plugin::Base
         {
           'seed'     => seed,
           'mutation' => prepare_mutation( mutation ),
-          'resource' => resource ? resource.to_rpc_data : nil,
+          'resource' => prepare_resource( resource ),
           'sinks'    => prepare_sinks( mutation )
         }
     end
 
     def prepare_mutation( mutation )
-        mutation.dup.tap { |m| m.auditor = nil }.to_rpc_data.merge 'type' => mutation.type
+        mutation.dup.tap { |m| m.auditor = nil }.to_rpc_data.merge( 'type' => mutation.type )
+    end
+
+    def prepare_resource( resource )
+        if resource
+            resource = resource.to_rpc_data
+
+            if resource['dom']
+                resource['dom']['data_flow_sinks'] = resource['dom']['data_flow_sinks'].map(&:my_stringify_keys)
+                resource['dom']['data_flow_sinks'].each do |dfs|
+                    dfs['trace'] = dfs['trace'].map(&:my_stringify_keys)
+                end
+            end
+
+            resource
+        else
+        nil
+        end
     end
 
     def prepare_sinks( mutation )
