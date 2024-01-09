@@ -87,7 +87,7 @@ class SCNR::Engine::Plugins::SinkTracer < SCNR::Engine::Plugin::Base
     def self.info
         {
           name:        'Sink tracer',
-          description: %q{},
+          description: %q{Identifies input characteristics such as reflection or triggering webapp functionality.},
           author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>',
           version:     '0.1'
         }
