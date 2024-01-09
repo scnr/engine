@@ -365,6 +365,10 @@ class BrowserPool
         job
     end
 
+    def shutdown?
+        @shutdown
+    end
+
     # @private
     def callback_for( job )
         @job_callbacks[job.id]
@@ -467,7 +471,7 @@ class BrowserPool
     end
 
     def fail_if_shutdown
-        fail Error::AlreadyShutdown, 'Cluster has been shut down.' if @shutdown
+        fail Error::AlreadyShutdown, 'Cluster has been shut down.' if shutdown?
     end
 
     def fail_if_job_done( job )

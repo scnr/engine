@@ -200,8 +200,12 @@ module Audit
         # Keep auditing until there are no more resources in the queues and the
         # browsers have stopped spinning.
         loop do
+            handle_signals
+
             show_workload_msg = true
             while !has_audit_workload? && (wait_for_browser_pool? || wait_for_trainer?)
+                handle_signals
+
                 if show_workload_msg
                     print_line
                     print_status 'Workload exhausted, waiting for new pages...'
@@ -240,6 +244,7 @@ module Audit
         return if !has_audit_workload? || page_limit_reached?
 
         while !suspended? && !page_limit_reached? && (page = pop_page)
+            handle_signals
             audit_page( page )
 
             # We do this last because we prefer exhausting all page queue entries

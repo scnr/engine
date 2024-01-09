@@ -34,7 +34,7 @@ class SCNR::Engine::Checks::ResponseSplitting < SCNR::Engine::Check::Base
         # try to inject the headers into all vectors
         # and pass a block that will check for a positive result
         audit( header, OPTIONS ) do |response, element|
-            next if response.headers[header_name].to_s.downcase != 'no'
+            next if !response.headers.include?( header_name )
 
             log(
                 vector:   element,
@@ -52,11 +52,11 @@ Injects arbitrary and checks if any of them end up in the response header.
 },
             elements:    ELEMENTS_WITH_INPUTS,
             sink:        {
-                areas: [:header_name]
+                areas: [:header_name, :header_value]
             },
             cost:        calculate_audit_cost( 1, OPTIONS ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
-            version:     '0.2.4',
+            version:     '0.2.5',
 
             issue:       {
                 name:            %q{Response Splitting},
