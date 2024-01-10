@@ -30,7 +30,7 @@ class SCNR::Engine::Plugins::SinkTracer < SCNR::Engine::Plugin::Base
 
         wait_while_framework_running
 
-        register_results @sinks
+        register_results @sinks.values
     end
 
     def load_sink_trace_force_check
@@ -64,12 +64,22 @@ class SCNR::Engine::Plugins::SinkTracer < SCNR::Engine::Plugin::Base
     end
 
     def prepare_entry( seed, mutation, resource = nil )
-        {
+        entry = {
           'seed'     => seed,
           'mutation' => prepare_mutation( mutation ),
-          'resource' => prepare_resource( resource ),
           'sinks'    => prepare_sinks( mutation )
         }
+
+        r = prepare_resource( resource )
+        case resource
+            when Page
+                entry['page'] = r
+
+            when HTTP::Response
+                entry['response'] = r
+        end
+
+        entry
     end
 
     def prepare_mutation( mutation )
