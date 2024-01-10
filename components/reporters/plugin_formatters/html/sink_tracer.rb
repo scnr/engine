@@ -68,6 +68,19 @@ class PluginFormatters::SinkTracer < SCNR::Engine::Plugin::Formatter
         </li>
     <% end %>
     </ol>
+
+    <h3>Blind sinks</h3>
+    <p>Could not discern functionality being activated in the web application.</p>
+
+    <ol>
+    <% results.each do |entry| %>
+        <% next if !sinks_for( entry ).include?( 'blind' )%>
+
+        <li>
+            <%= render_entry( entry ) %>
+        </li>
+    <% end %>
+    </ol>
         HTML
     end
 
