@@ -18,11 +18,11 @@ class Input < SCNR::Engine::OptionGroup
         /name/i    => 'scnr_engine_name',
         /user/i    => 'scnr_engine_user',
         /usr/i     => 'scnr_engine_user',
-        /pass/i    => '5543!%scnr_engine_secret',
+        /pass/i    => '5543!scnr_engine_secret',
         /txt/i     => 'scnr_engine_text',
         /num/i     => '132',
         /amount/i  => '100',
-        /mail/i    => 'scnr_engine@email.gr',
+        /mail/i    => 'scnr_engine@email.com',
         /account/i => '12',
         /id/i      => '1',
     }
