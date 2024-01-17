@@ -168,7 +168,7 @@ class Differential < Base
         @sinks.print_message
     end
 
-    Sinks.register_tracer self, :differential, [:active, :body, :header_name, :header_value]
+    Sinks.register_tracer self, :differential, [:blind, :active, :body, :header_name, :header_value]
 end
 
 end
