@@ -113,7 +113,8 @@ class Chrome < Base
         proxy_uri = URI( proxy.url )
 
         args = BROWSER_ARGS + [
-          "--proxy-server=#{proxy_uri.host}:#{proxy_uri.port}"
+          "--proxy-server=#{proxy_uri.host}:#{proxy_uri.port}",
+          "--proxy-bypass-list=<-loopback>"
         ]
         args << '--headless' if !@options[:visible]
 
