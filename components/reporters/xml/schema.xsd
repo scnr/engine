@@ -246,7 +246,7 @@
     <xs:complexType name="plugin_uncommon_headers_results_entry">
         <xs:all>
             <xs:element name="headers" type="headers"/>
-            <xs:element name="url" type="xs:anyURI"/>
+            <xs:element name="url" type="xs:string"/>
         </xs:all>
     </xs:complexType>
 
@@ -299,7 +299,7 @@
         <xs:all>
             <xs:element name="time" type="xs:dateTime"/>
             <xs:element name="cookies" type="cookies"/>
-            <xs:element name="url" type="xs:anyURI"/>
+            <xs:element name="url" type="xs:string"/>
         </xs:all>
     </xs:complexType>
 
@@ -321,7 +321,7 @@
     <xs:complexType name="plugin_content_types_results_entry">
         <xs:all>
             <xs:element name="content_type" type="xs:string"/>
-            <xs:element name="url" type="xs:anyURI"/>
+            <xs:element name="url" type="xs:string"/>
             <xs:element name="method" type="xs:string"/>
             <xs:element name="parameters" type="parameters" minOccurs="0"/>
         </xs:all>
@@ -393,7 +393,7 @@
 
     <xs:complexType name="sitemapentry">
         <xs:attribute name="code" type="xs:integer"/>
-        <xs:attribute name="url" type="xs:anyURI"/>
+        <xs:attribute name="url" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="issues">
@@ -491,7 +491,7 @@
             <!--
                 URL of the page which presented the element.
             -->
-            <xs:element name="url" type="xs:anyURI"/>
+            <xs:element name="url" type="xs:string"/>
 
             <!--
                 Source representation of the element according to the page
@@ -504,7 +504,7 @@
                 Unlike "url", this is the location that will be requested
                 upon submission of the element.
             -->
-            <xs:element name="action" type="xs:anyURI" minOccurs="0"/>
+            <xs:element name="action" type="xs:string" minOccurs="0"/>
 
             <!--
                 HTTP method to use for submission of the element.
@@ -584,7 +584,7 @@
     -->
     <xs:complexType name="pagedom">
         <xs:all>
-            <xs:element name="url" type="xs:anyURI"/>
+            <xs:element name="url" type="xs:string"/>
 
             <!--
                 Interactions, between the browser and the page, required
@@ -793,7 +793,7 @@
 
     <xs:complexType name="reference">
         <xs:attribute name="title" type="xs:string"/>
-        <xs:attribute name="url" type="xs:anyURI"/>
+        <xs:attribute name="url" type="xs:string"/>
     </xs:complexType>
 
     <xs:complexType name="cookies">
