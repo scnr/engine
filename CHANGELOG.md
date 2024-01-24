@@ -1,3 +1,10 @@
+# 0.1.1
+
+- Checks
+  - `rfi`: tests.arachni-scanner.com => checks.ecsypno.com
+
+# 0.1
+
 - Executables moved to optional `SCNR::UI::CLI` gem.
 - Added Bootsnap for faster boot-up.
 - `OptionGroups`

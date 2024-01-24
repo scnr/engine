@@ -45,9 +45,9 @@ class SCNR::Engine::Checks::Rfi < SCNR::Engine::Check::Base # *always* extend SC
     #
     def self.payloads
         @payloads ||= [
-            'hTtP://tests.arachni-scanner.com/rfi.md5.txt',
-            'http://tests.arachni-scanner.com/rfi.md5.txt',
-            'tests.arachni-scanner.com/rfi.md5.txt'
+            'hTtP://checks.ecsypno.com/rfi.md5.txt',
+            'http://checks.ecsypno.com/rfi.md5.txt',
+            'checks.ecsypno.com/rfi.md5.txt'
         ]
     end
 
