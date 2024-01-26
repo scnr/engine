@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 =begin
-    Copyright 2020-2022 Tasos Laskos <tasos.laskos@gmail.com>
+    Copyright 2024 Ecsypno Single Member P.C.
 
     This file is part of the SCNR::Engine project and is subject to
     redistribution and commercial restrictions. Please see the SCNR::Engine
