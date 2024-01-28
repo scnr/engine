@@ -59,69 +59,55 @@ Gem::Specification.new do |s|
     # Rust extension helpers.
     s.add_dependency 'thermite',            '~> 0'
 
-    # s.add_dependency 'google_hash',         '0.9.0'
-
     s.add_dependency 'awesome_print',       '1.6.1'
 
     # Don't specify version, messes with the packages since they always grab the
     # latest one.
     s.add_dependency 'bundler'
 
-    s.add_dependency 'concurrent-ruby',     '1.1.8'
-    s.add_dependency 'concurrent-ruby-ext', '1.1.8'
-
-    # For compressing/decompressing system state archives.
-    s.add_dependency 'rubyzip',             '2.3.0'
+    s.add_dependency 'concurrent-ruby',     '~> 1.2.3'
+    s.add_dependency 'concurrent-ruby-ext', '~> 1.2.3'
 
     # HTTP proxy server
-    s.add_dependency 'http_parser.rb',      '0.6.0'
+    s.add_dependency 'http_parser.rb',      '0.8.0'
 
     # HTML report
-    s.add_dependency 'coderay',             '1.1.2'
+    s.add_dependency 'coderay',             '1.1.3'
 
-    s.add_dependency 'childprocess',        '0.8.0'
-
-    # RPC serialization.
-    s.add_dependency 'msgpack',             '1.1.0'
+    s.add_dependency 'childprocess',        '5.0.0'
 
     # Optimized JSON.
     # s.add_dependency 'oj',                  '3.13.13'
     # s.add_dependency 'oj_mimic_json',       '1.0.1'
 
-    # Web server
-    s.add_dependency 'puma',                '5.6.2'
-
     s.add_dependency 'rack',                '~> 2.2.3'
     s.add_dependency 'rack-test'
 
     # HTTP client.
-    s.add_dependency 'typhoeus',            '1.4.0'
+    s.add_dependency 'typhoeus',            '1.4.1'
     # s.add_dependency 'ethon',               '0.15.0'
 
     # Fallback URI parsing and encoding utilities.
-    s.add_dependency 'addressable',         '2.5.2'
+    s.add_dependency 'addressable',         '2.8.6'
 
     # E-mail plugin.
-    s.add_dependency 'pony',                '1.11'
+    s.add_dependency 'pony',                '1.13.1'
 
     # Markup parsing, for reports and Element::XML.
     s.add_dependency 'nokogiri'
     # Really fast and lightweight markup parsing, for pages.
-    s.add_dependency 'ox',                  '2.14.16'
+    s.add_dependency 'ox',                  '2.14.17'
 
     # Browser support for DOM/JS/AJAX analysis stuff.
-    s.add_dependency 'watir',               '6.19.1'
-    s.add_dependency 'selenium-webdriver',  '4.1.0'
-
-    s.add_dependency 'vmstat',              '2.3.0'
-    s.add_dependency 'sys-proctable',       '1.1.5'
+    s.add_dependency 'watir',               '7.3.0'
+    s.add_dependency 'selenium-webdriver',  '4.17.0'
 
     # Markdown to HTML conversion, used by the HTML report for component
     # descriptions.
-    s.add_dependency 'kramdown',            '2.3.1'
+    s.add_dependency 'kramdown',            '2.4.0'
 
     # Used to scrub Markdown for XSS etc.
-    s.add_dependency 'loofah',              '2.9.1'
+    s.add_dependency 'loofah',              '2.22.0'
 
     s.add_development_dependency "rb_sys", "~> 0.9.39"
     s.add_development_dependency "rake-compiler", "~> 1.2"

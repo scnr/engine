@@ -147,11 +147,11 @@ describe SCNR::Engine::OptionGroups::Input do
                 'nAMe'    => 'scnr_engine_name',
                 'usEr'    => 'scnr_engine_user',
                 'uSR'     => 'scnr_engine_user',
-                'pAsS'    => '5543!%scnr_engine_secret',
+                'pAsS'    => '5543!scnr_engine_secret',
                 'tXt'     => 'scnr_engine_text',
                 'nUm'     => '132',
                 'AmoUnt'  => '100',
-                'mAIL'    => 'scnr_engine@email.gr',
+                'mAIL'    => 'scnr_engine@email.com',
                 'aCcouNt' => '12',
                 'stuff'   => 'stuff value',
                 'iD'      => '1'

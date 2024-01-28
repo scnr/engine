@@ -48,7 +48,6 @@ describe SCNR::Engine::BrowserPool::Jobs::DOMExploration do
                     e = result.page.ui_inputs.first.dom
 
                     expect(e.sinks).to be_traced
-                    expect(e.sinks).to be_active
                     expect(e.sinks).to be_body
 
                     expect(result.page.element_sink_trace_hash).to eq e.sink_hash

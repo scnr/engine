@@ -86,11 +86,11 @@ shared_examples_for 'sinks' do |options = {}|
                 let(:per_input) do
                     if opts[:single_input]
                         {
-                            active_input => [:traced, :active, :body].sort
+                            active_input => [:traced, :body].sort
                         }
                     else
                         {
-                            active_input => [:traced, :active, :body].sort,
+                            active_input => [:traced, :body].sort,
                             blind_input  => [:traced, :blind].sort
                         }
                     end

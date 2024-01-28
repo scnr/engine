@@ -7,11 +7,6 @@
 =end
 
 require 'watir'
-
-# Prevent this intermitent exception:
-#   constant Selenium::WebDriver::Remote::COMMANDS not defined
-require 'selenium/webdriver/remote/commands'
-
 require_relative '../../../../selenium/webdriver/remote/typhoeus'
 
 module SCNR::Engine
