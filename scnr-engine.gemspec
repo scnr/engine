@@ -84,7 +84,7 @@ Gem::Specification.new do |s|
     s.add_dependency 'rack-test'
 
     # HTTP client.
-    s.add_dependency 'typhoeus',            '1.4.1'
+    s.add_dependency 'typhoeus',            '~> 1.4.1'
     # s.add_dependency 'ethon',               '0.15.0'
 
     # Fallback URI parsing and encoding utilities.
@@ -99,8 +99,8 @@ Gem::Specification.new do |s|
     s.add_dependency 'ox',                  '2.14.17'
 
     # Browser support for DOM/JS/AJAX analysis stuff.
-    s.add_dependency 'watir',               '7.3.0'
-    s.add_dependency 'selenium-webdriver',  '4.17.0'
+    s.add_dependency 'watir',               '7.2.2'
+    s.add_dependency 'selenium-webdriver',  '4.9.0'
 
     # Markdown to HTML conversion, used by the HTML report for component
     # descriptions.

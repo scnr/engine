@@ -24,6 +24,10 @@ group :spec do
         gem 'scnr-introspector', path: '../introspector'
     end
 
+    if File.exist? '../license-client'
+        gem 'scnr-license-client', path: '../license-client'
+    end
+
     if File.exist? '../ui-cli'
         gem 'scnr-ui-cli', path: '../ui-cli'
     end
