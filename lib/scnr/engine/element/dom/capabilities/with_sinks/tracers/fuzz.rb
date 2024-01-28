@@ -63,6 +63,7 @@ class Fuzz < Base
         found = false
         # One of the occurrences will be the actual setting of the taint.
         if /#{seed}/i.match? page.body
+            mutation.sinks.active!
             mutation.sinks.body!
             found = true
 
