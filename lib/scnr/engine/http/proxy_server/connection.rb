@@ -74,18 +74,12 @@ class Connection < Raktr::Connection
                 next
             end
 
-            handle_request @request = SCNR::Engine::HTTP::Request.new(
-                http_opts.merge(
-                    url:     sanitize_url( @parser.request_url, headers ),
-                    method:  method,
-                    body:    @body,
-                    mode: :sync,
-                    headers: SCNR::Engine::HTTP::Client.headers.to_h.merge( headers ),
-                    fingerprint: false,
-                    update_cookies: false,
-                    do_not_manipulate_cookies: true
-                )
-            )
+            handle_request @request = SCNR::Engine::HTTP::Request.new( http_client_options(
+                url:     sanitize_url( @parser.request_url, headers ),
+                method:  method,
+                body:    @body,
+                headers: SCNR::Engine::HTTP::Client.headers.to_h.merge( headers )
+            ))
         end
     end
 
@@ -157,8 +151,9 @@ class Connection < Raktr::Connection
     end
 
     def self.bridge( connection, raktr, request )
+        # It's a blocking request, it won't trigger an emergency run -- but we want the global callbacks.
+        HTTP::Client.queue request
         response = request.run
-        HTTP::Client.global_on_complete response
 
         if connection.closed?
             print_debug_level_3 '-- Connection closed, will not respond.'
@@ -333,7 +328,7 @@ class Connection < Raktr::Connection
 
     # @param    [Hash]  options
     #   Merges the given HTTP options with some default ones.
-    def http_opts( options = {} )
+    def http_client_options( options = {} )
         options.merge(
             performer:         self,
 
@@ -343,15 +338,17 @@ class Connection < Raktr::Connection
             # Set the HTTP request timeout.
             timeout:           @options[:timeout],
 
-            # Update the framework-wide cookie-jar with the transmitted cookies.
-            update_cookies:    true,
+            update_cookies:    false,
+            do_not_manipulate_cookies: true,
 
             # We perform the request in blocking mode, parallelism is up to the
             # proxy client.
             mode:              :sync,
 
             # Don't limit the response size when using the proxy.
-            response_max_size: -1
+            response_max_size: -1,
+
+            fingerprint:       false
         )
     end
 end
