@@ -184,15 +184,6 @@ describe SCNR::Engine::Support::Database::Queue do
             subject.push :stuff
             expect(subject.pop).to eq(:stuff)
         end
-
-        it 'increments .disk_space' do
-            sz = described_class.disk_space
-
-            subject.max_buffer_size = 0
-            subject.push 'a' * 100
-
-            expect(described_class.disk_space).to be > sz
-        end
     end
 
     describe '#enq' do
@@ -222,16 +213,6 @@ describe SCNR::Engine::Support::Database::Queue do
             t.join
 
             expect(val).to eq(:stuff)
-        end
-
-        it 'decrements .disk_space' do
-            subject.max_buffer_size = 0
-            subject.push 'a' * 100
-
-            sz = described_class.disk_space
-            subject.pop
-
-            expect(described_class.disk_space).to be < sz
         end
     end
 
@@ -309,16 +290,6 @@ describe SCNR::Engine::Support::Database::Queue do
             sample_size.times { |i| subject << i }
             subject.clear
             expect(subject.size).to eq(0)
-        end
-
-        it 'decrements .disk_space' do
-            subject.max_buffer_size = 0
-            subject.push 'a' * 100
-
-            sz = described_class.disk_space
-            subject.clear
-
-            expect(described_class.disk_space).to be < sz
         end
     end
 

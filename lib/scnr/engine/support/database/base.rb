@@ -19,64 +19,14 @@ module Support::Database
 # @abstract
 class Base
 
-    DISK_SPACE_FILE = 'Database_disk_space'
-
     class <<self
 
         def reset
-            @@disk_space = 0
-            set_disk_space @@disk_space
-        end
-
-        def increment_disk_space( int )
-            set_disk_space @@disk_space + int
-        end
-
-        def decrement_disk_space( int )
-            set_disk_space @@disk_space - int
-        end
-
-        def disk_space
-            @@disk_space
         end
 
         def disk_directory
             Options.paths.tmpdir
         end
-
-        def disk_space_file
-            disk_space_file_for Process.pid
-        end
-
-        def disk_space_for( pid )
-            return 0 if !Dir.exists?( Options.paths.tmp_dir_for( pid ) )
-
-            IO.read( disk_space_file_for( pid ) ).to_i
-        end
-
-        def disk_space_file_for( pid )
-            "#{Options.paths.tmp_dir_for( pid )}/#{DISK_SPACE_FILE}"
-        end
-
-        private
-
-        def set_disk_space( int )
-            if !File.exist?( disk_directory )
-                # Could be caught in #at_exit callbacks, the tmpdir has already
-                # been deleted.
-                return
-            end
-
-            synchronize do
-                @@disk_space = int
-                IO.write( disk_space_file, @@disk_space.to_s )
-            end
-        end
-
-        def synchronize( &block )
-            (@@mutex ||= Mutex.new).synchronize( &block )
-        end
-
     end
     reset
 
@@ -124,7 +74,6 @@ class Base
             serialize( obj, f )
             p = f.path
         end
-        self.class.increment_disk_space File.size( p )
         p
     end
 
@@ -144,8 +93,6 @@ class Base
     # @param    [String]    filepath
     def delete_file( filepath )
         return if !File.exist?( filepath )
-
-        self.class.decrement_disk_space File.size( filepath )
         File.delete( filepath )
     end
 

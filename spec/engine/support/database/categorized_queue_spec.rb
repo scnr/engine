@@ -151,15 +151,6 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
             subject.push Item.new( :stuff )
             expect(subject.pop).to eq(Item.new( :stuff ))
         end
-
-        it 'increments .disk_space' do
-            sz = described_class.disk_space
-
-            subject.max_buffer_size = 0
-            subject.push Item.new( :stuff )
-
-            expect(described_class.disk_space).to be > sz
-        end
     end
 
     describe '#enq' do
@@ -201,16 +192,6 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
             expect(subject.pop.data).to eq 2
             expect(subject.pop.data).to eq 3
             expect(subject.pop.data).to eq 1
-        end
-
-        it 'decrements .disk_space' do
-            subject.max_buffer_size = 0
-            subject.push Item.new( "stuff" )
-
-            sz = described_class.disk_space
-            subject.pop
-
-            expect(described_class.disk_space).to be < sz
         end
 
         context 'when the block specified category is empty' do
@@ -311,16 +292,6 @@ describe SCNR::Engine::Support::Database::CategorizedQueue do
             subject.clear
             expect(subject.size).to eq(0)
             expect((subject.pop( true ) rescue nil)).to eq(nil)
-        end
-
-        it 'decrements .disk_space' do
-            subject.max_buffer_size = 0
-            subject.push Item.new( "stuff" )
-
-            sz = described_class.disk_space
-            subject.clear
-
-            expect(described_class.disk_space).to be < sz
         end
     end
 
