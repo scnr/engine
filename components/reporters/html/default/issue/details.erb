@@ -65,4 +65,47 @@
             </div>
         </div>
     </div>
+
+    <% if issue.execution_flow && issue.execution_flow.points.any? %>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a href="<%= issue_location( issue ) %>/execution-trace">
+            <i class="fa fa-link"></i>
+          </a>
+
+          <a data-toggle="collapse" href="#<%= id %>-execution-trace">
+            Execution trace
+          </a>
+        </h4>
+      </div>
+      <div id="<%= id %>-execution-trace" class="panel-collapse collapse">
+        <div class="panel-body">
+          <%= erb 'issue/execution_trace.erb', id: id, execution_flow: issue.execution_flow %>
+        </div>
+      </div>
+    </div>
+    <% end %>
+
+  <% if issue.data_flow && issue.data_flow.sinks.any? %>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a href="<%= issue_location( issue ) %>/data-flow">
+            <i class="fa fa-link"></i>
+          </a>
+
+          <a data-toggle="collapse" href="#<%= id %>-data-flow">
+            Data flow
+          </a>
+        </h4>
+      </div>
+      <div id="<%= id %>-data-flow" class="panel-collapse collapse">
+        <div class="panel-body">
+          <%= erb 'issue/data_flow.erb', id: id, data_flow: issue.data_flow %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
 </div>
