@@ -1,0 +1,28 @@
+<table class="table">
+  <th></th>
+  <th>
+    Path
+  </th>
+  <th>
+    Line
+  </th>
+  <th>
+    Class
+  </th>
+  <th>
+    Method
+  </th>
+  <th>
+    Event
+  </th>
+<% execution_flow.points.each.with_index do |point, i| %>
+  <tr>
+    <th><%= i %></th>
+    <td><%= point.path %></td>
+    <td><%= point.line_number %></td>
+    <td><code><%= point.class_name %></code></td>
+    <td><code><%= point.method_name %></code></td>
+    <td><code><%= point.event %></code></td>
+  </tr>
+<% end %>
+</table>
