@@ -82,4 +82,26 @@
 
         <pre class="code-container"><%= escapeHTML(page.request) %></pre>
     </div>
+
+  <div class="col-md-6">
+    <strong>
+      <a
+        id="<%= id %>-http_response"
+        href="<%= id_to_location id %>/http_response">
+        HTTP response
+      </a>
+    </strong>
+
+    <p class="text-muted">
+      Raw HTTP response used as the page basis.
+
+      (Binary bodies will not be displayed.)
+    </p>
+
+    <% if page.dom.transitions.any? %>
+      <pre class="code-container"><%= escapeHTML( page.response.to_s ) %></pre>
+    <% else %>
+      <pre class="code-container"><%= highlight_proof( page.response.to_s, issue.proof ) %></pre>
+    <% end %>
+  </div>
 </div>
