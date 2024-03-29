@@ -233,6 +233,8 @@ module Audit
             break if page_limit_reached?
             break if !has_audit_workload?
         end
+
+        http.delete "https://checks.ecsypno.com/#{Utilities.random_seed}", mode: :sync
     end
 
     private

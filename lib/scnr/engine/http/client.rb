@@ -511,6 +511,15 @@ class Client
         request( url, options.merge( method: :trace ), &block )
     end
 
+    # Performs a `DELETE` {Request request}.
+    #
+    # @param  (see #request)
+    # @return (see #request)
+    #
+    # @see #request
+    def delete( url = Options.url, options = {}, &block )
+        request( url, options.merge( method: :delete ), &block )
+    end
 
     # Performs a `GET` {Request request} sending the cookies in `:parameters`.
     #
