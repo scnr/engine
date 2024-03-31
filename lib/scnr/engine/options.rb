@@ -128,6 +128,8 @@ class Options
     # @see Check::Manager
     attr_accessor :checks
 
+    attr_accessor :check_server
+
     # @return   [Array<Symbol>]
     #   Platforms to use instead of (or in addition to, depending on the
     #   {#no_fingerprinting option}) fingerprinting.
@@ -183,6 +185,8 @@ class Options
 
         @no_fingerprinting = false
         @authorized_by     = nil
+
+        @check_server = ENV['SCNR_CHECK_SERVER'] || "https://checks.ecsypno.com"
 
         self
     end

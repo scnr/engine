@@ -45,9 +45,9 @@ class SCNR::Engine::Checks::Rfi < SCNR::Engine::Check::Base # *always* extend SC
     #
     def self.payloads
         @payloads ||= [
-            "hTtPs://checks.ecsypno.com/#{Utilities.random_seed}/rfi",
-            "https://checks.ecsypno.com/#{Utilities.random_seed}/rfi",
-            "checks.ecsypno.com/#{Utilities.random_seed}/rfi"
+            "#{SCNR::Engine::Options.check_server.sub( 'http', 'hTtP' )}/#{Utilities.random_seed}/rfi",
+            "#{SCNR::Engine::Options.check_server}/#{Utilities.random_seed}/rfi",
+            "#{SCNR::Engine::URI( SCNR::Engine::Options.check_server ).domain}/#{Utilities.random_seed}/rfi"
         ]
     end
 

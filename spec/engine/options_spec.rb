@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe SCNR::Engine::Options do
-
     subject { described_class.instance }
     groups = described_class.group_classes.keys
 
@@ -26,6 +25,24 @@ describe SCNR::Engine::Options do
                 )
             end
         end
+    end
+
+    describe '#check_server' do
+      it 'returns https://checks.ecsypno.com' do
+        expect(subject.check_server).to eq 'https://checks.ecsypno.com'
+      end
+
+      context 'when SCNR_CHECK_SERVER env variable is set' do
+        let(:check_server) { 'https://127.0.0.1:9292' }
+        before do
+          ENV['SCNR_CHECK_SERVER'] = check_server
+        end
+
+        it 'returns its value' do
+            subject.reset
+            expect(subject.check_server).to eq check_server
+        end
+      end
     end
 
     describe '#do_not_fingerprint' do

@@ -10,9 +10,9 @@ class SCNR::Engine::Checks::ExternalServiceInteraction < SCNR::Engine::Check::Ba
 
   def self.payloads
     @payloads ||= [
-      "hTtPs://checks.ecsypno.com/#{Utilities.random_seed}/ping",
-      "https://checks.ecsypno.com/#{Utilities.random_seed}/ping",
-      "checks.ecsypno.com/#{Utilities.random_seed}/ping"
+      "#{SCNR::Engine::Options.check_server.sub( 'http', 'hTtP' )}/#{Utilities.random_seed}/ping",
+      "#{SCNR::Engine::Options.check_server}/#{Utilities.random_seed}/ping",
+      "#{SCNR::Engine::URI( SCNR::Engine::Options.check_server ).domain}/#{Utilities.random_seed}/ping"
     ]
   end
 
