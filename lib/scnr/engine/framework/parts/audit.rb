@@ -234,7 +234,7 @@ module Audit
             break if !has_audit_workload?
         end
 
-        http.delete "#{options.check_server}/#{Utilities.random_seed}", mode: :sync
+        http.delete "#{Options.check_server}/#{Utilities.random_seed}", mode: :sync
     end
 
     private
