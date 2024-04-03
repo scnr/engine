@@ -38,11 +38,11 @@ class SCNR::Engine::Checks::ExternalServiceInteraction < SCNR::Engine::Check::Ba
     end
 
     http.after_run do
-      http.get "https://checks.ecsypno.com/#{Utilities.random_seed}" do |response|
+      http.get "#{SCNR::Engine::Options.check_server}/#{Utilities.random_seed}" do |response|
         next if response.body.empty?
 
         hits = ::JSON.load( response.body ) || {}
-        hits.each do |coverage_hash, request_env|
+        hits.each do |coverage_hash, _|
           next if !(audit = audits[coverage_hash.to_i])
 
           log(
