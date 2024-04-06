@@ -25,6 +25,11 @@ class SCNR::Engine::Plugins::LoginForm < SCNR::Engine::Plugin::Base
     }
 
     def prepare
+        if SCNR.edition == :community
+            print_error "#{shortname} plugin not supported by #{SCNR.edition} edition."
+            exit 1
+        end
+
         @parameters = request_parse_body( options[:parameters] )
         @verifier   = Regexp.new( options[:check] )
         @url        = options[:url].to_s

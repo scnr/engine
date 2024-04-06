@@ -20,6 +20,11 @@ class SCNR::Engine::Plugins::LoginScript < SCNR::Engine::Plugin::Base
     }
 
     def prepare
+        if SCNR.edition == :community
+            print_error "#{shortname} plugin not supported by #{SCNR.edition} edition."
+            exit 1
+        end
+
         script = IO.read( @options[:script] )
 
         session.record_login_sequence do |browser|
