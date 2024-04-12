@@ -498,7 +498,8 @@ class Page
             h
         end.merge(@cache).tap { |h| h.delete :parser }
 
-        hs[:dom] = hs[:dom].to_h
+        hs[:dom]      = hs[:dom].to_h
+        hs[:response] = hs[:response].to_h
         hs
     end
     alias :to_hash :to_h
