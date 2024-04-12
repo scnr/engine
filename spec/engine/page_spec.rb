@@ -827,8 +827,11 @@ EOHTML
             expect(subject.to_h).to be_kind_of Hash
 
             subject.to_h.each do |k, v|
+                next if k == :dom
                 expect(v).to eq(subject.send(k))
             end
+
+            expect(subject.to_h[:dom]).to eq(subject.dom.to_h)
         end
 
         [:document, :do_not_audit_elements, :has_custom_elements, :parser].each do |k|
