@@ -105,7 +105,8 @@ class ElementLocator
     def to_hash
         {
             tag_name:   tag_name,
-            attributes: attributes
+            attributes: attributes,
+            source:     to_s
         }
     end
     alias :to_h :to_hash
