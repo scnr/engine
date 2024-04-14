@@ -514,6 +514,7 @@ class Request < Message
             effective_body: effective_body,
             body:           body,
             method:         method,
+            raw:            to_s,
             execution_flow: execution_flow&.to_rpc_data,
             data_flow:      data_flow&.to_rpc_data
         }
