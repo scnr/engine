@@ -85,7 +85,9 @@ class Fuzz < Base
 
         if !found
             mutation.sinks.blind!
+            self.notify_on_sink :blind, seed, mutation, page
         end
+
         mutation.sinks.traced!
 
         mutation.sinks.print_message

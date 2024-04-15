@@ -153,16 +153,15 @@ class Differential < Base
             # that it'll at least be checked by timing attacks and the like.
             if default == Support::Signature.refine( data[:signatures] )
                 data[:mutation].sinks.blind!
-
+                self.class.notify_on_sink :blind, seed, data[:mutation]
             # The page changes when the input's value changes, mark it as
             # active.
             else
                 data[:mutation].sinks.active!
+                self.class.notify_on_sink :active, seed, data[:mutation]
             end
 
             data[:mutation].sinks.traced!
-
-            self.class.notify_on_sink :active, seed, data[:mutation]
         end
 
         @sinks.print_message
