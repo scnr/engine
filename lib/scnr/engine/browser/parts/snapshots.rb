@@ -473,6 +473,8 @@ module Snapshots
         page = Page.from_data( elements.merge( url: request.url ) )
         page.response.request = request
 
+        el.each { |e| e.page = page }
+
         @captured_pages << page if store_pages?
 
         page.clear_cache
