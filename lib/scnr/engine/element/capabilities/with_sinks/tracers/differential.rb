@@ -16,7 +16,7 @@ class Differential < Base
 
     class <<self
         include Support::Mixins::Observable
-        advertise :on_sinks
+        advertise :on_sink
     end
     observe!
 
@@ -162,7 +162,7 @@ class Differential < Base
 
             data[:mutation].sinks.traced!
 
-            self.class.notify_on_sinks seed, data[:mutation]
+            self.class.notify_on_sink :active, seed, data[:mutation]
         end
 
         @sinks.print_message
