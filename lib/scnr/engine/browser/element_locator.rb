@@ -27,7 +27,7 @@ class ElementLocator
     # @param    [Hash]  options
     #   Data used to set attributes via setters.
     def initialize( options = {} )
-        options.each { |k, v| send( "#{k}=", v ) }
+        options.each { |k, v| send( "#{k}=", v ) if respond_to?( k ) }
         @attributes ||= {}
     end
 

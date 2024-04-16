@@ -236,11 +236,11 @@ describe SCNR::Engine::Browser::ElementLocator do
 
     describe '#to_hash' do
         it 'converts it to a Hash' do
-            expect(subject.to_hash).to eq(options)
+            expect(subject.to_hash).to eq(options.merge( source: subject.to_s ))
         end
 
         it 'is aliased to #to_h' do
-            expect(subject.to_h).to eq(subject.to_hash)
+            expect(subject.to_h).to eq(subject.to_hash.merge( source: subject.to_s ))
         end
     end
 
