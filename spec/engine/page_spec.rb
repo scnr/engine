@@ -833,6 +833,7 @@ EOHTML
 
             expect(subject.to_h[:dom]).to eq(subject.dom.to_h)
             expect(subject.to_h[:response]).to eq(subject.response.to_h)
+            expect(subject.to_h[:request]).to eq(subject.request.to_h)
         end
 
         [:document, :do_not_audit_elements, :has_custom_elements, :parser].each do |k|
