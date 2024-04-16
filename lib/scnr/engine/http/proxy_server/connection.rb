@@ -21,7 +21,7 @@ class Connection < Raktr::Connection
 
     SKIP_HEADERS = %w(transfer-encoding connection proxy-connection keep-alive
         content-encoding te trailers accept-encoding accept-ranges vary
-        authorization upgrade http2-settings)
+        upgrade http2-settings)
 
     attr_reader :parent
     attr_reader :request
