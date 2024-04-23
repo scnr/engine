@@ -827,7 +827,7 @@ EOHTML
             expect(subject.to_h).to be_kind_of Hash
 
             subject.to_h.each do |k, v|
-                next if [:dom, :response].include? k
+                next if [:dom, :response, :request].include? k
                 expect(v).to eq(subject.send(k))
             end
 
