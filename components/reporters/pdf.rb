@@ -292,6 +292,7 @@ class SCNR::Engine::Reporters::PDF < SCNR::Engine::Reporter::Base
 
         IO.write( "#{tmpdir}/index.html", erb( TEMPLATE_FILE ) )
 
+        outfile.gsub!( "'", "" )
         render( "#{tmpdir}/index.html", outfile )
         FileUtils.rm_rf tmpdir
 
@@ -312,7 +313,8 @@ class SCNR::Engine::Reporters::PDF < SCNR::Engine::Reporter::Base
     private
 
     def render( html, pdf )
-        `#{Browser::Engines::Chrome.requirements['chrome'][:binary]} --headless --no-pdf-header-footer --print-to-pdf="#{pdf}" --disable-gpu "#{html}" 2> /dev/null`
+        `#{Browser::Engines::Chrome.requirements['chrome'][:binary]} --headless --no-pdf-header-footer  \
+            --print-to-pdf='#{pdf}' --disable-gpu "#{html}" 2> /dev/null`
     end
 
     def self.prep_description( str )
