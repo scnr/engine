@@ -124,7 +124,7 @@ class ElementLocator
     end
 
     def hash
-        to_hash.hash
+        [tag_name, attributes.hash].hash
     end
 
     def ==( other )
