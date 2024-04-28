@@ -16,6 +16,9 @@ module HTTP
     # @!method on_response( &block )
     advertise :on_response
 
+    # @return   [Array<String>]
+    attr_reader :dependencies
+
     AD_HOSTS = Support::Filter::Set.new
     File.open( Options.paths.root + 'config/adservers.txt' ) do |f|
         f.each_line do |entry|
@@ -37,6 +40,7 @@ module HTTP
     def initialize
         super
         @ignore_scope = @options[:ignore_scope]
+        @dependencies = []
     end
 
     def response
@@ -94,6 +98,10 @@ module HTTP
         request.performer = self
 
         print_debug_level_2 "Request: #{request.url}"
+
+        if @add_dependencies && request.url != @last_url && !@javascript.serve?( request )
+            @dependencies << request.url
+        end
 
         if !engine.allow_request?( request )
             print_debug_level_2 "Ignoring, blacklisted by engine: #{engine}"
