@@ -172,7 +172,7 @@ module Snapshots
                 dom: {
                     url: d_url,
                     has_data_flow_sink_signal: has_data_flow_sink_signal,
-                    dependencies: @dependencies.dup
+                    requests: @requests.dup
                 },
                 response: {
                     code: 0,
@@ -193,7 +193,7 @@ module Snapshots
         page                  = r.to_page
         page.dom.url          = d_url
         page.dom.transitions  = @transitions.dup
-        page.dom.dependencies = @dependencies.dup
+        page.dom.requests = @requests.dup
 
         if has_data_flow_sink_signal
             page.dom.has_data_flow_sink_signal!

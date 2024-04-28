@@ -39,7 +39,7 @@ module Navigation
         super
 
         @add_transitions  = true
-        @add_dependencies = true
+        @add_requests = true
 
         # User-controlled preloaded responses, by URL.
         @preloads = {}
@@ -70,7 +70,7 @@ module Navigation
                 Navigation.notify_before_load resource, options, self
 
                 @transitions  = []
-                @dependencies = []
+                @requests = []
                 goto resource, options
 
                 Navigation.notify_after_load resource, options, self
@@ -79,7 +79,7 @@ module Navigation
                 Navigation.notify_before_load resource, options, self
 
                 @transitions  = []
-                @dependencies = []
+                @requests = []
                 goto preload( resource ), options
 
                 Navigation.notify_after_load resource, options, self
@@ -93,13 +93,13 @@ module Navigation
                 Navigation.notify_before_load resource, options, self
 
                 @transitions  = resource.transitions.dup
-                @dependencies = resource.dependencies.dup
+                @requests = resource.requests.dup
 
                 @add_transitions  = false if @transitions.any?
-                @add_dependencies = false if @dependencies.any?
+                @add_requests = false if @requests.any?
                 resource.restore *[self, options[:take_snapshot]].compact
                 @add_transitions  = true
-                @add_dependencies = true
+                @add_requests = true
 
                 Navigation.notify_after_load resource, options, self
 

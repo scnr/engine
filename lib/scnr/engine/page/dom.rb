@@ -21,8 +21,8 @@ class DOM
     require_relative 'dom/transition'
 
     # @return       [Array<String>]
-    #   Page dependencies (JS, CSS, etc.)
-    attr_accessor   :dependencies
+    #   Page requests (JS, CSS, etc.)
+    attr_accessor   :requests
 
     # @return   [Array<Transition>]
     #   Transitions representing the steps required to convert a {DOM}
@@ -57,7 +57,7 @@ class DOM
         self.url              = options[:url]                   || @page.url
         self.digest           = options[:digest]
         @transitions          = options[:transitions]           || []
-        @dependencies         = options[:dependencies]          || []
+        @requests             = options[:requests]              || []
         @data_flow_sinks      = options[:data_flow_sinks]       || []
         @execution_flow_sinks = options[:execution_flow_sinks]  || []
         @has_data_flow_sink_signal = options[:has_data_flow_sink_signal]
@@ -207,7 +207,7 @@ class DOM
         {
             url:                  url,
             transitions:          transitions.map(&:to_hash),
-            dependencies:         dependencies,
+            requests:             requests.map(&:to_h),
             digest:               digest,
             data_flow_sinks:      data_flow_sinks.map(&:to_hash),
             execution_flow_sinks: execution_flow_sinks.map(&:to_hash)
@@ -233,7 +233,7 @@ class DOM
         {
             'url'                  => url,
             'transitions'          => transitions.map(&:to_rpc_data),
-            'dependencies'         => dependencies,
+            'requests'             => requests.map(&:to_rpc_data),
             'digest'               => digest,
             'data_flow_sinks'      => data_flow_sinks.map(&:to_rpc_data),
             'execution_flow_sinks' => execution_flow_sinks.map(&:to_rpc_data)
@@ -262,6 +262,9 @@ class DOM
             value = case name
                         when 'transitions'
                             value.map { |t| Transition.from_rpc_data t }
+
+                        when 'requests'
+                            value.map { |t| HTTP::Request.from_rpc_data t }
 
                         when 'data_flow_sinks'
                             value.map do |entry|

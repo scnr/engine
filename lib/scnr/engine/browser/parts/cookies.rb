@@ -123,7 +123,7 @@ EOJS
 EOJS
         end
 
-        @add_dependencies = false
+        @add_requests = false
         selenium.navigate.to preload( SCNR::Engine::HTTP::Response.new(
             code:    200,
             url:     "#{url}/set-cookies-#{request_token}",
@@ -132,7 +132,7 @@ EOJS
                 'Set-Cookie' => set_cookie
             }
         ))
-        @add_dependencies = true
+        @add_requests = true
     end
 
     def update_cookies

@@ -55,7 +55,7 @@ describe SCNR::Engine::Page::DOM do
         let(:restored) { described_class.from_rpc_data data }
         let(:data) { SCNR::Engine::RPC::Serializer.rpc_data( subject ) }
 
-        %w(url transitions dependencies digest data_flow_sinks execution_flow_sinks).each do |attribute|
+        %w(url transitions requests digest data_flow_sinks execution_flow_sinks).each do |attribute|
             it "restores '#{attribute}'" do
                 expect(restored.send( attribute )).to eq(subject.send( attribute ))
             end
@@ -74,9 +74,9 @@ describe SCNR::Engine::Page::DOM do
         end
     end
 
-    describe '#dependencies' do
+    describe '#requests' do
         it 'defaults to an empty Array' do
-            expect(empty_dom.dependencies).to eq([])
+            expect(empty_dom.requests).to eq([])
         end
     end
 
@@ -143,12 +143,12 @@ describe SCNR::Engine::Page::DOM do
         end
     end
 
-    describe '#dependencies=' do
-        it 'sets #dependencies' do
-            dependencies = [ 'https://stuff.com/script.js' ]
+    describe '#requests=' do
+        it 'sets #requests' do
+            requests = [ SCNR::Engine::HTTP::Request.new( url: 'https://stuff.com/script.js' ) ]
 
-            dom.dependencies = dependencies
-            expect(dom.dependencies).to eq(dependencies)
+            dom.requests = requests
+            expect(dom.requests).to eq(requests)
         end
     end
 
@@ -203,7 +203,7 @@ describe SCNR::Engine::Page::DOM do
                     { element:  :stuffed },
                     { element2: :stuffed2 }
                 ].map { |t| described_class::Transition.new *t.first },
-                dependencies:         [ 'https://test.com/script.js'],
+                requests:         [ SCNR::Engine::HTTP::Request.new( url: 'https://stuff.com/script.js' ) ],
                 data_flow_sinks:      [Factory[:data_flow]],
                 execution_flow_sinks: [Factory[:execution_flow]]
             }
@@ -212,14 +212,14 @@ describe SCNR::Engine::Page::DOM do
             data[:transitions].each do |t|
                 empty_dom.push_transition t
             end
-            empty_dom.dependencies = data[:dependencies]
+            empty_dom.requests = data[:requests]
             empty_dom.data_flow_sinks = data[:data_flow_sinks]
             empty_dom.execution_flow_sinks = data[:execution_flow_sinks]
 
             expect(empty_dom.to_h).to eq({
                 url:                  data[:url],
                 transitions:          data[:transitions].map(&:to_hash),
-                dependencies:         data[:dependencies],
+                requests:             data[:requests].map(&:to_h),
                 digest:               empty_dom.digest,
                 data_flow_sinks:      data[:data_flow_sinks].map(&:to_hash),
                 execution_flow_sinks: data[:execution_flow_sinks].map(&:to_hash)
