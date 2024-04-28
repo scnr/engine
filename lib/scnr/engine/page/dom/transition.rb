@@ -285,7 +285,7 @@ class Transition
     end
 
     def hash
-        to_hash.tap { |h| h.delete :time }.hash
+        [element.hash, event.hash, options.hash].hash
     end
 
     def ==( other )
