@@ -49,7 +49,7 @@ class CategorizedQueue < Base
     end
 
     def data_for( category )
-        @categories[category.to_s] ||= {
+        @categories[category] ||= {
             disk:   [],
             buffer: []
         }
