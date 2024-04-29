@@ -106,6 +106,12 @@ describe SCNR::Engine::State::Framework do
         end
     end
 
+    describe '#depths' do
+        it "returns an instance of #{SCNR::Engine::Support::PersistentHash}" do
+            expect(subject.depths).to be_kind_of SCNR::Engine::Support::PersistentHash
+        end
+    end
+
     describe '#element_checked?' do
         context 'when an element has already been checked' do
             it 'returns true' do
@@ -702,6 +708,17 @@ describe SCNR::Engine::State::Framework do
             expect(Marshal.load( IO.read( "#{dump_directory}/page_queue_filter" ) )).to eq(d)
         end
 
+        it 'stores #depths to disk' do
+            url = 'http://test.com/stuff/'
+            subject.depths[url] = 1
+
+            subject.dump( dump_directory )
+
+            d = SCNR::Engine::Support::PersistentHash.new(0)
+            d[url] = 1
+            expect(Marshal.load( IO.read( "#{dump_directory}/depths" ) )).to eq(d)
+        end
+
         it 'stores #page_paths_filter to disk' do
             subject.page_paths_filter << page
 
@@ -733,6 +750,18 @@ describe SCNR::Engine::State::Framework do
             d << element
 
             expect(described_class.load( dump_directory ).element_pre_check_filter).to eq(d)
+        end
+
+        it 'loads #depths from disk' do
+            url = 'http://test.com/stuff'
+            subject.depths[url] = 1
+
+            subject.dump( dump_directory )
+
+            d = SCNR::Engine::Support::PersistentHash.new(0)
+            d[url] = 1
+
+            expect(described_class.load( dump_directory ).depths).to eq(d)
         end
 
         it 'loads #dom_analysis_filter from disk' do

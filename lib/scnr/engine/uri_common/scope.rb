@@ -41,7 +41,8 @@ class Scope < SCNR::Engine::Scope
     # @see OptionGroups::Scope#directory_depth_limit
     def too_deep?
         depth = options.directory_depth_limit
-        depth.to_i > 0 && (depth + 1) <= @url.path.to_s.count( '/' )
+        (depth.to_i > 0 && (depth + 1) <= @url.path.to_s.count( '/' )) ||
+          options.depth_limit_reached?( Framework.state.depths[@url.to_s] )
     end
 
     # @return   [Bool]

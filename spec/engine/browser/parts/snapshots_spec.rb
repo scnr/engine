@@ -733,7 +733,7 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                                                                       ]))
         end
 
-        it "assigns the proper #{SCNR::Engine::Page::DOM}#requests", focus: true do
+        it "assigns the proper #{SCNR::Engine::Page::DOM}#requests" do
             subject.load( "#{web_server_url_for( :dom_monitor )}/elements_with_events/jQuery.on", take_snapshot: true )
             page = subject.to_page
 
