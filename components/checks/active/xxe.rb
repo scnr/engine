@@ -24,8 +24,12 @@ class SCNR::Engine::Checks::Xxe < SCNR::Engine::Check::Base
                             xml.sub( m.affected_input_value, "&#{ENTITY};" )
                         end
 
+                        m.source.sub!( /<\?xml.*\?>/i, '' )
+                        root_name = SCNR::Engine::Parser.parse_xml( m.source ).xpath('/*').first.name
+
                         m.audit_options[:platform] = platform
-                        m.source = "<!DOCTYPE #{ENTITY} [ <!ENTITY #{ENTITY} SYSTEM \"#{payload}\"> ]>\n#{m.source}"
+                        m.source = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE #{root_name} [ <!ENTITY #{ENTITY} SYSTEM \"file://#{payload}\"> ]>\n#{m.source}"
+
                         m
                     end
                 end
