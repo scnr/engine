@@ -603,7 +603,9 @@ describe SCNR::Engine::HTTP::Client do
                   "User-Agent: Mozilla/5.0 (Gecko) SCNR::Engine/v#{SCNR::Engine::VERSION}\r\n" <<
                     "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\n" +
                     "Accept-Language: en-US,en;q=0.8,he;q=0.6\r\n" +
-                    "X-Scnr-Engine-Scan-Seed: #{SCNR::Engine::Utilities.random_seed}\r\n\r\n"
+                    "X-Scnr-Engine-Scan-Seed: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
+                    "X-Scnr-Introspector-Taint: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
+                    "X-Scnr-Introspector-Trace: 0\r\n\r\n"
             )
         end
 
