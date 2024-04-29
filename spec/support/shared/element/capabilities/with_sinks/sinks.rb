@@ -89,8 +89,13 @@ shared_examples_for 'sinks' do |options = {}|
                             active_input => [:traced, :active, :body].sort
                         }
                     else
+                        if described_class.ancestors.include?( SCNR::Engine::Element::DOM )
+                            sinks = [:traced, :body]
+                        else
+                            sinks = [:traced, :active, :body]
+                        end
                         {
-                            active_input => [:traced, :active, :body].sort,
+                            active_input => sinks.sort,
                             blind_input  => [:traced, :blind].sort
                         }
                     end
