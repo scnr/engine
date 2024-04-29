@@ -103,14 +103,14 @@ class SCNR::Engine::Checks::XssScriptContext < SCNR::Engine::Check::Base
         payloads = [ "javascript:#{seed}" ]
 
         ['\'', '"', ''].each do |quote|
-            [ "%q;#{seed};%q" ].each do |payload|
+            [ "1%q;#{seed};//" ].each do |payload|
                 payloads << payload.gsub( '%q', quote )
             end
         end
 
         payloads << "1;\n#{seed};"
 
-        @payloads = payloads.map { |s| "#{s}//" }
+        @payloads = payloads
         @payloads << "*/;\n#{seed}/*"
 
         # In case they're placed as assoc array values.
