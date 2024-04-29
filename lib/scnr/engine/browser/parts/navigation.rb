@@ -87,7 +87,7 @@ module Navigation
             when Page
                 SCNR::Engine::HTTP::Client.update_cookies resource.cookie_jar
 
-                load resource.dom
+                load resource.dom, options
 
             when Page::DOM
                 Navigation.notify_before_load resource, options, self
