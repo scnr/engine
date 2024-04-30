@@ -57,7 +57,7 @@ module Environment
     # @see #has_js_env?
     def supported?
         # We won't have a response if the browser was steered towards an
-        # out-of-scope resource.
+        # out-of-scope resource or if the connection was closed.
         response = @browser.response
         response && has_js_env?( response )
     end
