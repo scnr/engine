@@ -19,6 +19,8 @@ module HTTP
     # @return   [Array<HTTP::Request>]
     attr_reader :requests
 
+    attr_reader :window_responses
+
     AD_HOSTS = Support::Filter::Set.new
     File.open( Options.paths.root + 'config/adservers.txt' ) do |f|
         f.each_line do |entry|
@@ -235,9 +237,14 @@ module HTTP
     end
 
     def make_response_key( url )
-        # Params may be in different order.
+        # Normalize by decoding components and putting params in order.
         uri = SCNR::Engine::URI.parse( url )
-        [uri.scheme, uri.host, uri.port, uri.path, uri.query_parameters.sort_by { |k, _| k }.hash].hash
+        [
+            uri.scheme, uri.host, uri.port, SCNR::Engine::URI.decode( uri.path ),
+            uri.query_parameters.
+              map { |k, v| [SCNR::Engine::URI.decode( k ), SCNR::Engine::URI.decode( v )] }.
+              sort_by { |k, _| k }.hash
+        ].hash
     end
 
     def enforce_scope?
