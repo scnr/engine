@@ -101,7 +101,7 @@ describe SCNR::Engine::Element::Link::DOM do
         end
     end
 
-    describe '#to_s', focus: true do
+    describe '#to_s' do
         it 'returns the URL as a string' do
             expect(subject.to_s).to end_with('/dom/#/test/?param=some-name')
         end
