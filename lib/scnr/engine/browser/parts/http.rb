@@ -56,27 +56,13 @@ module HTTP
             return
         end
 
-        r = get_response( u )
-
-        return r if r && r.code != 504
-
-        if r
-            print_debug "Origin server timed-out when requesting: #{u}"
-        else
-            print_debug "Response never arrived for: #{u}"
-
-            print_debug 'Available responses are:'
-            @window_responses.each do |k, _|
-                print_debug "-- #{k}"
-            end
-
-            print_debug 'Tried:'
-            print_debug "-- #{u}"
-            print_debug "-- #{normalize_url( u )}"
-            print_debug "-- #{normalize_watir_url( u )}"
+        t = Time.now
+        while !(r = get_response( u ))
+            sleep 0.05
+            return if Time.now - t > (Options.http.request_timeout / 1_000)
         end
 
-        nil
+        r
     end
 
     private
@@ -241,39 +227,22 @@ module HTTP
         notify_on_response response
         return response if !response.text?
 
-        @window_responses[response.url] = response
+        @window_responses[make_response_key( response.url )] = response
     end
 
     def get_response( url )
-        # Order is important, #normalize_url by can get confused and remove
-        # everything after ';' by treating it as a path parameter.
-        # Rightly so...but we need to bypass it when auditing LinkTemplate
-        # elements.
-        @window_responses[url] ||
-          @window_responses[normalize_watir_url( url )] ||
-          @window_responses[normalize_url( url )]
+        @window_responses[make_response_key( url )]
     end
 
-    def normalize_watir_url( url )
-        normalize_url( encode_semicolon( url ) ).gsub( '%3B', '%253B' )
-    end
-
-    def encode_semicolon( str )
-        if SCNR::Engine.has_extension?
-            Rust::Browser::Parts::HTTP.encode_semicolon_ext( str )
-        else
-            Browser::Parts::HTTP.encode_semicolon_ruby( str )
-        end
-    end
-
-    def self.encode_semicolon_ruby( str )
-        ::URI.encode( str, ';' )
+    def make_response_key( url )
+        # Params may be in different order.
+        uri = SCNR::Engine::URI.parse( url )
+        [uri.scheme, uri.host, uri.port, uri.path, uri.query_parameters.sort_by { |k, _| k }.hash].hash
     end
 
     def enforce_scope?
         !@ignore_scope
     end
-
 
 end
 
