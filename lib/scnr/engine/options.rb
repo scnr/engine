@@ -186,7 +186,7 @@ class Options
         @no_fingerprinting = false
         @authorized_by     = nil
 
-        @check_server = ENV['SCNR_CHECK_SERVER'] || "https://checks.ecsypno.com"
+        @check_server = ENV['SCNR_CHECK_SERVER'] || "http://checks.ecsypno.com"
 
         self
     end
