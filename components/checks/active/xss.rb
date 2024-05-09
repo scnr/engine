@@ -63,7 +63,7 @@ class SCNR::Engine::Checks::Xss < SCNR::Engine::Check::Base
             tag,
 
             # Go for an error.
-            "()\"&%1'-;#{tag}'",
+            "()\"&%1'-;#{tag}",
 
             # Break out of HTML comments and text areas.
             "</textarea>-->#{tag}<!--<textarea>"
@@ -177,7 +177,8 @@ tainted responses to look for proof of vulnerability.
             elements:    [Element::Form, Element::Link, Element::Cookie,
                           Element::NestedCookie, Element::Header, Element::LinkTemplate],
             sink:        {
-                areas: [:body]
+                areas: [:body],
+                seed:  '()\"&%1\'-;'
             },
             cost:        calculate_audit_cost( payloads.size, options ),
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
