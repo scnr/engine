@@ -78,6 +78,7 @@ module State
         default_filename =
             "#{URI(SCNR::Engine::Options.url).host} #{Time.now.to_s.gsub( ':', '_' )} " <<
                 "#{generate_token}.#{Snapshot::EXTENSION}"
+        default_filename.gsub!( ' ', '_' )
 
         location = SCNR::Engine::Options.snapshot.path
 
