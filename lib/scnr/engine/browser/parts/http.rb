@@ -245,6 +245,9 @@ module HTTP
               map { |k, v| [SCNR::Engine::URI.decode( k ), SCNR::Engine::URI.decode( v )] }.
               sort_by { |k, _| k }.hash
         ].hash
+    # Could be a data: URL or some such.
+    rescue
+        url.hash
     end
 
     def enforce_scope?
