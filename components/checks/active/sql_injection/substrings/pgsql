@@ -4,3 +4,5 @@ pg_query() [:
 pg_exec() [:
 valid PostgreSQL result
 Npgsql.
+- unterminated quoted string at or near
+- syntax error at or near
