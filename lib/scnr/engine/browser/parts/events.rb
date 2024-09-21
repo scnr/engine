@@ -212,12 +212,7 @@ module Events
                 end
 
                 if event == :input && (tag_name == 'input' || tag_name == 'textarea')
-                    wl = locator.to_h
-                    wl.merge! wl[:attributes]
-                    wl.delete :source
-                    wl.delete :attributes
-
-                    e = watir.element( wl )
+                    e = watir.element( css: locator.css )
                     e.set( options[:value] )
                     r = true
                 else
