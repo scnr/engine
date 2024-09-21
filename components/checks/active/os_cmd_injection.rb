@@ -30,7 +30,7 @@ class SCNR::Engine::Checks::OsCmdInjection < SCNR::Engine::Check::Base
             unix:    '/bin/cat /etc/passwd /etc/security/passwd /etc/master.passwd #',
             windows: 'type %SystemDrive%\\\\boot.ini %SystemRoot%\\\\win.ini &rem'
         }.inject({}) do |h, (platform, payload)|
-            h.merge platform => ['', '\'', '"'].map { |q| "#{q}; #{payload}" }
+            h.merge platform => ['', '\'', '"'].map { |q| ["#{payload}", "#{q}; #{payload}" ] }.flatten
         end
     end
 
