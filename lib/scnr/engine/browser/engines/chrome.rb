@@ -36,7 +36,11 @@ class Chrome < Base
 
         '--no-sandbox',
 
-        '--process-per-site'
+        '--process-per-site',
+
+        # For Docker, see:
+        # https://stackoverflow.com/questions/56050454/webdrivererror-invalid-session-id
+        '--disable-dev-shm-usage'
     ]
 
     REQUEST_BLACKLIST = []
