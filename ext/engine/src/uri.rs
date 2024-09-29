@@ -58,7 +58,7 @@ fn hash_obj<T: Hash>(t: &T) -> u64 {
 }
 
 /// Splits the string to `limit` pieces at the most, where `delimeter` is found.
-fn splitn_to_vector<'a, P: Pattern<'a>>( string: &'a str, delimeter: P, limit: usize ) -> Vec<String> {
+fn splitn_to_vector<'a, P: Pattern>( string: & str, delimeter: P, limit: usize ) -> Vec<String> {
     let mut vector:Vec<_> = vec![];
 
     for split in string.splitn( limit, delimeter ) {
@@ -68,7 +68,7 @@ fn splitn_to_vector<'a, P: Pattern<'a>>( string: &'a str, delimeter: P, limit: u
     vector
 }
 
-fn split_to_vector<'a, P: Pattern<'a>>( string: &'a str, delimeter: P ) -> Vec<String> {
+fn split_to_vector<'a, P: Pattern>( string: & str, delimeter: P ) -> Vec<String> {
     let mut vector:Vec<_> = vec![];
 
     for split in string.split( delimeter ) {
