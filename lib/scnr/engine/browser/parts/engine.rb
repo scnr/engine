@@ -44,9 +44,11 @@ module Engine
                 touch:       @options[:touch],
 
                 request_handler:  proc do |request, response|
+                    exception_jail { @options[:on_request].call( request, response ) } if @options[:on_request]
                     exception_jail { request_handler( request, response ) }
                 end,
                 response_handler: proc do |request, response|
+                    exception_jail { @options[:on_response].call( request, response ) } if @options[:on_response]
                     exception_jail { response_handler( request, response ) }
                 end
             }

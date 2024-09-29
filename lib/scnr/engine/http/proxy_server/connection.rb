@@ -21,7 +21,7 @@ class Connection < Raktr::Connection
 
     SKIP_HEADERS = %w(transfer-encoding connection proxy-connection keep-alive
         content-encoding te trailers accept-encoding accept-ranges vary
-        authorization upgrade http2-settings)
+        upgrade http2-settings)
 
     attr_reader :parent
     attr_reader :request
@@ -78,7 +78,8 @@ class Connection < Raktr::Connection
                 url:     sanitize_url( @parser.request_url, headers ),
                 method:  method,
                 body:    @body,
-                headers: SCNR::Engine::HTTP::Client.headers.to_h.merge( headers )
+                headers: SCNR::Engine::HTTP::Client.headers.to_h.merge( headers ),
+                raw:     @raw_request.dup
             ))
         end
     end

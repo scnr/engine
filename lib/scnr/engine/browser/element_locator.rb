@@ -27,7 +27,7 @@ class ElementLocator
     # @param    [Hash]  options
     #   Data used to set attributes via setters.
     def initialize( options = {} )
-        options.each { |k, v| send( "#{k}=", v ) }
+        options.each { |k, v| send( "#{k}=", v ) if respond_to?( k ) }
         @attributes ||= {}
     end
 
@@ -105,7 +105,8 @@ class ElementLocator
     def to_hash
         {
             tag_name:   tag_name,
-            attributes: attributes
+            attributes: attributes,
+            source:     to_s
         }
     end
     alias :to_h :to_hash
@@ -123,7 +124,7 @@ class ElementLocator
     end
 
     def hash
-        to_hash.hash
+        [tag_name, attributes.hash].hash
     end
 
     def ==( other )

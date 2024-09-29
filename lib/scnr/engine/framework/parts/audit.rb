@@ -105,6 +105,13 @@ module Audit
 
         if crawl? && !page.element_sink_trace_hash
             pushed = push_paths_from_page( page )
+
+            current_depth = state.depths[page.url]
+            pushed.each do |url|
+                state.depths[url] = current_depth + 1
+            end
+
+            print_info "Current depth: #{current_depth}"
             print_info "Analysis resulted in #{pushed.size} usable paths."
         end
 
@@ -233,6 +240,8 @@ module Audit
             break if page_limit_reached?
             break if !has_audit_workload?
         end
+
+        http.delete "#{Options.check_server}/#{Utilities.random_seed}", mode: :sync
     end
 
     private

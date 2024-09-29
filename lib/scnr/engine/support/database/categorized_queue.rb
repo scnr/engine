@@ -106,7 +106,7 @@ class CategorizedQueue < Base
                 else
                     # Get preferred category, hopefully there'll be some data
                     # for it.
-                    category = @prefer.call( @categories.keys )
+                    category = @prefer.call( @categories.keys ).to_s
 
                     # Get all other available categories just in case the
                     # preferred one is empty.

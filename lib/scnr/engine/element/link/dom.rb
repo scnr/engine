@@ -64,7 +64,7 @@ class DOM < DOM
     #   URL including the DOM {#inputs}.
     def to_s
         "#{@action}##{fragment_path}?" << inputs.
-            map { |k, v| "#{encode(k)}=#{encode(v)}" }.
+            map { |k, v| "#{Link.encode(k)}=#{Link.encode(v)}" }.
             join( '&' )
     end
 

@@ -45,9 +45,9 @@ class SCNR::Engine::Checks::Rfi < SCNR::Engine::Check::Base # *always* extend SC
     #
     def self.payloads
         @payloads ||= [
-            'hTtP://checks.ecsypno.com/rfi.md5.txt',
-            'http://checks.ecsypno.com/rfi.md5.txt',
-            'checks.ecsypno.com/rfi.md5.txt'
+            "#{SCNR::Engine::Options.check_server.sub( 'http', 'hTtP' )}/#{Utilities.random_seed}/rfi",
+            "#{SCNR::Engine::Options.check_server}/#{Utilities.random_seed}/rfi",
+            "#{SCNR::Engine::URI( SCNR::Engine::Options.check_server ).domain}/#{Utilities.random_seed}/rfi"
         ]
     end
 
@@ -106,7 +106,7 @@ the HTTP response body.
             # empty or don't define it at all.
             elements:    ELEMENTS_WITH_INPUTS - [Element::LinkTemplate],
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
-            version:     '0.3.4',
+            version:     '0.3.5',
             sink:        {
               areas: [:active]
             },

@@ -85,12 +85,25 @@ shared_examples_for 'sinks' do |options = {}|
 
                 let(:per_input) do
                     if opts[:single_input]
-                        {
-                            active_input => [:traced, :active, :body].sort
-                        }
+                        if [SCNR::Engine::Element::UIInput::DOM].include? described_class
+                            {
+                              active_input => [:traced, :body].sort
+                            }
+                        else
+                            {
+                              active_input => [:traced, :active, :body].sort
+                            }
+                        end
                     else
+                        if [SCNR::Engine::Element::Form::DOM, SCNR::Engine::Element::UIForm::DOM,
+                            SCNR::Engine::Element::UIInput::DOM].include? described_class
+
+                            sinks = [:traced, :body]
+                        else
+                            sinks = [:traced, :active, :body]
+                        end
                         {
-                            active_input => [:traced, :active, :body].sort,
+                            active_input => sinks.sort,
                             blind_input  => [:traced, :blind].sort
                         }
                     end

@@ -49,22 +49,9 @@ class SCNR::Engine::Checks::PathTraversal < SCNR::Engine::Check::Base
 
     def self.add_traversals( payload )
         trv = '/'
-        traversals = (MINIMUM_TRAVERSALS..MAXIMUM_TRAVERSALS).map do
+        ((MINIMUM_TRAVERSALS..MAXIMUM_TRAVERSALS).map do
             ["#{trv << '../'}#{payload}", "file://#{trv}#{payload}"]
-        end.flatten
-
-        # Use max traversal only, 99% of the time it's enough because it'll
-        # get us to root and then go from there.
-        if Options.audit.quick_mode? || Options.audit.moderate_mode?
-            return traversals.last
-        end
-
-        if Options.audit.super_mode?
-            # Use all traversals in case we need to get them just right.
-            return traversals
-        end
-
-        fail
+        end).last
     end
 
     def self.payloads
@@ -75,8 +62,8 @@ class SCNR::Engine::Checks::PathTraversal < SCNR::Engine::Check::Base
 
         @payloads[mode] = {
             unix:    [
-                '/proc/self/environ',
-                '/etc/passwd'
+                'proc/self/environ',
+                'etc/passwd'
             ],
             windows: [
                 'boot.ini',
@@ -112,7 +99,7 @@ of relevant content in the HTML responses.
 },
             elements:    ELEMENTS_WITH_INPUTS - [LinkTemplate],
             author:      'Tasos "Zapotek" Laskos <tasos.laskos@gmail.com> ',
-            version:     '0.5.0',
+            version:     '0.6.0',
             platforms:   payloads.keys,
             sink:        {
               areas: [:active]

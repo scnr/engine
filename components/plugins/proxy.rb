@@ -35,6 +35,11 @@ class SCNR::Engine::Plugins::Proxy < SCNR::Engine::Plugin::Base
     SESSION_TOKEN_COOKIE = 'scnr.engine.proxy.session_token'
 
     def prepare
+        if SCNR.edition == :community
+            print_error "#{shortname} plugin not supported by #{SCNR.edition} edition."
+            exit 1
+        end
+
         require_relative 'proxy/template_scope'
 
         @server = SCNR::Engine::HTTP::ProxyServer.new(

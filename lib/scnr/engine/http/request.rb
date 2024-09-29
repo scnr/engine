@@ -133,6 +133,8 @@ class Request < Message
     attr_accessor :execution_flow
     attr_accessor :data_flow
 
+    attr_accessor :raw
+
     # @param  [Hash]  options
     #   Request options.
     # @option options [String] :url
@@ -303,7 +305,7 @@ class Request < Message
     # @return   [String]
     #   HTTP request string.
     def to_s
-        "#{headers_string}#{effective_body}"
+        @raw || "#{headers_string}#{effective_body}"
     end
 
     def inspect
@@ -514,6 +516,7 @@ class Request < Message
             effective_body: effective_body,
             body:           body,
             method:         method,
+            raw:            to_s,
             execution_flow: execution_flow&.to_rpc_data,
             data_flow:      data_flow&.to_rpc_data
         }

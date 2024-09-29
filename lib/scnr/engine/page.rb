@@ -491,12 +491,17 @@ class Page
     def to_h
         skip = [:@document, :@do_not_audit_elements, :@has_custom_elements, :@scope]
 
-        instance_variables.inject({}) do |h, iv|
+        hs = instance_variables.inject({}) do |h, iv|
             next h if skip.include? iv
 
             h[iv.to_s.gsub( '@', '').to_sym] = try_dup( instance_variable_get( iv ) )
             h
         end.merge(@cache).tap { |h| h.delete :parser }
+
+        hs[:dom]      = self.dom.to_h
+        hs[:response] = self.response.to_h
+        hs[:request]  = self.request.to_h
+        hs
     end
     alias :to_hash :to_h
 

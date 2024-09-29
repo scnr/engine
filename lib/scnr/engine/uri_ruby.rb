@@ -435,6 +435,7 @@ class URIRuby
     end
 
     def port=( p )
+        raise ArgumentError if p && !p.is_a?( Integer )
         @port = p ? p.to_i : nil
     end
 

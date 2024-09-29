@@ -79,7 +79,10 @@ end
 
 get '/fail_stream' do
     stream do |out|
-        fail
+        5.times do |i|
+            out.puts "#{i}: Hello!"
+            fail if i == 3
+        end
 
         out.flush
     end

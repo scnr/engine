@@ -211,9 +211,19 @@ module Events
                     options[:value] = value_for( locator )
                 end
 
-                r = @javascript.events.fire( tag_name, locator.css, event, options )
+                if event == :input && (tag_name == 'input' || tag_name == 'textarea')
+                    e = watir.element( css: locator.css )
+                    e.set( options[:value] )
+                    r = true
+                else
+                    r = @javascript.events.fire( tag_name, locator.css, event, options )
+                end
+
                 Events.notify_on_event( r, locator, event, options, self )
                 fail Selenium::WebDriver::Error::WebDriverError, 'Event fire failed.' if !r
+
+                # Seems to be utterly necessary...
+                sleep 0.1
 
                 print_debug_level_2 "[waiting for requests]: #{event} (#{options}) #{locator}"
                 engine.wait_for_pending_requests
@@ -237,7 +247,6 @@ module Events
 
             transition
         rescue Selenium::WebDriver::Error::WebDriverError => e
-
             print_debug "Error when triggering event for: #{dom_url}"
             print_debug "-- '#{event}' on: #{opening_tag} -- #{locator.css}"
             print_debug

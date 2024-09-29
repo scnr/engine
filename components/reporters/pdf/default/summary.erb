@@ -1,0 +1,13 @@
+<h2>Summary</h2>
+
+<div id="summary-tabs">
+    <% if report.issues.any? %>
+        <div>
+            <%= erb 'summary/issues.erb' %>
+        </div>
+    <% else %>
+        <p class="alert alert-info">
+            No issues have been identified.
+        </p>
+    <% end %>
+</div>

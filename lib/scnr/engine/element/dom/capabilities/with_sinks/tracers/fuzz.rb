@@ -18,7 +18,7 @@ class Fuzz < Base
 
     class <<self
         include Support::Mixins::Observable
-        advertise :on_sinks
+        advertise :on_sink
     end
     observe!
 
@@ -63,8 +63,10 @@ class Fuzz < Base
         found = false
         # One of the occurrences will be the actual setting of the taint.
         if /#{seed}/i.match? page.body
-            mutation.sinks.active!
             mutation.sinks.body!
+
+            self.notify_on_sink :body, seed, mutation, page
+
             found = true
 
             mutation.sinks.print_message
@@ -73,16 +75,19 @@ class Fuzz < Base
         ## TODO: Add tests for signals
         if page.dom.has_data_flow_sink_signal? || page.dom.data_flow_sinks.any?
             mutation.sinks.active!
+
+            self.notify_on_sink :active, seed, mutation, page
+
             found = true
 
             mutation.sinks.print_message
         end
 
-        if found
-            self.notify_on_sinks seed, mutation, page
-        else
+        if !found
             mutation.sinks.blind!
+            self.notify_on_sink :blind, seed, mutation, page
         end
+
         mutation.sinks.traced!
 
         mutation.sinks.print_message

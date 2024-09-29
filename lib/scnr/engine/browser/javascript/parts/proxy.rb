@@ -31,6 +31,10 @@ module Proxy
         end
     end
 
+    def serve?( request )
+        request.url.split( '?', 2 ).first == self.class.env_script_url( request.parsed_url.scheme )
+    end
+
     # @param    [HTTP::Request]     request
     #   Request to process.
     # @param    [HTTP::Response]    response
@@ -42,10 +46,10 @@ module Proxy
     #
     # @see ENV_SCRIPT_URL
     def serve( request, response )
-        without_query, query = request.url.split( '?', 2 )
-        return false if without_query != self.class.env_script_url( request.parsed_url.scheme )
+        return if !serve?( request )
 
         parent_url = @browser.last_url
+        query      = request.url.split( '?', 2 ).last
 
         if query
             # Other scripts would append cache queries.

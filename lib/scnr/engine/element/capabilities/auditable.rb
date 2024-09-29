@@ -22,7 +22,7 @@ module Auditable
     class <<self
         include Support::Mixins::Decisions
 
-        query :pause_here
+        query :on_audit
     end
     ask!
 
@@ -278,7 +278,7 @@ module Auditable
     #
     # @see #submit
     def audit_single( payload, opts = { }, &block )
-        Auditable.pause_here?( self )
+        Auditable.on_audit?( self )
 
         if !valid_input_data?( payload )
             print_debug_level_2 "Payload not supported by #{self}: #{payload.inspect}"

@@ -103,15 +103,17 @@ class Framework
     # @return     [Integer]
     attr_accessor :audited_page_count
 
+    attr_accessor :depths
+
     def initialize
         super
 
-        @audited_page_count = 0
-
-        @page_queue_filter = Support::Filter::Set.new(hasher: :persistent_hash )
-        @page_paths_filter = Support::Filter::Set.new(hasher: :paths_hash )
+        @audited_page_count  = 0
+        @depths              = Support::PersistentHash.new(0)
+        @page_queue_filter   = Support::Filter::Set.new(hasher: :persistent_hash )
+        @page_paths_filter   = Support::Filter::Set.new(hasher: :paths_hash )
         @dom_analysis_filter = Support::Filter::Set.new(hasher: :transitions_hash )
-        @url_queue_filter  = Support::Filter::Set.new(hasher: :persistent_hash )
+        @url_queue_filter    = Support::Filter::Set.new(hasher: :persistent_hash )
 
         @element_pre_check_filter = Support::Filter::Set.new(hasher: :coverage_and_trace_hash )
 
@@ -218,12 +220,11 @@ class Framework
         @element_pre_check_filter << e
     end
 
-
     def dump( directory )
         FileUtils.mkdir_p( directory )
 
         %w(element_pre_check_filter page_queue_filter url_queue_filter
-            audited_page_count page_paths_filter
+            audited_page_count page_paths_filter depths
             dom_analysis_filter
         ).each do |attribute|
             IO.binwrite( "#{directory}/#{attribute}", Marshal.dump( send(attribute) ) )
@@ -242,12 +243,14 @@ class Framework
             framework.send(attribute).merge Marshal.load( IO.binread( path ) )
         end
 
+        framework.depths.merge! Marshal.load( IO.binread( "#{directory}/depths" ) )
         framework.audited_page_count = Marshal.load( IO.binread( "#{directory}/audited_page_count" ) )
         framework
     end
 
     def clear
         @element_pre_check_filter.clear
+        @depths.clear
 
         @dom_analysis_filter.clear
         @page_queue_filter.clear

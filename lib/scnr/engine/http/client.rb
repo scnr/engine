@@ -433,6 +433,11 @@ class Client
     def request( url = Options.url, options = {}, &block )
         fail ArgumentError, 'URL cannot be empty.' if !url
 
+        if Framework.abort?
+            client_abort
+            return
+        end
+
         options     = options.dup
         cookies     = options.delete( :cookies ) || {}
         raw_cookies = options.delete( :raw_cookies ) || []
@@ -506,6 +511,15 @@ class Client
         request( url, options.merge( method: :trace ), &block )
     end
 
+    # Performs a `DELETE` {Request request}.
+    #
+    # @param  (see #request)
+    # @return (see #request)
+    #
+    # @see #request
+    def delete( url = Options.url, options = {}, &block )
+        request( url, options.merge( method: :delete ), &block )
+    end
 
     # Performs a `GET` {Request request} sending the cookies in `:parameters`.
     #
@@ -570,6 +584,11 @@ class Client
 
     def global_on_complete( response )
         request = response.request
+
+        if Framework.abort?
+            client_abort
+            return
+        end
 
         synchronize do
             @response_count       += 1

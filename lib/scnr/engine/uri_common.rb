@@ -71,6 +71,7 @@ module URICommon
                 )
                 s.recode!
                 s.gsub!( '+', '%2B' )
+                s.gsub!( ';', '%3B' )
                 s
             end
         end

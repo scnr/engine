@@ -171,7 +171,8 @@ module Snapshots
             return Page.from_data(
                 dom: {
                     url: d_url,
-                    has_data_flow_sink_signal: has_data_flow_sink_signal
+                    has_data_flow_sink_signal: has_data_flow_sink_signal,
+                    requests: @requests.dup
                 },
                 response: {
                     code: 0,
@@ -189,9 +190,10 @@ module Snapshots
             end
         end
 
-        page                 = r.to_page
-        page.dom.url         = d_url
-        page.dom.transitions = @transitions.dup
+        page                  = r.to_page
+        page.dom.url          = d_url
+        page.dom.transitions  = @transitions.dup
+        page.dom.requests = @requests.dup
 
         if has_data_flow_sink_signal
             page.dom.has_data_flow_sink_signal!
@@ -472,6 +474,8 @@ module Snapshots
 
         page = Page.from_data( elements.merge( url: request.url ) )
         page.response.request = request
+
+        el.each { |e| e.page = page }
 
         @captured_pages << page if store_pages?
 

@@ -59,9 +59,9 @@ module State
     def initialize
         super
 
-        Element::Capabilities::Auditable.pause_here do |element|
+        Element::Capabilities::Auditable.on_audit do |element|
             if pause?
-                print_debug "Blocking on element audit: #{element.audit_id}"
+                print_debug "Paused, blocking on element audit: #{element.audit_id}"
             end
 
             wait_if_paused
@@ -78,6 +78,7 @@ module State
         default_filename =
             "#{URI(SCNR::Engine::Options.url).host} #{Time.now.to_s.gsub( ':', '_' )} " <<
                 "#{generate_token}.#{Snapshot::EXTENSION}"
+        default_filename.gsub!( ' ', '_' )
 
         location = SCNR::Engine::Options.snapshot.path
 
@@ -392,6 +393,7 @@ module State
 
     def abort_if_signaled
         return if !abort?
+        HTTP::Client.abort
         clean_up
         state.aborted
     end

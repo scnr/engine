@@ -49,8 +49,7 @@ class UIForm < Base
         browser.each_element_with_events SUPPORTED_TYPES do |locator, events|
             type = locator.attributes['type'].to_s.downcase
 
-            next if locator.tag_name == :input && type != 'button' &&
-                type != 'submit'
+            next if locator.tag_name == :input && type != 'button' && type != 'submit'
 
             events.each do |event, _|
                 ui_forms << new(
@@ -87,7 +86,7 @@ class UIForm < Base
 
         if UIInput.with_input_in_html?( page.body )
             page.document.nodes_by_name( :input ) do |input|
-                next if input['type'] && input['type'].downcase != 'text'
+                next if input['type'] && (input['type'].downcase != 'text' && input['type'].downcase != 'input')
 
                 name = node_to_name( input )
 

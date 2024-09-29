@@ -101,6 +101,17 @@ describe SCNR::Engine::Element::Link::DOM do
         end
     end
 
+    describe '#to_s' do
+        it 'returns the URL as a string' do
+            expect(subject.to_s).to end_with('/dom/#/test/?param=some-name')
+        end
+
+        it 'encodes query parameters' do
+            subject.inputs = { 'param' => ';stuff' }
+            expect(subject.to_s).to end_with('/dom/#/test/?param=%3Bstuff')
+        end
+    end
+
     describe '#trigger' do
         it 'triggers the event required to submit the element' do
             inputs = { 'param' => 'The.Dude' }

@@ -733,6 +733,13 @@ describe SCNR::Engine::Browser::Parts::Snapshots do
                                                                       ]))
         end
 
+        it "assigns the proper #{SCNR::Engine::Page::DOM}#requests" do
+            subject.load( "#{web_server_url_for( :dom_monitor )}/elements_with_events/jQuery.on", take_snapshot: true )
+            page = subject.to_page
+
+            expect(page.dom.requests.map(&:url)).to eq(["#{web_server_url_for( :dom_monitor )}/jquery.js"])
+        end
+
         it "assigns the proper #{SCNR::Engine::Page::DOM} sink data" do
             subject.load "#{web_server_url_for( :taint_tracer )}/debug" <<
                               "?input=#{subject.javascript.log_execution_flow_sink_stub(1)}"

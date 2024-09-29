@@ -16,6 +16,11 @@ module HTTP
     # @!method on_response( &block )
     advertise :on_response
 
+    # @return   [Array<HTTP::Request>]
+    attr_reader :requests
+
+    attr_reader :window_responses
+
     AD_HOSTS = Support::Filter::Set.new
     File.open( Options.paths.root + 'config/adservers.txt' ) do |f|
         f.each_line do |entry|
@@ -37,6 +42,7 @@ module HTTP
     def initialize
         super
         @ignore_scope = @options[:ignore_scope]
+        @requests = []
     end
 
     def response
@@ -52,27 +58,13 @@ module HTTP
             return
         end
 
-        r = get_response( u )
-
-        return r if r && r.code != 504
-
-        if r
-            print_debug "Origin server timed-out when requesting: #{u}"
-        else
-            print_debug "Response never arrived for: #{u}"
-
-            print_debug 'Available responses are:'
-            @window_responses.each do |k, _|
-                print_debug "-- #{k}"
-            end
-
-            print_debug 'Tried:'
-            print_debug "-- #{u}"
-            print_debug "-- #{normalize_url( u )}"
-            print_debug "-- #{normalize_watir_url( u )}"
+        t = Time.now
+        while !(r = get_response( u ))
+            sleep 0.05
+            return if Time.now - t > (Options.http.request_timeout / 1_000)
         end
 
-        nil
+        r
     end
 
     private
@@ -94,6 +86,10 @@ module HTTP
         request.performer = self
 
         print_debug_level_2 "Request: #{request.url}"
+
+        if @add_requests && request.url != @last_url && !@javascript.serve?( request )
+            @requests << request.dup
+        end
 
         if !engine.allow_request?( request )
             print_debug_level_2 "Ignoring, blacklisted by engine: #{engine}"
@@ -233,39 +229,30 @@ module HTTP
         notify_on_response response
         return response if !response.text?
 
-        @window_responses[response.url] = response
+        @window_responses[make_response_key( response.url )] = response
     end
 
     def get_response( url )
-        # Order is important, #normalize_url by can get confused and remove
-        # everything after ';' by treating it as a path parameter.
-        # Rightly so...but we need to bypass it when auditing LinkTemplate
-        # elements.
-        @window_responses[url] ||
-          @window_responses[normalize_watir_url( url )] ||
-          @window_responses[normalize_url( url )]
+        @window_responses[make_response_key( url )]
     end
 
-    def normalize_watir_url( url )
-        normalize_url( encode_semicolon( url ) ).gsub( '%3B', '%253B' )
-    end
-
-    def encode_semicolon( str )
-        if SCNR::Engine.has_extension?
-            Rust::Browser::Parts::HTTP.encode_semicolon_ext( str )
-        else
-            Browser::Parts::HTTP.encode_semicolon_ruby( str )
-        end
-    end
-
-    def self.encode_semicolon_ruby( str )
-        ::URI.encode( str, ';' )
+    def make_response_key( url )
+        # Normalize by decoding components and putting params in order.
+        uri = SCNR::Engine::URI.parse( url )
+        [
+            uri.scheme, uri.host, uri.port, SCNR::Engine::URI.decode( uri.path ),
+            uri.query_parameters.
+              map { |k, v| [SCNR::Engine::URI.decode( k ), SCNR::Engine::URI.decode( v )] }.
+              sort_by { |k, _| k }.hash
+        ].hash
+    # Could be a data: URL or some such.
+    rescue
+        url.hash
     end
 
     def enforce_scope?
         !@ignore_scope
     end
-
 
 end
 

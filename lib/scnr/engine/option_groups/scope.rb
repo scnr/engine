@@ -49,6 +49,14 @@ class Scope < SCNR::Engine::OptionGroup
     # @note `nil` is infinite -- default is `10`.
     #
     # @return    [Integer]
+    #   How deep to go into the site's tree.
+    #
+    # @see URICommon::Scope#too_deep?
+    attr_accessor :depth_limit
+
+    # @note `nil` is infinite -- default is `10`.
+    #
+    # @return    [Integer]
     #   How deep to go into the site's directory tree.
     #
     # @see URICommon::Scope#too_deep?
@@ -185,6 +193,7 @@ class Scope < SCNR::Engine::OptionGroup
     attr_accessor :url_rewrites
 
     set_defaults(
+        depth_limit:                 10,
         directory_depth_limit:       10,
         auto_redundant_paths:        15,
         redundant_path_patterns:     {},
@@ -270,6 +279,10 @@ class Scope < SCNR::Engine::OptionGroup
 
     def dom_event_limit_reached?( count )
         dom_event_limit && count >= dom_event_limit
+    end
+
+    def depth_limit_reached?( count )
+        depth_limit && count >= depth_limit
     end
 
     # Sets the redundancy filters.

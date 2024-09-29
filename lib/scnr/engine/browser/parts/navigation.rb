@@ -38,7 +38,8 @@ module Navigation
     def initialize
         super
 
-        @add_transitions = true
+        @add_transitions  = true
+        @add_requests = true
 
         # User-controlled preloaded responses, by URL.
         @preloads = {}
@@ -68,7 +69,8 @@ module Navigation
             when String
                 Navigation.notify_before_load resource, options, self
 
-                @transitions = []
+                @transitions  = []
+                @requests = []
                 goto resource, options
 
                 Navigation.notify_after_load resource, options, self
@@ -76,7 +78,8 @@ module Navigation
             when SCNR::Engine::HTTP::Response
                 Navigation.notify_before_load resource, options, self
 
-                @transitions = []
+                @transitions  = []
+                @requests = []
                 goto preload( resource ), options
 
                 Navigation.notify_after_load resource, options, self
@@ -84,16 +87,19 @@ module Navigation
             when Page
                 SCNR::Engine::HTTP::Client.update_cookies resource.cookie_jar
 
-                load resource.dom
+                load resource.dom, options
 
             when Page::DOM
                 Navigation.notify_before_load resource, options, self
 
-                @transitions = resource.transitions.dup
+                @transitions  = resource.transitions.dup
+                @requests = resource.requests.dup
 
-                @add_transitions = false if @transitions.any?
+                @add_transitions  = false if @transitions.any?
+                @add_requests = false if @requests.any?
                 resource.restore *[self, options[:take_snapshot]].compact
-                @add_transitions = true
+                @add_transitions  = true
+                @add_requests = true
 
                 Navigation.notify_after_load resource, options, self
 

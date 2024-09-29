@@ -790,6 +790,9 @@ describe SCNR::Engine::HTTP::Request do
                 h.delete :cookies
                 h.delete :username
                 h.delete :password
+                h[:raw] = 'stuff1=%202&%203=4'
+                options[:data_flow] = options[:data_flow].to_rpc_data
+                options[:execution_flow] = options[:execution_flow].to_rpc_data
             end)
         end
     end

@@ -163,7 +163,9 @@ describe SCNR::Engine::HTTP::ProxyServer do
                     "Content-Length: 7\r\n" <<
                     "X-Scnr-Engine-Scan-Seed: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
                     "Accept-Language: en-US,en;q=0.8,he;q=0.6\r\n" <<
-                    "Content-Type: application/x-www-form-urlencoded\r\n\r\n").split( "\r\n" ).sort
+                    "Content-Type: application/x-www-form-urlencoded\r\n" <<
+                    "X-Scnr-Introspector-Taint: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
+                    "X-Scnr-Introspector-Trace: 0\r\n").split( "\r\n" ).sort
                 )
 
                 expect(request.effective_body).to eq('1=2&3=4')
