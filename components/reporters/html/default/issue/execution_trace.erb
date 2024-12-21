@@ -13,6 +13,9 @@
     Method
   </th>
   <th>
+    Source
+  </th>
+  <th>
     Event
   </th>
 <% execution_flow.points.each.with_index do |point, i| %>
@@ -22,6 +25,7 @@
     <td><%= point.line_number %></td>
     <td><code><%= point.class_name %></code></td>
     <td><code><%= point.method_name %></code></td>
+    <td><code><%= escapeHTML point.source %></code></td>
     <td><code><%= point.event %></code></td>
   </tr>
 <% end %>
