@@ -21,12 +21,12 @@
       <td><code><%= escapeHTML sink.tainted_value.inspect %></code></td>
     </tr>
     <tr id="<%= id %>-<%= i %>-debug" class="collapse">
-      <td></td>
-      <td colspan="2">
-        <code><%= code_highlight ::JSON.pretty_generate( sink.backtrace ), :json %></code>
-      </td>
-      <td colspan="2">
+      <td colspan="5">
+        <strong>Arguments list</strong>
         <code><%= code_highlight ::JSON.pretty_generate( sink.arguments ), :json %></code>
+
+        <strong>Backtrace</strong>
+        <code><%= code_highlight ::JSON.pretty_generate( sink.backtrace ), :json %></code>
       </td>
     </tr>
   <% end %>
