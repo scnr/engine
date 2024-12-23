@@ -13,7 +13,7 @@
     Argument value
   </th>
   <% data_flow.sinks.each.with_index do |sink, i| %>
-    <tr data-toggle="collapse" data-target="#<%= id %>-<%= i %>-debug" class="collapses">
+    <tr data-toggle="collapse" onclick=$("#<%= id %>-<%= i %>-debug").toggle() class="collapses">
       <th><%= i %></th>
       <td><code><%= sink.object %></code></td>
       <td><code><%= sink.method_name %></code></td>
@@ -21,9 +21,28 @@
       <td><code><%= escapeHTML sink.tainted_value.inspect %></code></td>
     </tr>
     <tr id="<%= id %>-<%= i %>-debug" class="collapse">
-      <td colspan="5">
-        <strong>Arguments list</strong>
-        <code><%= code_highlight ::JSON.pretty_generate( sink.arguments ), :json %></code>
+      <td colspan="5" width="100%">
+        <div class="row">
+
+          <% if sink.source_location %>
+            <div class="col-md-6">
+              <strong>Method source</strong>
+              <div>
+                <code><%= sink.source_location.join ':' %></code>
+              </div>
+              <div>
+                <code><%= code_highlight sink.method_source, :ruby %></code>
+              </div>
+            </div>
+          <% end %>
+
+          <div class="col-md-6">
+            <strong>Arguments list</strong>
+            <div>
+              <code><%= code_highlight ::JSON.pretty_generate( sink.arguments ), :json %></code>
+            </div>
+          </div>
+        </div>
 
         <strong>Backtrace</strong>
         <code><%= code_highlight ::JSON.pretty_generate( sink.backtrace ), :json %></code>
