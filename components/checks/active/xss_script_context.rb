@@ -166,7 +166,7 @@ class SCNR::Engine::Checks::XssScriptContext < SCNR::Engine::Check::Base
                 response,
                 {
                     taint: self.class.seed,
-                    args:  [element, page],
+                    args:  [element, page, response],
                     parse_profile:
                         Browser::ParseProfile.only(
                             :body,
@@ -179,13 +179,15 @@ class SCNR::Engine::Checks::XssScriptContext < SCNR::Engine::Check::Base
         end
     end
 
-    def self.check_browser_result( result, element, referring_page, cluster )
+    def self.check_browser_result( result, element, referring_page, response, cluster )
         page = result.page
 
         print_info 'Checking results of deferred taint analysis for' <<
                        ' execution-flow sink data.'
 
         return if page.dom.execution_flow_sinks.empty?
+
+        page.response.request = response.request
 
         log(
             vector:         element,
