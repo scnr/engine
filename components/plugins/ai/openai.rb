@@ -186,7 +186,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
             msg << "\n#{files_msg}"
 
-            puts msg
+            # puts msg
             @client.post msg
         end
 
