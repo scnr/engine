@@ -51,6 +51,8 @@ Gem::Specification.new do |s|
     s.add_dependency 'scnr'
     s.add_dependency 'scnr-introspector',    '~> 0.1'
 
+    s.add_dependency 'ruby-openai',          '~> 7.3.1'
+
     s.add_dependency 'cuboid',               '~> 0.2'
     s.add_dependency 'dsel'
 

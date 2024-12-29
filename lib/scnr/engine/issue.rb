@@ -102,6 +102,11 @@ class Issue
     #   made the remark, value is an `Array` of remarks.
     attr_accessor :remarks
 
+    attr_accessor :patch
+    attr_accessor :exploit
+    attr_accessor :insights
+    attr_accessor :report
+
     # @param    [Hash]    options
     #   Configuration hash holding instance attributes.
     def initialize( options = {} )

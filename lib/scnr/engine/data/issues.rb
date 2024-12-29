@@ -123,13 +123,14 @@ class Issues
 
         synchronize do
             notify_on_new( issue )
-
-            if store?
-                @collection[issue.digest] = issue
-            end
+            _push( issue ) if store?
         end
 
         self
+    end
+
+    def _push( issue )
+        @collection[issue.digest] = issue
     end
 
     # @param    [Integer]   digest
