@@ -18,7 +18,91 @@
         </div>
     </div>
 
+  <% if issue.insights %>
     <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a href="<%= issue_location( issue ) %>/insights">
+            <i class="fa fa-link"></i>
+          </a>
+
+          <a data-toggle="collapse" href="#<%= id %>-insights">
+            Insights
+          </a>
+        </h4>
+      </div>
+      <div id="<%= id %>-insights" class="panel-collapse collapse">
+        <div class="panel-body">
+          <%= md issue.insights %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if issue.patch %>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a href="<%= issue_location( issue ) %>/patch">
+            <i class="fa fa-link"></i>
+          </a>
+
+          <a data-toggle="collapse" href="#<%= id %>-patch">
+            Patch
+          </a>
+        </h4>
+      </div>
+      <div id="<%= id %>-patch" class="panel-collapse collapse">
+        <div class="panel-body">
+          <%= md issue.patch %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if issue.exploit %>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a href="<%= issue_location( issue ) %>/exploit">
+            <i class="fa fa-link"></i>
+          </a>
+
+          <a data-toggle="collapse" href="#<%= id %>-exploit">
+            Exploit
+          </a>
+        </h4>
+      </div>
+      <div id="<%= id %>-exploit" class="panel-collapse collapse">
+        <div class="panel-body">
+          <%= md issue.exploit %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if issue.report %>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a href="<%= issue_location( issue ) %>/report">
+            <i class="fa fa-link"></i>
+          </a>
+
+          <a data-toggle="collapse" href="#<%= id %>-report">
+            Report
+          </a>
+        </h4>
+      </div>
+      <div id="<%= id %>-report" class="panel-collapse collapse">
+        <div class="panel-body">
+          <%= md issue.report %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="panel panel-default">
         <div class="panel-heading">
             <h4 class="panel-title">
                 <a href="<%= issue_location( issue ) %>/affected_page">

@@ -36,7 +36,7 @@ class SCNR::Engine::Reporters::HTML < SCNR::Engine::Reporter::Base
         end
 
         def md( markdown )
-            html = Kramdown::Document.new( markdown ).to_html.recode
+            html = Kramdown::Document.new( markdown.gsub( '```', '~~~' ) ).to_html.recode
             Loofah.fragment( html ).scrub!(:prune).to_s
         end
 

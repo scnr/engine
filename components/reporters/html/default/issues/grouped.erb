@@ -92,9 +92,9 @@
                                     </a>
                                 </h4>
 
-                                <pre class="issue-remedy_code">
-                                    <%= escapeHTML issues.first.remedy_code %>
-                                </pre>
+                                <div class="issue-remedy_code markdown">
+                                    <%= md issues.first.remedy_code %>
+                                </div>
                             </div>
                             <% end %>
                         </div>

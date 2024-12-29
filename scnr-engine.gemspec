@@ -106,10 +106,10 @@ Gem::Specification.new do |s|
 
     # Markdown to HTML conversion, used by the HTML report for component
     # descriptions.
-    s.add_dependency 'kramdown',            '2.4.0'
+    s.add_dependency 'kramdown',            '2.5.1'
 
     # Used to scrub Markdown for XSS etc.
-    s.add_dependency 'loofah',              '2.22.0'
+    s.add_dependency 'loofah',              '2.23.1'
 
     s.add_development_dependency "rb_sys", "~> 0.9.39"
     s.add_development_dependency "rake-compiler", "~> 1.2"
