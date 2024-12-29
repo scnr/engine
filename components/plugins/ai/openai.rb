@@ -137,17 +137,21 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 ```
 #{@issue.request}
 ```
-
-                The HTTP response for this resource was:
-```
-#{@issue.response}
-```
-
-                The rendered HTML response body for this resource was:
-```html
-#{@issue.page.body}
-```
             EOT
+
+            if !response.body.binary?
+                msg << <<-EOT
+                    The HTTP response for this resource was:
+    ```
+    #{@issue.response}
+    ```
+    
+                    The rendered HTML response body for this resource was:
+    ```html
+    #{@issue.page.body}
+    ```
+                EOT
+            end
 
             if @issue.active?
                 msg << <<-EOT
