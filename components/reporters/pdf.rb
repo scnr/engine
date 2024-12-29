@@ -7,7 +7,9 @@
 =end
 
 require 'zip'
-require 'kramdown'
+require 'redcarpet'
+require 'rouge'
+require 'rouge/plugins/redcarpet'
 require 'loofah'
 require 'coderay'
 require 'json'
@@ -25,6 +27,10 @@ class SCNR::Engine::Reporters::PDF < SCNR::Engine::Reporter::Base
 
     module TemplateUtilities
 
+        class RougeHTML < ::Redcarpet::Render::HTML
+            include ::Rouge::Plugins::Redcarpet
+        end
+
         def base64_encode( string )
             Base64.encode64( string ).gsub( /\n/, '' )
         end
@@ -34,7 +40,15 @@ class SCNR::Engine::Reporters::PDF < SCNR::Engine::Reporter::Base
         end
 
         def md( markdown )
-            html = Kramdown::Document.new( markdown ).to_html.recode
+            html = Redcarpet::Markdown.new(
+              RougeHTML,
+              autolink: true,
+              tables: true,
+              with_toc_data: true,
+              prettify: true,
+              fenced_code_blocks: true,
+              footnotes: true
+            ).render( markdown ).recode
             Loofah.fragment( html ).scrub!(:prune).to_s
         end
 
