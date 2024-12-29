@@ -99,6 +99,7 @@ module State
         return if @cleaned_up
         @cleaned_up = true
 
+        aborting = state.aborting?
         state.status = :cleanup
 
         if shutdown_browsers
@@ -115,8 +116,12 @@ module State
 
         state.running = false
 
-        state.set_status_message :waiting_for_plugins
-        @plugins.block
+        if aborting
+            @plugins.killall
+        else
+            state.set_status_message :waiting_for_plugins
+            @plugins.block
+        end
 
         # Plugins may need the session right till the very end so save it for last.
         @session.clean_up if @session
