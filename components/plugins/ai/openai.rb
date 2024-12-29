@@ -167,13 +167,13 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
         def prepare
             files     = self.executed_file_contents
-            files_msg = ""
+            files_msg = "The web application source code files are:\n"
             files.each do |path, contents|
                 files_msg << "#{path}\n"
-                files_msg << "```ruby\n#{contents}\n```"
+                files_msg << "```\n#{contents}\n```"
             end
 
-            msg = "You are a web application security engineer."
+            msg = "You are a web application security engineer.\n"
             if files.any?
                 msg << <<-EOT
                 These are #{files.size} Ruby source code files, which contain a '#{@issue.name}' vulnerability of 
@@ -202,7 +202,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
     #{@issue.response}
     ```
     
-                    The rendered HTML body for this response was:
+                    The rendered HTML body for this resource was:
     ```html
     #{@issue.page.body}
     ```
