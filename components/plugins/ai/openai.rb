@@ -233,10 +233,14 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
             end
 
             if @issue.remarks.any?
-                @issue.remarks.each do |component, remark|
+                @issue.remarks.each do |component, remarks|
                     msg << <<-EOT
-                    The '#{component}' component remarked: #{remark}
+                    The '#{component}' component remarked:
                     EOT
+
+                    remarks.each do |remark|
+                        msg << "* #{remark}\n"
+                    end
                 end
             end
 
