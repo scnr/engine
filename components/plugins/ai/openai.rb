@@ -135,13 +135,14 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
                 files_msg << "```ruby\n#{contents}\n```"
             end
 
+            msg = "You are a web application security engineer."
             if files.any?
-                msg = <<-EOT
+                msg << <<-EOT
                 These are #{files.size} Ruby source code files, which contain a '#{@issue.name}' vulnerability of 
                 #{@issue.severity} severity.
                 EOT
             else
-                msg = <<-EOT
+                msg << <<-EOT
                 There is a '#{@issue.name}' vulnerability of #{@issue.severity} severity.
                 EOT
             end
@@ -163,7 +164,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
     #{@issue.response}
     ```
     
-                    The rendered HTML response body for this resource was:
+                    The rendered HTML body for this response was:
     ```html
     #{@issue.page.body}
     ```
@@ -184,7 +185,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
                 if @issue.signature
                     msg << <<-EOT
-                    Identified by this signature: #{@issue.signature}
+                    It was identified by this signature: #{@issue.signature}
                     EOT
                 end
             else
@@ -263,7 +264,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
             @issue.insights =
               join_response_contents(
                 @client.post(
-                  "Do you have any insights regarding this specific issue?"
+                  "Write any insights regarding this issue."
                 )
               )
         end
@@ -272,7 +273,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
             @issue.report =
               join_response_contents(
                 @client.post(
-                  "Can you please write a report for this issue?"
+                  "Write a report for this issue."
                 )
               )
         end
