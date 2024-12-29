@@ -12,7 +12,7 @@ require 'openai'
 # @version 0.1
 class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
-    THREADS   = 2
+    THREADS   = 1
     MAX_QUEUE = 10
 
     class Client
@@ -89,10 +89,12 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
                         return
 
                     when 'cancelled', 'failed', 'expired'
-                        return
+                        # ap response
+                        fail "Status response: #{status} -- #{response['last_error']}"
 
                     else
-                        fail "Unknown status response: #{status}"
+                        # ap response
+                        fail "Unknown status response: #{status} -- #{response['last_error']}"
                 end
             end
 
