@@ -15,9 +15,19 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
     THREADS   = 1
     MAX_QUEUE = 10
 
+    def self.rate_limit_reached?
+        !!@rate_limited
+    end
+
+    def self.rate_limit_reached!
+        @rate_limited = true
+    end
+
     class Client
         def initialize( options )
             @apikey = options[:apikey]
+
+            @rate_limited = false
         end
 
         def client
@@ -41,6 +51,8 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         end
 
         def post( message )
+            fail 'Rate limit reached.' if @rate_limited
+
             message message
             think
         end
@@ -89,6 +101,11 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
                         return
 
                     when 'cancelled', 'failed', 'expired'
+                        if response['last_error']['code'] == 'rate_limit_exceeded'
+                            @rate_limited = true
+                            SCNR::Engine::Plugins::OpenAI.rate_limit_reached!
+                        end
+
                         # ap response
                         fail "Status response: #{status} -- #{response['last_error']}"
 
@@ -139,7 +156,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 ```
             EOT
 
-            if !response.body.binary?
+            if !@issue.response.body.binary?
                 msg << <<-EOT
                     The HTTP response for this resource was:
     ```
@@ -287,6 +304,8 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
     end
 
     def process( issue )
+        return if self.class.rate_limit_reached?
+
         msg = "[#{issue.digest}] #{issue.name} in #{issue.vector.type}"
         if issue.active?
             msg << " input '#{issue.affected_input_name}'."
