@@ -23,7 +23,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         def client
             @client ||= OpenAI::Client.new(
               access_token: @apikey,
-              log_errors:   true
+              # log_errors:   true
             )
         end
 
