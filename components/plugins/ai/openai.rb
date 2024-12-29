@@ -12,7 +12,7 @@ require 'openai'
 # @version 0.1
 class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
-    THREADS   = 1
+    THREADS   = 2
     MAX_QUEUE = 10
 
     class Client
@@ -265,6 +265,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         end
 
         def join_response_contents( response )
+            fail 'Response does not include content.' if !response.include?( 'content' )
             response['content'].map { |c| c['text']['value'] }.join( "\n" )
         end
     end
@@ -289,29 +290,61 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
         print_status "Processing issue: #{msg}"
 
-        print_info "Initialising the Djin."
-        djin = Djin.new( issue, @options )
+        begin
+            print_info "Initialising the Djin."
+            djin = Djin.new( issue, @options )
+        rescue => e
+            print_exception e
+            return
+        end
 
-        print_info "Djin: [#{issue.digest}] Getting description."
-        djin.describe!
+        begin
+            print_info "Djin: [#{issue.digest}] Getting description."
+            djin.describe!
+        rescue => e
+            print_exception e
+        end
+        begin
+            print_info "Djin: [#{issue.digest}] Getting patch."
+            djin.patch!
+        rescue => e
+            print_exception e
+        end
 
-        print_info "Djin: [#{issue.digest}] Getting patch."
-        djin.patch!
+        begin
+            print_info "Djin: [#{issue.digest}] Getting exploit."
+            djin.exploit!
+        rescue => e
+            print_exception e
+        end
 
-        print_info "Djin: [#{issue.digest}] Getting exploit."
-        djin.exploit!
+        begin
+            print_info "Djin: [#{issue.digest}] Getting insights."
+            djin.insights!
+        rescue => e
+            print_exception e
+        end
 
-        print_info "Djin: [#{issue.digest}] Getting insights."
-        djin.insights!
+        begin
+            print_info "Djin: [#{issue.digest}] Getting remedy guidance."
+            djin.remedy_guidance!
+        rescue => e
+            print_exception e
+        end
 
-        print_info "Djin: [#{issue.digest}] Getting remedy guidance."
-        djin.remedy_guidance!
+        begin
+            print_info "Djin: [#{issue.digest}] Getting remedy code."
+            djin.remedy_code!
+        rescue => e
+            print_exception e
+        end
 
-        print_info "Djin: [#{issue.digest}] Getting remedy code."
-        djin.remedy_code!
-
-        print_info "Djin: [#{issue.digest}] Getting report."
-        djin.report!
+        begin
+            print_info "Djin: [#{issue.digest}] Getting report."
+            djin.report!
+        rescue => e
+            print_exception e
+        end
 
         # ap 'DESCRIBE'
         # puts issue.description
@@ -327,8 +360,6 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         # puts issue.remedy_code
         # ap 'REPORT'
         # puts issue.report
-    rescue => e
-        print_exception e
     ensure
         Data.issues._push issue
     end
