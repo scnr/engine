@@ -120,12 +120,50 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
     end
 
     class Djin
+
         def initialize( issue, options )
             @issue  = issue
             @client = Client.new( options )
 
             prepare
         end
+
+        def describe!
+            @issue.description = post( "How would you describe this vulnerability?" )
+        end
+
+        def remedy_guidance!
+            @issue.remedy_guidance = post( "How would you remediate this vulnerability?" )
+        end
+
+        def remedy_code!
+            @issue.remedy_code = post( "How would you remediate this vulnerability in code?" )
+        end
+
+        def exploit!
+            @issue.exploit = post( "How could a malicious hacker exploit this vulnerability?" )
+        end
+
+        def patch!
+            @issue.patch = post(
+                "Fix the #{@issue.name} issue found in the source code files and provide a patch file along " <<
+                "with patching instructions."
+          )
+        end
+
+        def insights!
+            @issue.insights = post( "Write any insights regarding this issue." )
+        end
+
+        def report!
+            @issue.report = post( "Write a report for this issue." )
+        end
+
+        def post( message )
+            join_response_contents( @client.post( message ) )
+        end
+
+        private
 
         def prepare
             files     = self.executed_file_contents
@@ -211,71 +249,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
             msg << "\n#{files_msg}"
 
             # puts msg
-            @client.post msg
-        end
-
-        def describe!
-            @issue.description =
-              join_response_contents(
-                @client.post(
-                  "How would you describe this vulnerability?"
-                )
-              )
-        end
-
-        def remedy_guidance!
-            @issue.remedy_guidance =
-              join_response_contents(
-                @client.post(
-                  "How would you remediate this vulnerability?"
-                )
-              )
-        end
-
-        def remedy_code!
-            @issue.remedy_code =
-              join_response_contents(
-                @client.post(
-                  "How would you remediate this vulnerability in code?"
-                )
-              )
-        end
-
-        def exploit!
-            @issue.exploit =
-              join_response_contents(
-                @client.post(
-                  "How could a malicious hacker exploit this vulnerability?"
-                )
-              )
-        end
-
-        def patch!
-            @issue.patch =
-              join_response_contents(
-                @client.post(
-                  "Fix the #{@issue.name} issue found in the source code files and provide a patch file along " <<
-                    "with patching instructions."
-                )
-              )
-        end
-
-        def insights!
-            @issue.insights =
-              join_response_contents(
-                @client.post(
-                  "Write any insights regarding this issue."
-                )
-              )
-        end
-
-        def report!
-            @issue.report =
-              join_response_contents(
-                @client.post(
-                  "Write a report for this issue."
-                )
-              )
+            post msg
         end
 
         def executed_file_contents
@@ -352,14 +326,14 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         end
 
         begin
-            print_info "Djin: [#{issue.digest}] Getting remedy guidance."
+            print_info "Djin: [#{issue.digest}] Getting remediation guidance."
             djin.remedy_guidance!
         rescue => e
             print_exception e
         end
 
         begin
-            print_info "Djin: [#{issue.digest}] Getting remedy code."
+            print_info "Djin: [#{issue.digest}] Getting remediation code."
             djin.remedy_code!
         rescue => e
             print_exception e
