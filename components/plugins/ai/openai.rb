@@ -13,7 +13,7 @@ require 'openai'
 class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
     THREADS   = 1
-    MAX_QUEUE = 10
+    MAX_QUEUE = 10_000
 
     def self.rate_limit_reached?
         !!@rate_limited
