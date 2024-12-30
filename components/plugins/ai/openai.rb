@@ -278,7 +278,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
                 msg << "\n#{files_msg}"
             end
 
-            puts msg
+            # puts msg
             post msg
         end
 
