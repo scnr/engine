@@ -12,8 +12,7 @@ require 'openai'
 # @version 0.1
 class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
-    THREADS   = 1
-    MAX_QUEUE = 10_000
+    THREADS = 1
 
     def self.rate_limit_reached?
         !!@rate_limited
@@ -369,17 +368,9 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
     end
 
     def thread_pool
-        # Start a pool that:
-        #
-        # * Has no workers by default;
-        # * Can reach up to THREADS workers max;
-        # * Once jobs exceed MAX_QUEUE, new jobs will run in the caller thread,
-        #   instead of being rejected or letting the queue grow without bounds.
         @thread_pool ||= Concurrent::ThreadPoolExecutor.new(
-          min_threads:     0,
-          max_threads:     THREADS,
-          max_queue:       MAX_QUEUE,
-          fallback_policy: :caller_runs
+          min_threads: 0,
+          max_threads: THREADS
         )
     end
 
