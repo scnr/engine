@@ -382,7 +382,8 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
           version:     '0.1',
           options:     [
             Options::String.new( :apikey, required: true,
-                                 description: 'An OpenAI API key with all permissions granted.'
+                                 description: 'An OpenAI API key with all permissions granted. ' <<
+                                   'Tier 2 and higher, to avoid token rate limiting errors. '
             )
           ]
         }
