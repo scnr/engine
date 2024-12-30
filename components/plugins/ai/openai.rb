@@ -165,8 +165,8 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         private
 
         def prepare
-            files_msg = "The web application source code files are:\n"
-            files_msg << "On the Server side:\n"
+            files_msg = "The web application source code files are:\n\n"
+            files_msg << "On the Server side these files:\n"
 
             server_files = self.executed_file_contents
             server_files.each do |path, contents|
@@ -174,30 +174,25 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
                 files_msg << "\n```\n#{contents}\n```\n"
             end
 
-            files_msg << "On the Client side these JavaScript files:\n"
+            files_msg << "\nOn the Client side these files:\n"
 
             client_files = {}
-            @issue.page.dom.execution_flow_sinks.each.with_index do |i, sink|
-                sink.trace.each.with_index do |j, frame|
+            (@issue.page.dom.execution_flow_sinks + @issue.page.dom.data_flow_sinks).each do |sink|
+                sink.trace.each do |frame|
                     next if client_files.include? frame.url
+                    next if frame.url.empty?
+                    next if frame.url.start_with? 'http://javascript.browser.scnr.engine/'
 
-                    if !frame.url.empty?
-                        next if frame.url.start_with? 'http://javascript.browser.scnr.engine/'
-
-                        client_files[frame.url] = SCNR::Engine::HTTP::Request.new( url: frame.url ).run.body
-                    else
-                        client_files["#{i}:#{j}"] = frame.function.source
-                    end
-
+                    client_files[frame.url] = SCNR::Engine::HTTP::Request.new( url: frame.url ).run.body
                 end
             end
 
-            client_files.each do |path, contents|
-                files_msg << "#{path} :\n"
+            client_files.each do |url, contents|
+                files_msg << "#{url} :\n"
                 files_msg << "\n```\n#{contents}\n```\n"
             end
 
-            msg = "You are a web application security engineer.\n"
+            msg = "You are an expert web application security engineer and expert web developer.\n"
             if server_files.any?
                 msg << <<-EOT
                 These are source code files, which contain a '#{@issue.name}' vulnerability of #{@issue.severity} severity.
