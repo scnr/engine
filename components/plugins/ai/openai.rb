@@ -165,35 +165,40 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         private
 
         def prepare
-            files_msg = "The web application source code files are:\n\n"
-            files_msg << "On the Server side these files:\n"
+            files_msg = ""
 
             server_files = self.executed_file_contents
-            server_files.each do |path, contents|
-                files_msg << "#{path} :\n"
-                files_msg << "\n```\n#{contents}\n```\n"
-            end
+            if server_files.any?
+                files_msg << "On the Server side these files:\n"
 
-            files_msg << "\nOn the Client side these files:\n"
-
-            client_files = {}
-            (@issue.page.dom.execution_flow_sinks + @issue.page.dom.data_flow_sinks).each do |sink|
-                sink.trace.each do |frame|
-                    next if client_files.include? frame.url
-                    next if frame.url.empty?
-                    next if frame.url.start_with? 'http://javascript.browser.scnr.engine/'
-
-                    client_files[frame.url] = SCNR::Engine::HTTP::Request.new( url: frame.url ).run.body
+                server_files.each do |path, contents|
+                    files_msg << "#{path} :\n"
+                    files_msg << "\n```\n#{contents}\n```\n"
                 end
             end
 
-            client_files.each do |url, contents|
-                files_msg << "#{url} :\n"
-                files_msg << "\n```\n#{contents}\n```\n"
+            if (sinks = (@issue.page.dom.execution_flow_sinks + @issue.page.dom.data_flow_sinks)).any?
+                files_msg << "\nOn the Client side these files:\n"
+
+                client_files = {}
+                sinks.each do |sink|
+                    sink.trace.each do |frame|
+                        next if client_files.include? frame.url
+                        next if frame.url.empty?
+                        next if frame.url.start_with? 'http://javascript.browser.scnr.engine/'
+
+                        client_files[frame.url] = SCNR::Engine::HTTP::Request.new( url: frame.url ).run.body
+                    end
+                end
+
+                client_files.each do |url, contents|
+                    files_msg << "#{url} :\n"
+                    files_msg << "\n```\n#{contents}\n```\n"
+                end
             end
 
             msg = "You are an expert web application security engineer and expert web developer.\n"
-            if server_files.any?
+            if !files_msg.empty?
                 msg << <<-EOT
                 These are source code files, which contain a '#{@issue.name}' vulnerability of #{@issue.severity} severity.
                 EOT
@@ -268,7 +273,10 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
                 EOT
             end
 
-            msg << "\n#{files_msg}"
+            if !files_msg.empty?
+                msg << "\nThe web application source code files are:\n\n"
+                msg << "\n#{files_msg}"
+            end
 
             puts msg
             post msg
