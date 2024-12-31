@@ -165,7 +165,8 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
         def insights!
             @issue.insights = post(
-              "Write any insights regarding this issue. Keep the server side and client side separate."
+              "Write any insights regarding this issue. Keep the server side and client side separate. " <<
+                "Also provide a holistic view."
             )
         end
 
