@@ -119,8 +119,14 @@ module State
         if aborting
             @plugins.killall
         else
-            state.set_status_message :waiting_for_plugins
+            t = Thread.new do
+                while (jn = @plugins.job_names).any?
+                    state.set_status_message :waiting_for_plugins, jn.join( ', ' )
+                    sleep 0.1
+                end
+            end
             @plugins.block
+            t.kill
         end
 
         # Plugins may need the session right till the very end so save it for last.

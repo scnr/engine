@@ -50,7 +50,7 @@ class Framework
               browser_pool_startup:          'Initialising the browser cluster.',
               browser_pool_shutdown:         'Shutting down the browser cluster.',
               clearing_queues:                  'Clearing the audit queues.',
-              waiting_for_plugins:              'Waiting for the plugins to finish.',
+              waiting_for_plugins:              'Waiting for the plugins to finish: %s',
               aborting:                         'Aborting the scan.',
               timed_out:                        'Scan timed out.'
             }
