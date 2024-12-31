@@ -128,15 +128,21 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         end
 
         def describe!
-            @issue.description = post( "How would you describe this vulnerability?" )
+            @issue.description = post(
+              "How would you describe this vulnerability? Keep the server side and client side separate."
+            )
         end
 
         def remedy_guidance!
-            @issue.remedy_guidance = post( "How would you remediate this vulnerability?" )
+            @issue.remedy_guidance = post(
+              "How would you remediate this vulnerability? Keep the server side and client side separate."
+            )
         end
 
         def remedy_code!
-            @issue.remedy_code = post( "How would you remediate this vulnerability in code?" )
+            @issue.remedy_code = post(
+              "How would you remediate this vulnerability in code? Keep the server side and client side separate."
+            )
         end
 
         def exploit!
@@ -146,12 +152,20 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         def patch!
             @issue.patch = post(
                 "Fix the #{@issue.name} issue found in the source code files and provide a patch file along " <<
-                "with patching instructions."
+                "with patching instructions. Keep the server side and client side separate."
           )
         end
 
+        def dissect!
+            @issue.dissect = post(
+              "Dissect this issue. Keep the server side and client side separate as much as possible."
+            )
+        end
+
         def insights!
-            @issue.insights = post( "Write any insights regarding this issue." )
+            @issue.insights = post(
+              "Write any insights regarding this issue. Keep the server side and client side separate."
+            )
         end
 
         def report!
@@ -370,6 +384,13 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         end
 
         begin
+            print_info "Djin: [#{issue.digest}] Getting dissect."
+            djin.dissect!
+        rescue => e
+            print_exception e
+        end
+
+        begin
             print_info "Djin: [#{issue.digest}] Getting report."
             djin.report!
         rescue => e
@@ -382,6 +403,8 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         # puts issue.patch
         # ap 'EXPLOIT'
         # puts issue.exploit
+        # ap 'DISSECT'
+        # puts issue.dissect
         # ap 'INSIGHTS'
         # puts issue.insights
         # ap 'REMEDY GUIDANCE'

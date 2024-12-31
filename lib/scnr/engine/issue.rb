@@ -105,6 +105,7 @@ class Issue
     attr_accessor :patch
     attr_accessor :exploit
     attr_accessor :insights
+    attr_accessor :dissect
     attr_accessor :report
 
     # @param    [Hash]    options
