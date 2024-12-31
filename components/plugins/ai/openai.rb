@@ -152,7 +152,8 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         def patch!
             @issue.patch = post(
                 "Fix the #{@issue.name} issue found in the source code files and provide a patch file along " <<
-                "with patching instructions. Keep the server side and client side separate."
+                "with patching instructions. Keep the server side and client side separate. Also, provide a " <<
+                "holistic approach as well."
           )
         end
 
@@ -173,7 +174,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         end
 
         def post( message )
-            join_response_contents( @client.post( message ) )
+            join_response_contents( @client.post( "Without greeting: #{message}" ) )
         end
 
         private
