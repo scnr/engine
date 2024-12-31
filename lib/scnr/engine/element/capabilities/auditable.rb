@@ -229,7 +229,10 @@ module Auditable
     # @param  [Block]   block
     #   Block to be used for analysis of the response.
     def submit_and_process( &block )
-        submit( @audit_options[:submit] || {} ) do |response|
+        options = (@audit_options[:submit] || {}).dup
+        options[:data_flow_taint] ||= self.affected_input_value if self.affected_input_value
+
+        submit( options ) do |response|
             # In case of redirection or runtime scope changes.
             if !response.parsed_url.seed_in_host? && response.scope.out?
                 next

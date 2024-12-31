@@ -6,6 +6,8 @@
     web site for more information on licensing and terms of use.
 =end
 
+require 'base64'
+
 module SCNR::Engine
 module HTTP
 
@@ -34,6 +36,9 @@ class Request < Message
         # Synchronous (blocking)
         :sync
     ]
+
+    TRACE_HEADER_NAME = 'X-SCNR-Introspector-Trace'
+    TAINT_HEADER_NAME = 'X-SCNR-Introspector-Taint'
 
     # @return     [Integer]
     #   Auto-incremented ID for this request (set by {Client#request}).
@@ -130,8 +135,10 @@ class Request < Message
     # @private
     attr_accessor :response_body_buffer
 
+
     attr_accessor :execution_flow
     attr_accessor :data_flow
+    attr_accessor :data_flow_taint
 
     attr_accessor :raw
 
@@ -498,6 +505,11 @@ class Request < Message
                 options[:proxyuserpwd] =
                     "#{Options.http.proxy_username}:#{Options.http.proxy_password}"
             end
+        end
+
+        if self.data_flow_taint
+            options[:headers][TAINT_HEADER_NAME] = Base64.encode64( self.data_flow_taint ).gsub( "\n", '' )
+            options[:headers][TRACE_HEADER_NAME] = '1'
         end
 
         # ap options

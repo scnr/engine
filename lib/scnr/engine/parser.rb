@@ -36,8 +36,8 @@ class Parser
 
     IGNORE_REQUEST_HEADERS = [
         HTTP::Client::SEED_HEADER_NAME,
-        HTTP::Client::TRACE_HEADER_NAME,
-        HTTP::Client::TAINT_HEADER_NAME,
+        HTTP::Request::TRACE_HEADER_NAME,
+        HTTP::Request::TAINT_HEADER_NAME,
         'Content-Length'
     ]
 

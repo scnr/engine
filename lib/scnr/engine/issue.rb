@@ -158,9 +158,7 @@ class Issue
             # Needs to happen **AFTER** the push to page queue.
             SCNR::Engine::Options.scope.do_not_crawl
 
-            HTTP::Client.with_trace do
-                f.run
-            end
+            f.run
 
             new_issue = Data.issues[digest]
         end
