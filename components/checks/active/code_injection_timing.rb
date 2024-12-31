@@ -24,7 +24,15 @@ class SCNR::Engine::Checks::CodeInjectionTiming < SCNR::Engine::Check::Base
 
     OPTIONS = {
         format:  [Format::STRAIGHT],
-        timeout: 4000
+        timeout: 4000,
+        each_mutation: proc do |mutation|
+            mutation.audit_options[:submit] ||= {}
+            if mutation.affected_input_value.include? 'sleep'
+                mutation.audit_options[:submit][:data_flow_taint] = 'sleep'
+            elsif mutation.affected_input_value.include? 'Sleep'
+                mutation.audit_options[:submit][:data_flow_taint] = 'Sleep'
+            end
+        end
     }
 
     def self.payloads

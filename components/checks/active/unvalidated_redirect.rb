@@ -36,7 +36,8 @@ class SCNR::Engine::Checks::UnvalidatedRedirect < SCNR::Engine::Check::Base
         @options ||= {
             format: [ Format::STRAIGHT ],
             submit: {
-                follow_location: false
+                follow_location: false,
+                data_flow_taint: BASE_URL
             },
 
             # Add one more mutation (on the fly) which will include the original

@@ -83,7 +83,7 @@ class SCNR::Engine::Checks::XssEvent < SCNR::Engine::Check::Base
     end
 
     def self.options
-        @options ||= { format: [ Format::APPEND ] }
+        @options ||= { format: [ Format::APPEND ], submit: { data_flow_taint: attribute_name } }
     end
 
     def self.optimization_cache

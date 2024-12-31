@@ -121,7 +121,12 @@ class SCNR::Engine::Checks::XssScriptContext < SCNR::Engine::Check::Base
     end
 
     def self.options
-        @options ||= { format: [ Format::STRAIGHT ] }
+        @options ||= {
+          format: [ Format::STRAIGHT ],
+          submit: {
+            data_flow_taint: 'taint_tracer.log_execution_flow_sink'
+          }
+        }
     end
 
     def self.optimization_cache

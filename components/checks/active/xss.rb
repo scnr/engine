@@ -72,7 +72,10 @@ class SCNR::Engine::Checks::Xss < SCNR::Engine::Check::Base
 
     def self.options
         @options ||= {
-            format: [Format::APPEND]
+            format: [Format::APPEND],
+            submit: {
+              data_flow_taint: self.tag_name
+            }
         }
     end
 

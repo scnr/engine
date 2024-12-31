@@ -135,7 +135,6 @@ class Request < Message
     # @private
     attr_accessor :response_body_buffer
 
-
     attr_accessor :execution_flow
     attr_accessor :data_flow
     attr_accessor :data_flow_taint
@@ -507,11 +506,11 @@ class Request < Message
             end
         end
 
-        if self.data_flow_taint
+        if !self.data_flow_taint.to_s.empty?
             options[:headers][TAINT_HEADER_NAME] = Base64.encode64( self.data_flow_taint ).gsub( "\n", '' )
-            options[:headers][TRACE_HEADER_NAME] = '1'
         end
 
+        options[:headers][TRACE_HEADER_NAME] = '1'
         # ap options
 
         set_typhoeus_callbacks(

@@ -60,7 +60,8 @@ class SCNR::Engine::Checks::Rfi < SCNR::Engine::Check::Base # *always* extend SC
             format:     [Format::STRAIGHT],
             signatures: '705cd559b16e6946826207c2199bd890',
             submit:     {
-                follow_location: false
+                follow_location: false,
+                data_flow_taint: SCNR::Engine::URI( SCNR::Engine::Options.check_server ).domain
             }
         }
     end

@@ -20,7 +20,8 @@ class SCNR::Engine::Checks::ExternalServiceInteraction < SCNR::Engine::Check::Ba
     @options ||= {
       format:     [Format::STRAIGHT],
       submit:     {
-        follow_location: false
+        follow_location: false,
+        data_flow_taint: SCNR::Engine::URI( SCNR::Engine::Options.check_server ).domain
       },
       each_mutation: proc do |mutation|
         mutation.affected_input_value = "#{mutation.affected_input_value}/#{mutation.coverage_hash}"

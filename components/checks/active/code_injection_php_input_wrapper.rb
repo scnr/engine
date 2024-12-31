@@ -35,7 +35,10 @@ class SCNR::Engine::Checks::CodeInjectionPhpInputWrapper < SCNR::Engine::Check::
 
                 # Pass our new element back to be audited.
                 m
-            end
+            end,
+            submit: {
+              data_flow_taint: 'vDBVBsbVdv'
+            }
         }
     end
 

@@ -30,7 +30,18 @@ class SCNR::Engine::Checks::CodeInjection < SCNR::Engine::Check::Base
     def self.options
         @options ||= {
             signatures: (rand1.to_i * rand2.to_i).to_s,
-            format:     [Format::STRAIGHT]
+            format:     [Format::STRAIGHT],
+            each_mutation: proc do |mutation|
+                unix    = 'print'
+                windows = 'Response.Write'
+
+                mutation.audit_options[:submit] ||= {}
+                if mutation.affected_input_value.include? unix
+                    mutation.audit_options[:submit][:data_flow_taint] = unix
+                elsif mutation.affected_input_value.include? windows
+                    mutation.audit_options[:submit][:data_flow_taint] = windows
+                end
+            end
         }
     end
 

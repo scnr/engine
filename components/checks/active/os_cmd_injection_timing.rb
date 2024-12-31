@@ -20,7 +20,15 @@ class SCNR::Engine::Checks::OsCmdInjectionTiming < SCNR::Engine::Check::Base
         format:          [Format::STRAIGHT],
         timeout:         4000,
         timeout_divider: 1000,
-        timeout_add:     -1000
+        timeout_add:     -1000,
+        each_mutation: proc do |mutation|
+            mutation.audit_options[:submit] ||= {}
+            if mutation.affected_input_value.include? 'sleep'
+                mutation.audit_options[:submit][:data_flow_taint] = 'sleep'
+            elsif mutation.affected_input_value.include? 'ping'
+                mutation.audit_options[:submit][:data_flow_taint] = 'ping'
+            end
+        end
     }
 
     def self.payloads

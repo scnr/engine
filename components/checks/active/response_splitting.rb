@@ -15,31 +15,28 @@
 # @see http://www.securiteam.com/securityreviews/5WP0E2KFGK.html
 class SCNR::Engine::Checks::ResponseSplitting < SCNR::Engine::Check::Base
 
+    def self.header_name
+        @header_name ||= "X-CRLF-Safe-#{self.random_seed}"
+    end
+
     OPTIONS = {
         submit: {
             follow_location:   false,
-            response_max_size: 0
+            response_max_size: 0,
+            data_flow_taint:   self.header_name
         }
     }
+
     def run
-        header_name = "X-CRLF-Safe-#{random_seed}"
+        header = "\r\n#{self.class.header_name}: no"
 
-        # the header to inject...
-        # what we will check for in the response header
-        # is the existence of the "x-crlf-safe" field.
-        # if we find it it means that the attack was successful
-        # thus site is vulnerable.
-        header = "\r\n#{header_name}: no"
-
-        # try to inject the headers into all vectors
-        # and pass a block that will check for a positive result
         audit( header, OPTIONS ) do |response, element|
-            next if !response.headers.include?( header_name )
+            next if !response.headers.include?( self.class.header_name )
 
             log(
                 vector:   element,
                 response: response,
-                proof:    response.headers_string[/#{header_name}.*$/i]
+                proof:    response.headers_string[/#{self.class.header_name}.*$/i]
             )
         end
     end

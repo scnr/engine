@@ -20,7 +20,18 @@ class SCNR::Engine::Checks::OsCmdInjection < SCNR::Engine::Check::Base
                 unix:    [ FILE_SIGNATURES['passwd'] ],
                 windows: FILE_SIGNATURES_PER_PLATFORM[:windows]
             },
-            format: [Format::STRAIGHT]
+            format: [Format::STRAIGHT],
+            each_mutation: proc do |mutation|
+                unix    = '/bin/cat'
+                windows = 'type %'
+
+                mutation.audit_options[:submit] ||= {}
+                if mutation.affected_input_value.include? unix
+                    mutation.audit_options[:submit][:data_flow_taint] = unix
+                elsif mutation.affected_input_value.include? windows
+                    mutation.audit_options[:submit][:data_flow_taint] = windows
+                end
+            end
         }
     end
 

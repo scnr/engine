@@ -18,7 +18,10 @@ class SCNR::Engine::Checks::XssTag < SCNR::Engine::Check::Base
 
     ATTRIBUTE_NAME = 'scnr_engine_xss_in_tag'
     OPTIONS        = {
-        format: [ Format::APPEND ]
+        format: [ Format::APPEND ],
+        submit: {
+          data_flow_taint: ATTRIBUTE_NAME
+        }
     }
 
     class SAX
