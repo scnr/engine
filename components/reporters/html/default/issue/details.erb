@@ -18,6 +18,27 @@
         </div>
     </div>
 
+  <% if issue.dissect %>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a href="<%= issue_location( issue ) %>/dissect">
+            <i class="fa fa-link"></i>
+          </a>
+
+          <a data-toggle="collapse" href="#<%= id %>-dissect">
+            Dissection
+          </a>
+        </h4>
+      </div>
+      <div id="<%= id %>-dissect" class="panel-collapse collapse">
+        <div class="panel-body">
+          <%= md issue.dissect %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <% if issue.insights %>
     <div class="panel panel-default">
       <div class="panel-heading">
