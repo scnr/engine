@@ -39,6 +39,7 @@ class Request < Message
 
     TRACE_HEADER_NAME = 'X-SCNR-Introspector-Trace'
     TAINT_HEADER_NAME = 'X-SCNR-Introspector-Taint'
+    REQUEST_ID_HEADER_NAME = 'X-SCNR-Request-ID'
 
     # @return     [Integer]
     #   Auto-incremented ID for this request (set by {Client#request}).
@@ -506,11 +507,6 @@ class Request < Message
             end
         end
 
-        if !self.data_flow_taint.to_s.empty?
-            options[:headers][TAINT_HEADER_NAME] = Base64.encode64( self.data_flow_taint ).gsub( "\n", '' )
-        end
-
-        options[:headers][TRACE_HEADER_NAME] = '1'
         # ap options
 
         set_typhoeus_callbacks(
@@ -669,6 +665,12 @@ class Request < Message
     end
 
     def prepare_headers
+        if !self.data_flow_taint.to_s.empty?
+            headers[TAINT_HEADER_NAME] = Base64.encode64( self.data_flow_taint ).gsub( "\n", '' )
+        end
+
+        headers[REQUEST_ID_HEADER_NAME] = self.id
+        headers[TRACE_HEADER_NAME]   = '1'
         headers['User-Agent']      ||= Options.device.user_agent
         headers['Accept']          ||= 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
         headers['From']            ||= Options.authorized_by if Options.authorized_by
@@ -741,7 +743,10 @@ class Request < Message
     def set_introspector_data( typhoeus_response )
         seed = HTTP::Client.headers[HTTP::Client::SEED_HEADER_NAME]
 
-        return if !typhoeus_response.body.optimized_include?( "<!-- #{seed}" )
+        if !typhoeus_response.body.optimized_include?( "<!-- #{seed}" )
+            self.response.body = typhoeus_response.body
+            return
+        end
 
         body, trace_data = typhoeus_response.body.split( "<!-- #{seed}", 2 )
         self.response.body = body

@@ -230,7 +230,7 @@ module Auditable
     #   Block to be used for analysis of the response.
     def submit_and_process( &block )
         options = (@audit_options[:submit] || {}).dup
-        options[:data_flow_taint] ||= self.affected_input_value if self.affected_input_value
+        options[:data_flow_taint] ||= self.affected_input_value if !self.affected_input_value.to_s.empty?
 
         submit( options ) do |response|
             # In case of redirection or runtime scope changes.

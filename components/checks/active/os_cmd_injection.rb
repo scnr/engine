@@ -31,6 +31,8 @@ class SCNR::Engine::Checks::OsCmdInjection < SCNR::Engine::Check::Base
                 elsif mutation.affected_input_value.include? windows
                     mutation.audit_options[:submit][:data_flow_taint] = windows
                 end
+
+                nil
             end
         }
     end
