@@ -56,19 +56,14 @@ Gem::Specification.new do |s|
     s.add_dependency 'cuboid',               '~> 0.2'
     s.add_dependency 'dsel'
 
-    s.add_dependency 'webrick',              '1.7.0'
+    s.add_dependency 'webrick',              '1.9.1'
 
     # Rust extension helpers.
     s.add_dependency 'thermite',            '~> 0'
 
-    s.add_dependency 'awesome_print',       '1.6.1'
-
     # Don't specify version, messes with the packages since they always grab the
     # latest one.
     s.add_dependency 'bundler'
-
-    s.add_dependency 'concurrent-ruby',     '~> 1.2.3'
-    s.add_dependency 'concurrent-ruby-ext', '~> 1.2.3'
 
     # HTTP proxy server
     s.add_dependency 'http_parser.rb',      '0.8.0'
@@ -76,21 +71,16 @@ Gem::Specification.new do |s|
     # HTML report
     s.add_dependency 'coderay',             '1.1.3'
 
-    s.add_dependency 'childprocess',        '5.0.0'
-
     # Optimized JSON.
     # s.add_dependency 'oj',                  '3.13.13'
     # s.add_dependency 'oj_mimic_json',       '1.0.1'
-
-    s.add_dependency 'rack',                '~> 2.3.0'
-    s.add_dependency 'rack-test'
 
     # HTTP client.
     s.add_dependency 'typhoeus',            '~> 1.4.1'
     # s.add_dependency 'ethon',               '0.15.0'
 
     # Fallback URI parsing and encoding utilities.
-    s.add_dependency 'addressable',         '2.8.6'
+    s.add_dependency 'addressable',         '2.8.7'
 
     # E-mail plugin.
     s.add_dependency 'pony',                '1.13.1'
@@ -98,7 +88,7 @@ Gem::Specification.new do |s|
     # Markup parsing, for reports and Element::XML.
     s.add_dependency 'nokogiri'
     # Really fast and lightweight markup parsing, for pages.
-    s.add_dependency 'ox',                  '2.14.17'
+    s.add_dependency 'ox',                  '2.14.19'
 
     # Browser support for DOM/JS/AJAX analysis stuff.
     s.add_dependency 'watir',               '7.2.2'
@@ -107,10 +97,10 @@ Gem::Specification.new do |s|
     # Markdown to HTML conversion, used by the HTML report for component
     # descriptions.
     s.add_dependency 'redcarpet',            '3.6.0'
-    s.add_dependency 'rouge'#,            '3.6.0'
+    s.add_dependency 'rouge',                '4.5.1'
 
     # Used to scrub Markdown for XSS etc.
-    s.add_dependency 'loofah',              '2.23.1'
+    s.add_dependency 'loofah',              '2.24.0'
 
     s.add_development_dependency "rb_sys", "~> 0.9.39"
     s.add_development_dependency "rake-compiler", "~> 1.2"

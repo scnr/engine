@@ -6,8 +6,7 @@
     web site for more information on licensing and terms of use.
 =end
 
-require 'rack'
-require 'rack/typhoeus/middleware/params_decoder'
+require 'json'
 require_relative 'base'
 
 module SCNR::Engine::Element
