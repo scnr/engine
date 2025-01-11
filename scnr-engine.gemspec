@@ -82,7 +82,7 @@ Gem::Specification.new do |s|
     # s.add_dependency 'oj',                  '3.13.13'
     # s.add_dependency 'oj_mimic_json',       '1.0.1'
 
-    s.add_dependency 'rack',                '~> 2.2.3'
+    s.add_dependency 'rack',                '~> 2.3.0'
     s.add_dependency 'rack-test'
 
     # HTTP client.
