@@ -188,6 +188,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
                 files_msg << "On the Server side these files:\n"
 
                 server_files.each do |path, contents|
+                    next if contents.to_s.empty?
                     files_msg << "#{path} :\n"
                     files_msg << "\n```\n#{contents}\n```\n"
                 end
