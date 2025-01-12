@@ -403,7 +403,7 @@ shared_examples_for 'auditable'  do |options = {}|
 
                     called = false
                     each = proc do |mutation|
-                        expect(mutation).to receive(:submit).with(options.merge( data_flow_taint: seed))
+                        expect(mutation).to receive(:submit).with(options.merge( data_flow_taint: mutation.affected_input_value ))
                         called = true
                     end
                     auditable.audit( seed, each_mutation: each, submit: options ){}
