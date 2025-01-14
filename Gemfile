@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # gem 'bootsnap', require: false
-gem 'rake', '11.3.0'
+gem 'rake', '>= 12.3.3'
 
 # gem 'ethon', github: 'typhoeus/ethon', branch: 'thread-safe-easy-handle-cleanup'
 
