@@ -42,7 +42,14 @@ class SCNR::Engine::Checks::ExternalServiceInteraction < SCNR::Engine::Check::Ba
       http.get "#{SCNR::Engine::Options.check_server}/#{Utilities.random_seed}" do |response|
         next if response.body.empty?
 
-        hits = ::JSON.load( response.body ) || {}
+        hits = nil
+        begin
+          hits = ::JSON.load( response.body ) || {}
+        rescue => e
+          print_exception( e )
+          next
+        end
+
         hits.each do |coverage_hash, _|
           next if !(audit = audits[coverage_hash.to_i])
 
