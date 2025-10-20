@@ -46,7 +46,7 @@ class SCNR::Engine::Checks::ExternalServiceInteraction < SCNR::Engine::Check::Ba
         begin
           hits = ::JSON.load( response.body ) || {}
         rescue => e
-          print_exception( e )
+          # print_exception( e )
           next
         end
 
