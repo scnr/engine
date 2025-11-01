@@ -20,6 +20,10 @@ group :spec do
     gem 'rspec', '3.11.0'
     gem 'faker'
 
+    if File.exist? '../scnr'
+        gem 'scnr', path: '../scnr'
+    end
+
     if File.exist? '../introspector'
         gem 'scnr-introspector', path: '../introspector'
     end
