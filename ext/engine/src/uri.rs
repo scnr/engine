@@ -48,7 +48,7 @@ define_encode_set! {
 
 define_encode_set! {
     /// Used to encode query name/value pairs.
-    pub QUERY_ENCODE_SET = [percent_encoding::QUERY_ENCODE_SET] | { '[', ']', '^', AMP, PLUS, SEMICOLON }
+    pub QUERY_ENCODE_SET = [percent_encoding::QUERY_ENCODE_SET] | { '[', ']', '^', AMP, PLUS, SEMICOLON, '%' }
 }
 
 fn hash_obj<T: Hash>(t: &T) -> u64 {
