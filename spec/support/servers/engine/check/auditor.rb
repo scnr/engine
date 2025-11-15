@@ -258,3 +258,46 @@ get '/log_remote_file_if_exists/custom_404/combo/*' do
     'This is a custom 404, try to catch it. ;)<br/> Random bit: ' + rand( 999 ).to_s +
     '<br/>You asked for "' + params[:splat].first.to_s + '", which could not be found.'
 end
+
+get '/openapi' do
+    content_type 'application/yaml'
+    <<-EOYAML
+openapi: 3.0.0
+info:
+  title: XSS Test API
+  version: 1.0.0
+paths:
+  /xss-test:
+    get:
+      summary: Test endpoint for XSS
+      parameters:
+        - name: input
+          in: query
+          required: true
+          schema:
+            type: string
+          description: "<script>alert('XSS')</script>"
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "XSS test successful"
+    EOYAML
+end
+
+get '/xss-test' do
+    input = params[:input]
+    <<HTML
+    <html>
+        <body>
+            <p>Input: #{input}</p>
+        </body>
+    </html>
+HTML
+end

@@ -57,7 +57,12 @@ class Page
     #
     # @return   [Page]
     def self.from_response( response )
-        Parser.new( response ).page
+        fr = [response].flatten.first
+        if Parser::OpenAPI.openapi?( fr.body )
+            Parser::OpenAPI.new( fr ).page
+        else
+            Parser.new( response ).page
+      end
     end
 
     # @option options  [String]    :url

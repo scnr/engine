@@ -31,6 +31,18 @@ describe SCNR::Engine::Framework do
             expect(subject.report.plugins[:wait][:results]).to eq({ 'stuff' => true })
         end
 
+        it 'performs an OpenAPI scan', focus: true do
+            SCNR::Engine::Options.url = url + '/openapi'
+            SCNR::Engine::Options.audit.elements :links, :forms, :cookies
+            subject.checks.load :signature
+            subject.plugins.load :wait
+
+            subject.run
+            expect(subject.report.issues.size).to eq(3)
+
+            expect(subject.report.plugins[:wait][:results]).to eq({ 'stuff' => true })
+        end
+
         it 'sets #status to scanning' do
             described_class.safe do |f|
                 SCNR::Engine::Options.url = url + '/elem_combo'

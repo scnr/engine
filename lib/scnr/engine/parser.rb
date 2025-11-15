@@ -7,6 +7,7 @@
 =end
 
 require 'ox'
+require_relative 'parser/openapi'
 
 Ox.default_options = {
     indent:          4,
