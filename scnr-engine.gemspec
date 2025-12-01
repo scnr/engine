@@ -76,11 +76,12 @@ Gem::Specification.new do |s|
     # s.add_dependency 'oj_mimic_json',       '1.0.1'
 
     # HTTP client.
-    s.add_dependency 'typhoeus',            '~> 1.4.1'
+    s.add_dependency 'typhoeus'#,            '~> 1.4.1'
     # s.add_dependency 'ethon',               '0.15.0'
 
     # Fallback URI parsing and encoding utilities.
     s.add_dependency 'addressable',         '2.8.7'
+    s.add_dependency 'mutex_m'
 
     # E-mail plugin.
     s.add_dependency 'pony',                '1.13.1'
