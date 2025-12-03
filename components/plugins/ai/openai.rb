@@ -49,10 +49,10 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
             @assistant_id = response["id"]
         end
 
-        def post( message )
+        def post( m )
             fail 'Rate limit reached.' if @rate_limited
 
-            message message
+            message m
             think
         end
 
@@ -105,11 +105,9 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
                             SCNR::Engine::Plugins::OpenAI.rate_limit_reached!
                         end
 
-                        # ap response
                         fail "Status response: #{status} -- #{response['last_error']}"
 
                     else
-                        # ap response
                         fail "Unknown status response: #{status} -- #{response['last_error']}"
                 end
             end
@@ -128,9 +126,9 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         end
 
         def describe!
-            @issue.description = post(
+          @issue.description = post(
               "How would you describe this vulnerability? Keep the server side and client side separate."
-            )
+          )
         end
 
         def remedy_guidance!
@@ -310,7 +308,7 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
         end
 
         def join_response_contents( response )
-            fail 'Response does not include content.' if !response.include?( 'content' )
+            fail 'Response does not include content.' if !response.to_s.include?( 'content' )
             response['content'].map { |c| c['text']['value'] }.join( "\n" )
         end
     end
@@ -337,12 +335,13 @@ class SCNR::Engine::Plugins::OpenAI < SCNR::Engine::Plugin::Base
 
         print_status "Processing issue: #{msg}"
 
+        djin = nil
         begin
             print_info "Initialising the Djin."
             djin = Djin.new( issue, @options )
         rescue => e
-            print_exception e
-            return
+           print_exception e
+           return
         end
 
         begin

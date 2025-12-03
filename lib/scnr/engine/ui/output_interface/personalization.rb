@@ -45,11 +45,11 @@ module Personalization
             break
         end
 
-        file.gsub!( output_root, '' )
+        file.gsub!( output_root, '' ) if file
 
         context = nil
         if caller_method
-            context = "[#{file}##{caller_method}:#{line}]"
+            context = "[#{file || 'NOFILE'}##{caller_method}:#{line}]"
         end
 
         context
