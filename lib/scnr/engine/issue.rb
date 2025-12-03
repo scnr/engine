@@ -25,6 +25,8 @@ class Issue
     #   Brief description.
     attr_accessor :description
 
+    attr_accessor :datatore
+
     # @note Should be treated as Markdown.
     #
     # @return    [String]
