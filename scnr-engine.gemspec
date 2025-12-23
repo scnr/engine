@@ -95,7 +95,7 @@ Gem::Specification.new do |s|
     s.add_dependency 'watir',               '7.2.2'
     s.add_dependency 'selenium-webdriver',  '4.9.0'
 
-    s.add_dependency 'ostruct',             '0.5.1'
+    s.add_dependency 'ostruct',             '0.6.3'
     s.add_dependency 'fiddle',              '1.1.8'
 
     # Markdown to HTML conversion, used by the HTML report for component
