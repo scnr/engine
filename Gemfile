@@ -43,4 +43,9 @@ group :prof do
     gem 'memory_profiler'
 end
 
+gem 'scnr', path: '../scnr'
+gem 'cuboid', path: '../../qadron/cuboid'
+gem 'raktr', path: '../../qadron/raktr'
+gem 'toq', path: '../../qadron/toq'
+
 gemspec
