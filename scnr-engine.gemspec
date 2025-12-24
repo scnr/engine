@@ -92,6 +92,7 @@ Gem::Specification.new do |s|
     s.add_dependency 'ox',                  '2.14.19'
 
     # Browser support for DOM/JS/AJAX analysis stuff.
+    s.add_dependency 'childprocess'
     s.add_dependency 'watir',               '7.2.2'
     s.add_dependency 'selenium-webdriver',  '4.9.0'
 
