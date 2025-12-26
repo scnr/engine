@@ -14,10 +14,12 @@ group :spec do
     gem 'simplecov', require: false, group: :test
 
     gem 'rackup'
-    gem 'puma'
-    gem 'rack'
-    gem 'sinatra', '4.2.1'
-    gem 'sinatra-contrib'
+    gem 'puma', '5.6.2'
+
+    # DO NOT TOUCH THIS GROUP VERSION
+    gem 'rack', '2.2.4'
+    gem 'sinatra', '3.2.0'
+    gem 'sinatra-contrib', '3.2.0'
 
     gem 'rspec', '3.11.0'
     gem 'faker'
