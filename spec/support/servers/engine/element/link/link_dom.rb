@@ -1,5 +1,8 @@
 require 'sinatra'
 
+set :host_authorization, { permitted_hosts: [] }
+
+
 get '/link' do
     <<-EOHTML
     <html>

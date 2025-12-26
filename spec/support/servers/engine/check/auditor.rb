@@ -2,6 +2,8 @@ require 'sinatra'
 require 'sinatra/contrib'
 require 'digest/md5'
 
+set :host_authorization, { permitted_hosts: [] }
+
 get '/' do
     'Match this!'
 end

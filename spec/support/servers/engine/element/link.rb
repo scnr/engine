@@ -4,6 +4,8 @@ require 'sinatra/streaming'
 
 class Link < Sinatra::Application
 
+  set :host_authorization, { permitted_hosts: [] }
+
 get '/' do
     params.to_s
 end

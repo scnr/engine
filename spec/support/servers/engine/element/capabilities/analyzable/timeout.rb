@@ -2,6 +2,8 @@ require 'sinatra'
 
 class STimeout < Sinatra::Application
 
+  set :host_authorization, { permitted_hosts: [] }
+
 get '/' do
     'Stuff'
 end

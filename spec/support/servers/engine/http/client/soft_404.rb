@@ -4,6 +4,8 @@ class Soft404 < Sinatra::Application
 
 @@erratic = 0
 
+set :host_authorization, { permitted_hosts: [] }
+
 def handler_response_1
     "Random #{rand( 999 ).to_s} bits #{rand( 999 ).to_s} go #{rand( 999 ).to_s} here #{rand( 999 ).to_s}"
 end

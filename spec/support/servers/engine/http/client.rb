@@ -7,6 +7,7 @@ require 'sinatra/streaming'
 
 helpers Sinatra::Streaming
 
+set :host_authorization, { permitted_hosts: [] }
 set :logging, false
 set :server, :puma
 

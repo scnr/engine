@@ -2,6 +2,8 @@ require 'json'
 require 'sinatra'
 require 'sinatra/streaming'
 
+set :host_authorization, { permitted_hosts: [] }
+
 def submitted
     JSON.load request.body.read
 end

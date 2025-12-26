@@ -5,6 +5,8 @@ require 'ap'
 class Session < Sinatra::Application
 
 set :protection, except: :session_hijacking
+set :host_authorization, { permitted_hosts: [] }
+
 enable :sessions
 
 def logged_in?

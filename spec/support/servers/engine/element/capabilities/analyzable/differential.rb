@@ -4,6 +4,8 @@ require 'sinatra/streaming'
 
 class DTimeout < Sinatra::Application
 
+set :host_authorization, { permitted_hosts: [] }
+
 helpers Sinatra::Streaming
 
 get '/true' do

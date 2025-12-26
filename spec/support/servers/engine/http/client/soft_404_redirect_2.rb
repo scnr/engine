@@ -1,5 +1,7 @@
 require 'sinatra'
 
+set :host_authorization, { permitted_hosts: [] }
+
 get '/error/index.html' do
     response.headers['Content-Type'] = 'text/html'
     "custom page"

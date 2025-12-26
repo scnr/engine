@@ -2,6 +2,7 @@ require 'yaml'
 require 'sinatra'
 require 'sinatra/streaming'
 
+set :host_authorization, { permitted_hosts: [] }
 set :logging, false
 
 IGNORE = %w(HTTP_VERSION HTTP_HOST HTTP_ACCEPT_ENCODING HTTP_USER_AGENT

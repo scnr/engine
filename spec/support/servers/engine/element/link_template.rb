@@ -2,6 +2,8 @@ require 'yaml'
 require 'sinatra'
 require 'sinatra/streaming'
 
+set :host_authorization, { permitted_hosts: [] }
+
 get '/param/:value' do |value|
     { 'param' => value }.to_yaml
 end

@@ -1,5 +1,7 @@
 require 'sinatra'
 
+set :host_authorization, { permitted_hosts: [] }
+
 get '/vulnerable' do
     params.values.to_s
 end

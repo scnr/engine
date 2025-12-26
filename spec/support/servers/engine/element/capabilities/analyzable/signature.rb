@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'sinatra/contrib'
+
 set :logging, false
+set :host_authorization, { permitted_hosts: [] }
 
 get '/' do
     <<-EOHTML

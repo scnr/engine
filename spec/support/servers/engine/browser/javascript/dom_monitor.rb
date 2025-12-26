@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'sinatra/contrib'
 
+set :host_authorization, { permitted_hosts: [] }
+
 JS_LIB = "#{File.dirname( __FILE__ )}/"
 
 get '/' do

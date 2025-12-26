@@ -13,13 +13,15 @@ options = {
 
 class HTTPSServer < Sinatra::Base
 
+  set :host_authorization, { permitted_hosts: [] }
+
     get '/' do
         'HTTPS GET'
     end
 
 end
 
-server = ::Rack::Handler::WEBrick
+server = ::Rackup::Handler::WEBrick
 trap( :INT ) { server.shutdown }
 
 server.run( HTTPSServer, **options )

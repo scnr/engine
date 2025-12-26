@@ -1,5 +1,7 @@
 require 'sinatra'
 require 'sinatra/contrib'
+
+set :host_authorization, { permitted_hosts: [] }
 set :logging, false
 
 get '/' do

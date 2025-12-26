@@ -3,6 +3,9 @@ require 'sinatra/contrib'
 
 class Framework < Sinatra::Application
 
+  set :host_authorization, { permitted_hosts: [] }
+
+
 def logged_in?
     cookies[:success] == 'true'
 end

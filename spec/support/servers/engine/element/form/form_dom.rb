@@ -1,6 +1,9 @@
 require 'sinatra'
 require 'yaml'
 
+set :host_authorization, { permitted_hosts: [] }
+
+
 get '/' do
     <<-EOHTML
 <html>

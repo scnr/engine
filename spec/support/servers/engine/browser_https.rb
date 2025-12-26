@@ -54,7 +54,7 @@ class BrowserHTTPSServer < Sinatra::Base
 
 end
 
-server = ::Rack::Handler::WEBrick
+server = ::Rackup::Handler::WEBrick
 trap( :INT ) { server.shutdown }
 
 server.run( BrowserHTTPSServer, **options )

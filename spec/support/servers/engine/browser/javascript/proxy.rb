@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'sinatra/contrib'
 
+set :host_authorization, { permitted_hosts: [] }
+
 get '/' do
     <<EOHTML
     <html>

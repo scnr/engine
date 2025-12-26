@@ -4,6 +4,8 @@ require 'sinatra/streaming'
 
 class Form < Sinatra::Application
 
+  set :host_authorization, { permitted_hosts: [] }
+
 set :logging, false
 
 get '/' do

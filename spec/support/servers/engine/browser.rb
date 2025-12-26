@@ -7,6 +7,8 @@ class BrowserServer < Sinatra::Application
     @@hit_count       ||= 0
     @@image_hit_count ||= 0
 
+    set :host_authorization, { permitted_hosts: [] }
+
 get '/' do
     @@hit_count += 1
 

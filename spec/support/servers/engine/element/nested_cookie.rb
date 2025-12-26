@@ -3,6 +3,8 @@ require 'sinatra'
 require 'sinatra/streaming'
 require 'sinatra/contrib'
 
+set :host_authorization, { permitted_hosts: [] }
+
 def parse( value )
     value.split('&').inject({}) do |h, pair|
         name, value = pair.split( '=' )

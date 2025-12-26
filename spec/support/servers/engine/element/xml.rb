@@ -2,6 +2,8 @@ require 'nokogiri'
 require 'sinatra'
 require 'sinatra/streaming'
 
+set :host_authorization, { permitted_hosts: [] }
+
 def submitted
     doc = Nokogiri::XML( request.body.read )
     {

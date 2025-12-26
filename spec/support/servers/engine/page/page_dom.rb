@@ -1,5 +1,7 @@
 require 'sinatra'
 
+set :host_authorization, { permitted_hosts: [] }
+
 get '/restore/by-url' do
     <<HTML
     <html>

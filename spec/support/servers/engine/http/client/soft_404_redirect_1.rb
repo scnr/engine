@@ -3,6 +3,8 @@ require 'ap'
 
 class Soft404Redirect_1 < Sinatra::Application
 
+  set :host_authorization, { permitted_hosts: [] }
+
     @@redirect_url ||= nil
 
     get '/set-redirect' do

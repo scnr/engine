@@ -1,6 +1,8 @@
 require 'sinatra'
 require 'sinatra/contrib'
+
 set :logging, false
+set :host_authorization, { permitted_hosts: [] }
 
 def initial_elements
     cookies[:cookie1] = 'foo'
