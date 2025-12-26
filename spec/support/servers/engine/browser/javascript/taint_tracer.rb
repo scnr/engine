@@ -822,5 +822,6 @@ get '/needs-injector' do
 end
 
 get '/without_javascript_support' do
-    json 'test'
+    content_type 'application/json'
+    "'test'"
 end

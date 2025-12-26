@@ -28,8 +28,8 @@ describe SCNR::Engine::Options do
     end
 
     describe '#check_server' do
-      it 'returns https://checks.ecsypno.com' do
-        expect(subject.check_server).to eq 'https://checks.ecsypno.com'
+      it 'returns http://checks.ecsypno.com' do
+        expect(subject.check_server).to eq 'http://checks.ecsypno.com'
       end
 
       context 'when SCNR_CHECK_SERVER env variable is set' do

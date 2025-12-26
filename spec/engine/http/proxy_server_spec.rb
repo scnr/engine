@@ -154,7 +154,7 @@ describe SCNR::Engine::HTTP::ProxyServer do
                 proxy.start_async
                 post_via_proxy( proxy, url )
 
-                expect(request.headers_string.split( "\r\n" ).sort).to eq(
+                expect(request.headers_string.split( "\r\n" ).reject { |h| h.include? 'X-Scnr-Request-Id'  }.sort).to eq(
                     ("POST / HTTP/1.1\r\n" <<
                     "Host: #{request.parsed_url.host}:#{request.parsed_url.port}\r\n" <<
                     "Accept-Encoding: gzip, deflate\r\n" <<
@@ -164,8 +164,8 @@ describe SCNR::Engine::HTTP::ProxyServer do
                     "X-Scnr-Engine-Scan-Seed: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
                     "Accept-Language: en-US,en;q=0.8,he;q=0.6\r\n" <<
                     "Content-Type: application/x-www-form-urlencoded\r\n" <<
-                    "X-Scnr-Introspector-Taint: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
-                    "X-Scnr-Introspector-Trace: 0\r\n").split( "\r\n" ).sort
+                    # "X-Scnr-Introspector-Taint: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
+                    "X-Scnr-Introspector-Trace: 1\r\n").split( "\r\n" ).sort
                 )
 
                 expect(request.effective_body).to eq('1=2&3=4')

@@ -266,6 +266,7 @@ describe SCNR::Engine::HTTP::Request do
             expect(described_class.new( url: url ).run.request.headers_string).to eq(
                    "GET / HTTP/1.1\r\nHost: #{host}\r\nAccept-Encoding: gzip, deflate\r\n" <<
                      "User-Agent: Mozilla/5.0 (Gecko) SCNR::Engine/v#{SCNR::Engine::VERSION}\r\n" <<
+                   "X-Scnr-Introspector-Trace: 1\r\n" <<
                        "Accept: text/html,application/xhtml+xml,application/xml;" <<
                        "q=0.9,*/*;q=0.8\r\nAccept-Language: en-US,en;q=0.8,he;q=0.6\r\n\r\n"
             )
