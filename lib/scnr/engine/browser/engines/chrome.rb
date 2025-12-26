@@ -51,9 +51,9 @@ class Chrome < Base
             # We want the exception every time so we put this before the lazy
             # retrieval of the rest of the info.
             if SCNR::Engine.mac?
-                browser_bin = self.find_executable( 'Google Chrome' )
+                browser_bin = self.find_executable( 'Chrome' )
             else
-                browser_bin = self.find_executable( 'google-chrome' )
+                browser_bin = self.find_executable( 'chrome' )
             end
 
             driver_bin = self.find_executable( DRIVER )
