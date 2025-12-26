@@ -13,8 +13,10 @@ end
 group :spec do
     gem 'simplecov', require: false, group: :test
 
+    gem 'rackup'
     gem 'puma'
-    gem 'sinatra'
+    gem 'rack'
+    gem 'sinatra', '4.2.1'
     gem 'sinatra-contrib'
 
     gem 'rspec', '3.11.0'
@@ -38,7 +40,6 @@ group :spec do
 end
 
 group :prof do
-
     gem 'benchmark-ips'
     gem 'memory_profiler'
 end
