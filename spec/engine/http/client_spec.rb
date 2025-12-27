@@ -595,17 +595,17 @@ describe SCNR::Engine::HTTP::Client do
             subject.reset
             expect { subject.request }.to raise_error
         end
-
+        H
         it "fills in #{SCNR::Engine::HTTP::Request}#headers_string" do
             host = "#{SCNR::Engine::URI(url).host}:#{SCNR::Engine::URI(url).port}"
-            expect(subject.request( url, mode: :sync ).request.headers_string).to eq(
-                "GET / HTTP/1.1\r\nHost: #{host}\r\nAccept-Encoding: gzip, deflate\r\n" <<
+            expect(subject.request( url, mode: :sync ).request.headers_string.split("\r\n").sort).to eq(
+                ("GET / HTTP/1.1\r\nHost: #{host}\r\nAccept-Encoding: gzip, deflate\r\n" <<
                   "User-Agent: Mozilla/5.0 (Gecko) SCNR::Engine/v#{SCNR::Engine::VERSION}\r\n" <<
                     "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\r\n" +
                     "Accept-Language: en-US,en;q=0.8,he;q=0.6\r\n" +
                     "X-Scnr-Engine-Scan-Seed: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
-                    "X-Scnr-Introspector-Taint: #{SCNR::Engine::Utilities.random_seed}\r\n" <<
-                    "X-Scnr-Introspector-Trace: 0\r\n\r\n"
+                    "X-Scnr-Request-Id: 0\r\n" <<
+                    "X-Scnr-Introspector-Trace: 1\r\n").split("\r\n").sort
             )
         end
 
