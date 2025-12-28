@@ -595,7 +595,7 @@ describe SCNR::Engine::HTTP::Client do
             subject.reset
             expect { subject.request }.to raise_error
         end
-        H
+
         it "fills in #{SCNR::Engine::HTTP::Request}#headers_string" do
             host = "#{SCNR::Engine::URI(url).host}:#{SCNR::Engine::URI(url).port}"
             expect(subject.request( url, mode: :sync ).request.headers_string.split("\r\n").sort).to eq(
