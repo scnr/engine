@@ -6,7 +6,7 @@
     web site for more information on licensing and terms of use.
 =end
 
-require 'zlib'
+require 'xxhash'
 
 # Overloads the {String} class.
 #
@@ -185,7 +185,7 @@ class String
     #   not use a random seed per Ruby process -- making it suitable for use
     #   in distributed systems.
     def persistent_hash
-        Zlib.crc32 self
+        ::XXhash.xxh32  self
     end
 
     def recode!
