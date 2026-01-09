@@ -1,7 +1,7 @@
 //! Corresponds to `Engine::Cookie`.
 
 use url::percent_encoding;
-use rutie::{Class, Object, RString};
+use magnus::{class, function, Error, RClass, RModule};
 
 define_encode_set! {
     pub COOKIE_ENCODE_SET = [percent_encoding::SIMPLE_ENCODE_SET] | { '+', ';', '%', '\0', '&', ' ', '"', '\n', '\r', '=' }
@@ -25,27 +25,21 @@ fn encode( input: &str ) -> String {
     ).collect::<String>().replace( ENCODED_SPACE, PLUS )
 }
 
-class!( Cookie );
-unsafe_methods!(
-    Cookie,
-    _itself,
-
-    fn cookie_encode( string: RString ) -> RString {
-        RString::new_utf8( &encode( string.to_str() ) )
-    }
-);
+fn cookie_encode(string: String) -> String {
+    encode(&string)
+}
 
 /// Adds Ruby hooks for:
 ///
 /// * `Engine::Cookie.encode_ext`
-pub fn initialize() {
+pub fn initialize() -> Result<(), Error> {
+    let scnr_ns = class::object().const_get::<_, RModule>("SCNR")?;
+    let engine_ns = scnr_ns.const_get::<_, RModule>("Engine")?;
+    let rust_ns = engine_ns.define_module("Rust")?;
+    let element_ns = rust_ns.define_module("Element")?;
+    let cookie_class = element_ns.define_class("Cookie", class::object())?;
 
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        define_nested_class( "Rust", None ).define_nested_class( "Element", None ).
-        define_nested_class( "Cookie", None ).define( |itself| {
+    cookie_class.define_singleton_method("encode_ext", function!(cookie_encode, 1))?;
 
-        itself.def_self( "encode_ext", cookie_encode );
-
-    });
-
+    Ok(())
 }

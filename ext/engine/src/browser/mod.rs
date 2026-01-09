@@ -2,6 +2,8 @@
 
 pub mod parts;
 
-pub fn initialize() {
-    parts::initialize();
+use magnus::Error;
+
+pub fn initialize() -> Result<(), Error> {
+    parts::initialize()
 }

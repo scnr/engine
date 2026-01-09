@@ -1,7 +1,7 @@
 //! Corresponds to `String`.
 
 use std::collections::HashMap;
-use rutie::{Class, Object, Boolean, RString};
+use magnus::{class, method, Error, RClass};
 use regex;
 use regex::Regex;
 use std::sync::Mutex;
@@ -19,26 +19,18 @@ fn compile_and_match( pattern: String, haystack: &str ) -> bool {
         is_match( haystack )
 }
 
-unsafe_methods!(
-    RString,
-    itself,
-
-    fn include_ext( needle: RString ) -> Boolean {
-        Boolean::new(
-            compile_and_match(
-                regex::escape( needle.to_str() ),
-                itself.to_str()
-            )
-        )
-    }
-
-);
+fn include_ext(rb_self: String, needle: String) -> bool {
+    compile_and_match(
+        regex::escape(&needle),
+        &rb_self
+    )
+}
 
 /// Adds Ruby hooks for:
 ///
 /// * `String#include_ext?`
-pub fn initialize() {
-    Class::from_existing( "String" ).define(|itself| {
-        itself.def( "include_ext?", include_ext );
-    });
+pub fn initialize() -> Result<(), Error> {
+    let string_class = class::object().const_get::<_, RClass>("String")?;
+    string_class.define_method("include_ext?", method!(include_ext, 1))?;
+    Ok(())
 }

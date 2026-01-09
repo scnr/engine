@@ -1,6 +1,6 @@
 //! Corresponds to `Engine::Utilities`.
 
-use rutie::{Class, Object, RString};
+use magnus::{class, function, method, Error, RClass, RModule};
 use std::char;
 
 const B10:        char = '#';
@@ -71,28 +71,21 @@ pub fn html_decode( input: &str ) -> String {
     result
 }
 
-class!( Utilities );
-unsafe_methods!(
-    Utilities,
-    _itself,
-
-    fn html_decode_ext( input: RString ) -> RString {
-        RString::new_utf8( &html_decode( input.to_str() ) )
-    }
-
-);
+fn html_decode_ext(input: String) -> String {
+    html_decode(&input)
+}
 
 /// Adds Ruby hooks for:
 ///
 /// * `Engine::Utilities#html_decode_ext`
-pub extern fn initialize() {
+pub fn initialize() -> Result<(), Error> {
+    let scnr_ns = class::object().const_get::<_, RModule>("SCNR")?;
+    let engine_ns = scnr_ns.const_get::<_, RModule>("Engine")?;
+    let rust_ns = engine_ns.define_module("Rust")?;
+    let utilities_class = rust_ns.define_class("Utilities", class::object())?;
 
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        define_nested_class( "Rust", None ).define_nested_class( "Utilities", None ).define( |itself| {
+    utilities_class.define_singleton_method("html_decode_ext", function!(html_decode_ext, 1))?;
+    utilities_class.define_method("html_decode_ext", function!(html_decode_ext, 1))?;
 
-        itself.def_self( "html_decode_ext", html_decode_ext );
-        itself.def( "html_decode_ext", html_decode_ext );
-
-    });
-
+    Ok(())
 }

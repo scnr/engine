@@ -8,7 +8,7 @@ use fnv::FnvHasher;
 
 use std::collections::BTreeSet;
 use std::panic;
-use rutie::{Array, Class, Fixnum, Object, RString, AnyObject, Boolean, Float};
+use magnus::{class, method, function, Error, RClass, RModule, Value, TypedData};
 
 lazy_static! {
     static ref TOKENIZE_REGEXP:Regex = Regex::new( r"\W" ).unwrap();
@@ -54,6 +54,8 @@ fn tokenize( data: String ) -> BTreeSet<i16> {
 
 #[derive(Hash)]
 #[derive(PartialEq)]
+#[derive(Clone)]
+#[magnus::wrap(class = "SCNR::Engine::Rust::Support::Signature", free_immediately, size)]
 pub struct Signature {
     tokens: BTreeSet<i16>
 }
@@ -102,9 +104,7 @@ impl Signature {
     }
 
     fn dup( &self ) -> Signature {
-        Signature {
-            tokens: self.tokens.clone()
-        }
+        self.clone()
     }
 
     fn is_empty( &self ) -> bool {
@@ -115,7 +115,7 @@ impl Signature {
         self.tokens.clear();
     }
 
-    fn size( &mut self ) -> i64 {
+    fn size( &self ) -> i64 {
         self.tokens.len() as i64
     }
 
@@ -127,155 +127,103 @@ impl Signature {
         format!( "Signature {:?}", self.tokens )
     }
 
+    fn tokens_array( &self ) -> Vec<i64> {
+        self.tokens.iter().map(|&t| i64::from(t)).collect()
+    }
 }
 
-fn _signature_new_ext( data: &RString ) -> AnyObject {
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).get_nested_class( "Support" ).
-        get_nested_class( "SignatureExt" ).wrap_data(
-        Signature::new( data.to_string() ), &*SIGNATURE_WRAPPER
-    )
+// Magnus method wrappers
+fn signature_new(data: String) -> Signature {
+    Signature::new(data)
 }
 
-fn _signature_is_similar_ext( _itself: &SignatureExt, other: &AnyObject, threshold: &Float ) -> Boolean {
-    let self_sig  = _itself.get_data( &*SIGNATURE_WRAPPER );
-    let other_sig = other.get_data( &*SIGNATURE_WRAPPER );
-
-    Boolean::new( self_sig.is_similar( other_sig, threshold.to_f64() ) )
+fn signature_clear(rb_self: &Signature) -> Value {
+    // Need to get mutable reference, return self
+    unsafe {
+        let ptr = rb_self as *const Signature as *mut Signature;
+        (*ptr).clear();
+    }
+    rb_self.into()
 }
 
-fn _signature_differences_ext( _itself: &SignatureExt, other: &AnyObject ) -> Float {
-    let self_sig  = _itself.get_data( &*SIGNATURE_WRAPPER );
-    let other_sig = other.get_data( &*SIGNATURE_WRAPPER );
-
-    Float::new( self_sig.differences( other_sig ) )
+fn signature_size(rb_self: &Signature) -> i64 {
+    rb_self.size()
 }
 
-fn _signature_push_ext( _itself: &mut SignatureExt, data: &RString ) -> AnyObject {
-    _itself.get_data_mut( &*SIGNATURE_WRAPPER ).push( data.to_str() );
-    _itself.to_any_object()
+fn signature_tokens(rb_self: &Signature) -> Vec<i64> {
+    rb_self.tokens_array()
 }
 
-fn _signature_refine_bang_ext( _itself: &mut SignatureExt, other: &AnyObject ) -> AnyObject {
-    _itself.get_data_mut( &*SIGNATURE_WRAPPER ).refine_bang(
-            other.get_data( &*SIGNATURE_WRAPPER )
-    );
-    _itself.to_any_object()
+fn signature_dup(rb_self: &Signature) -> Signature {
+    rb_self.dup()
 }
 
-fn _signature_refine_ext( _itself: &SignatureExt, other: &AnyObject ) -> AnyObject {
-    let self_sig  = _itself.get_data( &*SIGNATURE_WRAPPER );
-    let other_sig = other.get_data( &*SIGNATURE_WRAPPER );
-
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).get_nested_class( "Support" ).
-        get_nested_class( "SignatureExt" ).wrap_data(
-            self_sig.refine( other_sig ), &*SIGNATURE_WRAPPER
-        )
+fn signature_refine(rb_self: &Signature, other: &Signature) -> Signature {
+    rb_self.refine(other)
 }
 
-wrappable_struct!( Signature, SignatureWrapper, SIGNATURE_WRAPPER );
-
-class!( SignatureExt );
-unsafe_methods!(
-    SignatureExt,
-    _itself,
-
-    fn signature_new_ext( data: RString ) -> AnyObject {
-        _signature_new_ext( &data )
+fn signature_refine_bang(rb_self: &Signature, other: &Signature) -> Value {
+    unsafe {
+        let ptr = rb_self as *const Signature as *mut Signature;
+        (*ptr).refine_bang(other);
     }
+    rb_self.into()
+}
 
-    fn signature_clear_ext() -> AnyObject {
-        _itself.get_data_mut( &*SIGNATURE_WRAPPER ).clear();
-        _itself.to_any_object()
+fn signature_push(rb_self: &Signature, data: String) -> Value {
+    unsafe {
+        let ptr = rb_self as *const Signature as *mut Signature;
+        (*ptr).push(&data);
     }
+    rb_self.into()
+}
 
-    fn signature_size_ext() -> Fixnum {
-        Fixnum::new( _itself.get_data_mut( &*SIGNATURE_WRAPPER ).size() )
-    }
+fn signature_differences(rb_self: &Signature, other: &Signature) -> f64 {
+    rb_self.differences(other)
+}
 
-    fn signature_tokens_ext() -> Array {
-        let mut array = Array::new();
+fn signature_is_similar(rb_self: &Signature, other: &Signature, threshold: f64) -> bool {
+    rb_self.is_similar(other, threshold)
+}
 
-        for token in _itself.get_data( &*SIGNATURE_WRAPPER ).tokens.clone() {
-            array.push( Fixnum::new( i64::from( token ) ) );
-        }
+fn signature_is_equal(rb_self: &Signature, other: &Signature) -> bool {
+    rb_self == other
+}
 
-        array
-    }
+fn signature_hash(rb_self: &Signature) -> i64 {
+    rb_self.ahash() as i64
+}
 
-    fn signature_dup_ext() -> AnyObject {
-        Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).get_nested_class( "Support" ).
-            get_nested_class( "SignatureExt" ).wrap_data(
-                _itself.get_data( &*SIGNATURE_WRAPPER ).dup(),
-                &*SIGNATURE_WRAPPER
-            )
-    }
+fn signature_is_empty(rb_self: &Signature) -> bool {
+    rb_self.is_empty()
+}
 
-    fn signature_refine_ext( other: AnyObject ) -> AnyObject {
-        _signature_refine_ext( &_itself, &other )
-    }
+fn signature_inspect(rb_self: &Signature) -> String {
+    rb_self.inspect()
+}
 
-    fn signature_refine_bang_ext( other: AnyObject ) -> AnyObject {
-        _signature_refine_bang_ext( &mut _itself, &other )
-    }
+pub fn initialize() -> Result<(), Error> {
+    let scnr_ns = class::object().const_get::<_, RModule>("SCNR")?;
+    let engine_ns = scnr_ns.const_get::<_, RModule>("Engine")?;
+    let rust_ns = engine_ns.define_module("Rust")?;
+    let support_ns = rust_ns.define_module("Support")?;
+    let sig_class = support_ns.define_class("Signature", class::object())?;
 
-    fn signature_push_ext( data: RString ) -> AnyObject {
-        _signature_push_ext( &mut _itself, &data )
-    }
+    sig_class.define_singleton_method("new", function!(signature_new, 1))?;
 
-    fn signature_differences_ext( other: AnyObject ) -> Float {
-        _signature_differences_ext( &_itself, &other )
-    }
+    sig_class.define_method("clear", method!(signature_clear, 0))?;
+    sig_class.define_method("size", method!(signature_size, 0))?;
+    sig_class.define_method("refine", method!(signature_refine, 1))?;
+    sig_class.define_method("refine!", method!(signature_refine_bang, 1))?;
+    sig_class.define_method("differences", method!(signature_differences, 1))?;
+    sig_class.define_method("tokens", method!(signature_tokens, 0))?;
+    sig_class.define_method("similar?", method!(signature_is_similar, 2))?;
+    sig_class.define_method("empty?", method!(signature_is_empty, 0))?;
+    sig_class.define_method("dup", method!(signature_dup, 0))?;
+    sig_class.define_method("==", method!(signature_is_equal, 1))?;
+    sig_class.define_method("<<", method!(signature_push, 1))?;
+    sig_class.define_method("hash", method!(signature_hash, 0))?;
+    sig_class.define_method("inspect", method!(signature_inspect, 0))?;
 
-    fn signature_is_similar_ext( other: AnyObject, threshold: Float ) -> Boolean {
-        _signature_is_similar_ext( &_itself, &other, &threshold )
-    }
-
-    fn signature_is_equal_ext( other: AnyObject ) -> Boolean {
-        Boolean::new(
-            _itself.get_data( &*SIGNATURE_WRAPPER ) ==
-                other.get_data( &*SIGNATURE_WRAPPER )
-        )
-    }
-
-    fn signature_hash_ext() -> Fixnum {
-        Fixnum::new( _itself.get_data( &*SIGNATURE_WRAPPER ).ahash() as i64 )
-    }
-
-    fn signature_is_empty_ext() -> Boolean {
-        Boolean::new(
-            _itself.get_data( &*SIGNATURE_WRAPPER ).is_empty()
-        )
-    }
-
-    fn signature_inspect_ext() -> RString {
-        RString::new_utf8( &_itself.get_data( &*SIGNATURE_WRAPPER ).inspect() )
-    }
-);
-
-pub fn initialize() {
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        define_nested_class( "Rust", None ).
-        define_nested_class( "Support", None ).
-        define_nested_class(
-        "Signature",
-        None
-    ).define( |_itself| {
-
-        _itself.def_self( "new", signature_new_ext );
-
-        _itself.def( "clear", signature_clear_ext );
-        _itself.def( "size", signature_size_ext );
-        _itself.def( "refine", signature_refine_ext );
-        _itself.def( "refine!", signature_refine_bang_ext );
-        _itself.def( "differences", signature_differences_ext );
-        _itself.def( "tokens", signature_tokens_ext );
-        _itself.def( "similar?", signature_is_similar_ext );
-        _itself.def( "empty?", signature_is_empty_ext );
-        _itself.def( "dup", signature_dup_ext );
-        _itself.def( "==", signature_is_equal_ext );
-        _itself.def( "<<", signature_push_ext );
-        _itself.def( "hash", signature_hash_ext );
-        _itself.def( "inspect", signature_inspect_ext );
-
-    });
+    Ok(())
 }

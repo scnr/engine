@@ -2,6 +2,8 @@
 
 pub mod http;
 
-pub fn initialize() {
-    http::initialize();
+use magnus::Error;
+
+pub fn initialize() -> Result<(), Error> {
+    http::initialize()
 }
