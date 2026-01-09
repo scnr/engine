@@ -1,7 +1,7 @@
 //! Corresponds to `String`.
 
 use std::collections::HashMap;
-use magnus::{class, method, Error, RClass};
+use magnus::{class, method, Error, RClass, prelude::*};
 use regex;
 use regex::Regex;
 use std::sync::Mutex;

@@ -1,4 +1,4 @@
-use magnus::{class, method, function, Error, RClass, RModule, Value, RHash, Symbol, TypedData, block::Proc};
+use magnus::{class, method, function, Error, RClass, RModule, Value, RHash, Symbol, TypedData, block::Proc, prelude::*};
 use parser::sax::*;
 use std::collections::HashMap;
 
@@ -13,6 +13,10 @@ lazy_static! {
 pub struct Node {
     pub native: Option<node::Handle>
 }
+
+// SAFETY: Node is only used from the Ruby main thread, which doesn't share data across threads
+// in the way that Rust's Send implies. The Ruby GVL ensures thread safety.
+unsafe impl Send for Node {}
 
 impl Node {
     fn new( native: Option<node::Handle> ) -> Self {

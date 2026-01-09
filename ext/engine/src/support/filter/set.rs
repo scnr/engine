@@ -1,7 +1,7 @@
 //! Corresponds to `Engine::Support::SetExt`.
 
 use std::collections::HashSet;
-use magnus::{class, method, function, Error, RClass, RModule, Value, TypedData};
+use magnus::{class, method, function, Error, RClass, RModule, Value, TypedData, prelude::*};
 
 #[derive(PartialEq, Clone)]
 #[magnus::wrap(class = "SCNR::Engine::Rust::Support::Filter::Set", free_immediately, size)]
@@ -56,12 +56,11 @@ fn set_new() -> Set {
     Set::new()
 }
 
-fn set_clear(rb_self: &Set) -> Value {
+fn set_clear(rb_self: &Set) {
     unsafe {
         let ptr = rb_self as *const Set as *mut Set;
         (*ptr).clear();
     }
-    rb_self.into()
 }
 
 fn set_size(rb_self: &Set) -> i64 {
@@ -76,12 +75,11 @@ fn set_dup(rb_self: &Set) -> Set {
     rb_self.dup()
 }
 
-fn set_push(rb_self: &Set, entry: i64) -> Value {
+fn set_push(rb_self: &Set, entry: i64) {
     unsafe {
         let ptr = rb_self as *const Set as *mut Set;
         (*ptr).push(entry);
     }
-    rb_self.into()
 }
 
 fn set_include(rb_self: &Set, entry: i64) -> bool {

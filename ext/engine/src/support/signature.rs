@@ -8,7 +8,7 @@ use fnv::FnvHasher;
 
 use std::collections::BTreeSet;
 use std::panic;
-use magnus::{class, method, function, Error, RClass, RModule, Value, TypedData};
+use magnus::{class, method, function, Error, RClass, RModule, Value, TypedData, prelude::*};
 
 lazy_static! {
     static ref TOKENIZE_REGEXP:Regex = Regex::new( r"\W" ).unwrap();
@@ -137,13 +137,12 @@ fn signature_new(data: String) -> Signature {
     Signature::new(data)
 }
 
-fn signature_clear(rb_self: &Signature) -> Value {
-    // Need to get mutable reference, return self
+fn signature_clear(rb_self: &Signature) {
+    // Need to get mutable reference
     unsafe {
         let ptr = rb_self as *const Signature as *mut Signature;
         (*ptr).clear();
     }
-    rb_self.into()
 }
 
 fn signature_size(rb_self: &Signature) -> i64 {
@@ -162,20 +161,18 @@ fn signature_refine(rb_self: &Signature, other: &Signature) -> Signature {
     rb_self.refine(other)
 }
 
-fn signature_refine_bang(rb_self: &Signature, other: &Signature) -> Value {
+fn signature_refine_bang(rb_self: &Signature, other: &Signature) {
     unsafe {
         let ptr = rb_self as *const Signature as *mut Signature;
         (*ptr).refine_bang(other);
     }
-    rb_self.into()
 }
 
-fn signature_push(rb_self: &Signature, data: String) -> Value {
+fn signature_push(rb_self: &Signature, data: String) {
     unsafe {
         let ptr = rb_self as *const Signature as *mut Signature;
         (*ptr).push(&data);
     }
-    rb_self.into()
 }
 
 fn signature_differences(rb_self: &Signature, other: &Signature) -> f64 {

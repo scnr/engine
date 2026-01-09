@@ -1,6 +1,6 @@
 //! Corresponds to `Engine::HTTP::Headers`.
 
-use magnus::{class, function, Error, RClass, RModule};
+use magnus::{class, function, Error, RClass, RModule, prelude::*};
 
 const SKIP_SUBSTRING: &str = "--";
 

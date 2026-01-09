@@ -1,6 +1,6 @@
 //! Corresponds to `Engine::Utilities`.
 
-use magnus::{class, function, method, Error, RClass, RModule};
+use magnus::{class, function, method, Error, RClass, RModule, prelude::*};
 use std::char;
 
 const B10:        char = '#';

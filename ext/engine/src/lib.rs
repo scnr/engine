@@ -30,7 +30,7 @@ pub mod parser;
 pub mod element;
 pub mod browser;
 
-use magnus::{Error, define_global_function, function};
+use magnus::{Error, prelude::*};
 
 /// Initializes all Rust modules and Ruby hooks.
 #[magnus::init]
