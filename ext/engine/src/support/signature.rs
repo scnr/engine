@@ -8,7 +8,7 @@ use fnv::FnvHasher;
 
 use std::collections::BTreeSet;
 use std::panic;
-use magnus::{class, method, function, Error, RClass, RModule, Value, TypedData, typed_data, TryConvert, prelude::*};
+use magnus::{class, method, function, Error, RClass, RModule, Value, TypedData, typed_data, prelude::*};
 
 lazy_static! {
     static ref TOKENIZE_REGEXP:Regex = Regex::new( r"\W" ).unwrap();
@@ -159,15 +159,17 @@ fn signature_dup(rb_self: &Signature) -> Signature {
 }
 
 fn signature_refine(rb_self: &Signature, other: Value) -> Result<Signature, Error> {
-    let other_sig: typed_data::Obj<Signature> = TryConvert::try_convert(other)?;
-    Ok(rb_self.refine(&*other_sig))
+    // Get the Signature from the Ruby object
+    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    Ok(rb_self.refine(&*other_obj))
 }
 
 fn signature_refine_bang(rb_self: typed_data::Obj<Signature>, other: Value) -> Result<typed_data::Obj<Signature>, Error> {
-    let other_sig: typed_data::Obj<Signature> = TryConvert::try_convert(other)?;
+    // Get the Signature from the Ruby object
+    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
     unsafe {
         let ptr = &*rb_self as *const Signature as *mut Signature;
-        (*ptr).refine_bang(&*other_sig);
+        (*ptr).refine_bang(&*other_obj);
     }
     Ok(rb_self)
 }
@@ -181,18 +183,18 @@ fn signature_push(rb_self: typed_data::Obj<Signature>, data: String) -> typed_da
 }
 
 fn signature_differences(rb_self: &Signature, other: Value) -> Result<f64, Error> {
-    let other_sig: typed_data::Obj<Signature> = TryConvert::try_convert(other)?;
-    Ok(rb_self.differences(&*other_sig))
+    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    Ok(rb_self.differences(&*other_obj))
 }
 
 fn signature_is_similar(rb_self: &Signature, other: Value, threshold: f64) -> Result<bool, Error> {
-    let other_sig: typed_data::Obj<Signature> = TryConvert::try_convert(other)?;
-    Ok(rb_self.is_similar(&*other_sig, threshold))
+    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    Ok(rb_self.is_similar(&*other_obj, threshold))
 }
 
 fn signature_is_equal(rb_self: &Signature, other: Value) -> Result<bool, Error> {
-    let other_sig: typed_data::Obj<Signature> = TryConvert::try_convert(other)?;
-    Ok(rb_self == &*other_sig)
+    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    Ok(rb_self == &*other_obj)
 }
 
 fn signature_hash(rb_self: &Signature) -> i64 {
