@@ -23,8 +23,8 @@ module SignatureExtInstanceMethods
 
     def refine( data )
         # Create a new signature by duping and refining
+        # Note: dup already extends the result with SignatureExtInstanceMethods
         result = dup
-        SignatureExt.extend_with_methods(result, signature_ext_class)
         result.refine! data
         result
     end
