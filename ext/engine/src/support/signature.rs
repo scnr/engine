@@ -159,17 +159,24 @@ fn signature_dup(rb_self: &Signature) -> Signature {
 }
 
 fn signature_refine(rb_self: &Signature, other: Value) -> Result<Signature, Error> {
-    // Get the Signature from the Ruby object
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
-    Ok(rb_self.refine(&*other_obj))
+    // Try to get the Signature from the Ruby object
+    // This works for both Rust::Support::Signature and SignatureExt (which inherits from it)
+    let other_ref: &Signature = unsafe {
+        // Get the underlying TypedData pointer
+        magnus::TryConvert::try_convert(other)?
+    };
+    Ok(rb_self.refine(other_ref))
 }
 
 fn signature_refine_bang(rb_self: typed_data::Obj<Signature>, other: Value) -> Result<typed_data::Obj<Signature>, Error> {
-    // Get the Signature from the Ruby object
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    // Try to get the Signature from the Ruby object
+    let other_ref: &Signature = unsafe {
+        // Get the underlying TypedData pointer
+        magnus::TryConvert::try_convert(other)?
+    };
     unsafe {
         let ptr = &*rb_self as *const Signature as *mut Signature;
-        (*ptr).refine_bang(&*other_obj);
+        (*ptr).refine_bang(other_ref);
     }
     Ok(rb_self)
 }
@@ -183,18 +190,24 @@ fn signature_push(rb_self: typed_data::Obj<Signature>, data: String) -> typed_da
 }
 
 fn signature_differences(rb_self: &Signature, other: Value) -> Result<f64, Error> {
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
-    Ok(rb_self.differences(&*other_obj))
+    let other_ref: &Signature = unsafe {
+        magnus::TryConvert::try_convert(other)?
+    };
+    Ok(rb_self.differences(other_ref))
 }
 
 fn signature_is_similar(rb_self: &Signature, other: Value, threshold: f64) -> Result<bool, Error> {
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
-    Ok(rb_self.is_similar(&*other_obj, threshold))
+    let other_ref: &Signature = unsafe {
+        magnus::TryConvert::try_convert(other)?
+    };
+    Ok(rb_self.is_similar(other_ref, threshold))
 }
 
 fn signature_is_equal(rb_self: &Signature, other: Value) -> Result<bool, Error> {
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
-    Ok(rb_self == &*other_obj)
+    let other_ref: &Signature = unsafe {
+        magnus::TryConvert::try_convert(other)?
+    };
+    Ok(rb_self == other_ref)
 }
 
 fn signature_hash(rb_self: &Signature) -> i64 {
