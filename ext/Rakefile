@@ -7,4 +7,37 @@ Thermite::Tasks.new(
     ruby_project_path:  File.dirname( project_dir )
 )
 
+# Magnus generates Init_scnr_engine but Cargo outputs libscnr_engine.so
+# Create a symlink so Ruby can find the correct init function
+namespace :thermite do
+    task :postbuild do
+        ['release', 'debug'].each do |profile|
+            lib_path = "#{project_dir}/engine/target/#{profile}"
+            
+            if RUBY_PLATFORM =~ /linux/
+                src = "#{lib_path}/libscnr_engine.so"
+                dst = "#{lib_path}/scnr_engine.so"
+                
+                if File.exist?(src) && !File.exist?(dst)
+                    File.symlink(File.basename(src), dst)
+                    puts "Created symlink: #{dst} -> #{File.basename(src)}"
+                end
+            elsif RUBY_PLATFORM =~ /darwin/
+                src = "#{lib_path}/libscnr_engine.dylib"
+                dst = "#{lib_path}/scnr_engine.dylib"
+                
+                if File.exist?(src) && !File.exist?(dst)
+                    File.symlink(File.basename(src), dst)
+                    puts "Created symlink: #{dst} -> #{File.basename(src)}"
+                end
+            end
+        end
+    end
+end
+
+# Make postbuild run after build
+Rake::Task['thermite:build'].enhance do
+    Rake::Task['thermite:postbuild'].invoke
+end
+
 task default: %w(thermite:build)

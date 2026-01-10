@@ -104,8 +104,9 @@ module Engine
 
                 if File.exist?( library_path )
                     # Magnus uses Ruby's standard require mechanism.
-                    # The Init_scnr_engine function is automatically called by Ruby
-                    # when the library is loaded via require.
+                    # The Init_scnr_engine function is automatically called by Ruby.
+                    # Note: Cargo outputs libscnr_engine.so, but a symlink to scnr_engine.so
+                    # is created by the build process (see ext/Rakefile) to match the init function name.
                     require library_path
 
                     @loaded_extension = true
