@@ -18,17 +18,37 @@ namespace :thermite do
                 src = "#{lib_path}/libscnr_engine.so"
                 dst = "#{lib_path}/scnr_engine.so"
                 
-                if File.exist?(src) && !File.exist?(dst)
-                    File.symlink(File.basename(src), dst)
-                    puts "Created symlink: #{dst} -> #{File.basename(src)}"
+                if File.exist?(src)
+                    if File.exist?(dst)
+                        if File.symlink?(dst)
+                            puts "Symlink already exists: #{dst}"
+                        else
+                            puts "Warning: #{dst} exists but is not a symlink"
+                        end
+                    else
+                        File.symlink(File.basename(src), dst)
+                        puts "✓ Created symlink: #{dst} -> #{File.basename(src)}"
+                    end
+                else
+                    puts "Source library not found: #{src}"
                 end
             elsif RUBY_PLATFORM =~ /darwin/
                 src = "#{lib_path}/libscnr_engine.dylib"
                 dst = "#{lib_path}/scnr_engine.dylib"
                 
-                if File.exist?(src) && !File.exist?(dst)
-                    File.symlink(File.basename(src), dst)
-                    puts "Created symlink: #{dst} -> #{File.basename(src)}"
+                if File.exist?(src)
+                    if File.exist?(dst)
+                        if File.symlink?(dst)
+                            puts "Symlink already exists: #{dst}"
+                        else
+                            puts "Warning: #{dst} exists but is not a symlink"
+                        end
+                    else
+                        File.symlink(File.basename(src), dst)
+                        puts "✓ Created symlink: #{dst} -> #{File.basename(src)}"
+                    end
+                else
+                    puts "Source library not found: #{src}"
                 end
             end
         end

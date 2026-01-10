@@ -111,7 +111,13 @@ module Engine
 
                     @loaded_extension = true
                 else
-                    fail "Missing extension: #{library_path}"
+                    # Check if the source library exists but symlink wasn't created
+                    src_path = library_path.sub('scnr_engine.', 'libscnr_engine.')
+                    if File.exist?(src_path)
+                        fail "Extension needs rebuild: #{src_path} exists but symlink #{library_path} not found. Run 'cd ext && rake' to rebuild."
+                    else
+                        fail "Missing extension: #{library_path}"
+                    end
                 end
             end
 
