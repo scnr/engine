@@ -94,7 +94,7 @@ module Engine
 
             if linux? || mac?
                 ext_directory = File.dirname( File.dirname( __FILE__ ) ) + '/../ext'
-                library_path  = "#{ext_directory}/engine/target/release/libscnr_engine."
+                library_path  = "#{ext_directory}/engine/target/release/scnr_engine."
 
                 if linux?
                     library_path << 'so'

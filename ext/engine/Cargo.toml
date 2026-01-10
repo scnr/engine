@@ -17,4 +17,5 @@ tendril = "0.4.3"
 #git = "https://github.com/rust-lang-nursery/rust-clippy.git"
 
 [lib]
+name = "scnr_engine"
 crate-type = ["cdylib"]
