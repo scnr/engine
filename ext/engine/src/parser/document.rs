@@ -103,49 +103,98 @@ impl Node {
         panic!( "Use after free." );
     }
 
-    pub fn nodes_by_name( &self, tag_name: &str, cb: Proc ) {
+    pub fn nodes_by_name( &self, tag_name: &str, cb: Proc ) -> Result<(), Error> {
         if let Some( ref handle ) = self.native {
+            let mut error: Option<Error> = None;
             handle.nodes_by_name( tag_name, |h| {
+                if error.is_some() {
+                    return; // Skip remaining iterations if we hit an error
+                }
                 let node = Node::new(Some(h.clone()));
-                let _ = cb.call::<(Node,), Value>((node,));
+                // If the block uses return/break, it will raise an exception
+                match cb.call::<(Node,), Value>((node,)) {
+                    Ok(_) => {},
+                    Err(e) => {
+                        error = Some(e);
+                    }
+                }
             });
-            return
+            if let Some(e) = error {
+                return Err(e);
+            }
+            return Ok(())
         }
 
         panic!( "Use after free." );
     }
 
-    pub fn nodes_by_attribute_name_and_value( &self, n: &str, v: &str, cb: Proc ) {
+    pub fn nodes_by_attribute_name_and_value( &self, n: &str, v: &str, cb: Proc ) -> Result<(), Error> {
         if let Some( ref handle ) = self.native {
+            let mut error: Option<Error> = None;
             handle.nodes_by_attribute_name_and_value( n, v, |h| {
+                if error.is_some() {
+                    return;
+                }
                 let node = Node::new(Some(h.clone()));
-                let _ = cb.call::<(Node,), Value>((node,));
+                match cb.call::<(Node,), Value>((node,)) {
+                    Ok(_) => {},
+                    Err(e) => {
+                        error = Some(e);
+                    }
+                }
             });
-            return
+            if let Some(e) = error {
+                return Err(e);
+            }
+            return Ok(())
         }
 
         panic!( "Use after free." );
     }
 
-    pub fn traverse_comments( &self, cb: Proc ) {
+    pub fn traverse_comments( &self, cb: Proc ) -> Result<(), Error> {
         if let Some( ref handle ) = self.native {
+            let mut error: Option<Error> = None;
             handle.traverse_comments( |h| {
+                if error.is_some() {
+                    return;
+                }
                 let node = Node::new(Some(h.clone()));
-                let _ = cb.call::<(Node,), Value>((node,));
+                match cb.call::<(Node,), Value>((node,)) {
+                    Ok(_) => {},
+                    Err(e) => {
+                        error = Some(e);
+                    }
+                }
             });
-            return
+            if let Some(e) = error {
+                return Err(e);
+            }
+            return Ok(())
         }
 
         panic!( "Use after free." );
     }
 
-    pub fn traverse( &self, cb: Proc ) {
+    pub fn traverse( &self, cb: Proc ) -> Result<(), Error> {
         if let Some( ref handle ) = self.native {
+            let mut error: Option<Error> = None;
             handle.traverse( |h| {
+                if error.is_some() {
+                    return;
+                }
                 let node = Node::new(Some(h.clone()));
-                let _ = cb.call::<(Node,), Value>((node,));
+                match cb.call::<(Node,), Value>((node,)) {
+                    Ok(_) => {},
+                    Err(e) => {
+                        error = Some(e);
+                    }
+                }
             });
-            return
+            if let Some(e) = error {
+                return Err(e);
+            }
+            return Ok(())
         }
 
         panic!( "Use after free." );
@@ -178,24 +227,24 @@ fn parse(html: String, filter: bool) -> Node {
     )
 }
 
-fn node_traverse_comments(rb_self: &Node, cb: Proc) -> bool {
-    rb_self.traverse_comments(cb);
-    true
+fn node_traverse_comments(rb_self: &Node, cb: Proc) -> Result<bool, Error> {
+    rb_self.traverse_comments(cb)?;
+    Ok(true)
 }
 
-fn node_nodes_by_name(rb_self: &Node, name: String, cb: Proc) -> bool {
-    rb_self.nodes_by_name(&name, cb);
-    true
+fn node_nodes_by_name(rb_self: &Node, name: String, cb: Proc) -> Result<bool, Error> {
+    rb_self.nodes_by_name(&name, cb)?;
+    Ok(true)
 }
 
-fn node_nodes_by_attribute_name_and_value(rb_self: &Node, name: String, value: String, cb: Proc) -> bool {
-    rb_self.nodes_by_attribute_name_and_value(&name, &value, cb);
-    true
+fn node_nodes_by_attribute_name_and_value(rb_self: &Node, name: String, value: String, cb: Proc) -> Result<bool, Error> {
+    rb_self.nodes_by_attribute_name_and_value(&name, &value, cb)?;
+    Ok(true)
 }
 
-fn node_traverse(rb_self: &Node, cb: Proc) -> bool {
-    rb_self.traverse(cb);
-    true
+fn node_traverse(rb_self: &Node, cb: Proc) -> Result<bool, Error> {
+    rb_self.traverse(cb)?;
+    Ok(true)
 }
 
 fn node_is_root(rb_self: &Node) -> bool {

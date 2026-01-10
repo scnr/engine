@@ -98,7 +98,7 @@ impl Handle {
         html
     }
 
-    pub fn nodes_by_name<F>( &self, tag_name: &str, cb: F ) where F: Fn( &Handle ) {
+    pub fn nodes_by_name<F>( &self, tag_name: &str, mut cb: F ) where F: FnMut( &Handle ) {
         let ln = tag_name.to_lowercase();
 
         self.traverse( |handle| {
@@ -109,8 +109,8 @@ impl Handle {
         })
     }
 
-    pub fn nodes_by_attribute_name_and_value<F>( &self, n: &str, v: &str, cb: F )
-        where F: Fn( &Handle ) {
+    pub fn nodes_by_attribute_name_and_value<F>( &self, n: &str, v: &str, mut cb: F )
+        where F: FnMut( &Handle ) {
 
         let ln = n.to_lowercase();
         let lv = v.to_lowercase();
@@ -145,7 +145,7 @@ impl Handle {
         }
     }
 
-    pub fn traverse_comments<F>( &self, cb: F ) where F: Fn( &Handle ) {
+    pub fn traverse_comments<F>( &self, mut cb: F ) where F: FnMut( &Handle ) {
         self.traverse( |handle| {
             if let Enum::Comment( .. ) = handle.borrow().node {
                 cb( handle )
@@ -153,11 +153,11 @@ impl Handle {
         })
     }
 
-    pub fn traverse<F>( &self, cb: F ) where F: Fn( &Handle ) {
-        Handle::traverser( &self.borrow().children, &cb )
+    pub fn traverse<F>( &self, mut cb: F ) where F: FnMut( &Handle ) {
+        Handle::traverser( &self.borrow().children, &mut cb )
     }
 
-    fn traverser<F>( children: &[Handle], cb: &F ) where F: Fn( &Handle ) {
+    fn traverser<F>( children: &[Handle], cb: &mut F ) where F: FnMut( &Handle ) {
         for handle in children {
             cb( handle );
             Handle::traverser( &handle.borrow().children, cb );
