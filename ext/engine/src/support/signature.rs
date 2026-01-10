@@ -228,15 +228,24 @@ pub fn initialize() -> Result<(), Error> {
 
     sig_class.define_method("clear", method!(signature_clear, 0))?;
     sig_class.define_method("size", method!(signature_size, 0))?;
-    // Use _ext suffix to avoid conflicts with Ruby wrapper methods that normalize arguments
+    
+    // Public API methods that accept Signature objects
+    sig_class.define_method("refine", method!(signature_refine, 1))?;
+    sig_class.define_method("refine!", method!(signature_refine_bang, 1))?;
+    sig_class.define_method("differences", method!(signature_differences, 1))?;
+    sig_class.define_method("similar?", method!(signature_is_similar, 2))?;
+    sig_class.define_method("==", method!(signature_is_equal, 1))?;
+    
+    // _ext suffix methods for SignatureExt Ruby wrapper to call (adds String normalization)
     sig_class.define_method("refine_ext", method!(signature_refine, 1))?;
     sig_class.define_method("refine_bang_ext", method!(signature_refine_bang, 1))?;
     sig_class.define_method("differences_ext", method!(signature_differences, 1))?;
-    sig_class.define_method("tokens", method!(signature_tokens, 0))?;
     sig_class.define_method("is_similar_ext", method!(signature_is_similar, 2))?;
+    sig_class.define_method("is_equal_ext", method!(signature_is_equal, 1))?;
+    
+    sig_class.define_method("tokens", method!(signature_tokens, 0))?;
     sig_class.define_method("empty?", method!(signature_is_empty, 0))?;
     sig_class.define_method("dup", method!(signature_dup, 0))?;
-    sig_class.define_method("is_equal_ext", method!(signature_is_equal, 1))?;
     sig_class.define_method("<<", method!(signature_push, 1))?;
     sig_class.define_method("hash", method!(signature_hash, 0))?;
     sig_class.define_method("inspect", method!(signature_inspect, 0))?;
