@@ -2,6 +2,8 @@
 
 pub mod headers;
 
-pub fn initialize() {
-    headers::initialize();
+use magnus::Error;
+
+pub fn initialize() -> Result<(), Error> {
+    headers::initialize()
 }

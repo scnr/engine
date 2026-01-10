@@ -2,6 +2,8 @@
 
 pub mod string;
 
-pub fn initialize() {
-    string::initialize();
+use magnus::Error;
+
+pub fn initialize() -> Result<(), Error> {
+    string::initialize()
 }

@@ -3,6 +3,8 @@
 pub mod sax;
 pub mod document;
 
-pub fn initialize() {
-    document::initialize();
+use magnus::Error;
+
+pub fn initialize() -> Result<(), Error> {
+    document::initialize()
 }

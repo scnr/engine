@@ -3,7 +3,10 @@
 pub mod header;
 pub mod cookie;
 
-pub fn initialize() {
-    header::initialize();
-    cookie::initialize();
+use magnus::Error;
+
+pub fn initialize() -> Result<(), Error> {
+    header::initialize()?;
+    cookie::initialize()?;
+    Ok(())
 }

@@ -4,7 +4,6 @@ version = "1.0.0"
 authors = ["Tasos Laskos <tasos.laskos@gmail.com>"]
 
 [dependencies]
-rutie = "0.8.4"
 magnus = "0.6.2"
 regex = "1.7.2"
 lazy_static = "1.4.0"
@@ -18,4 +17,5 @@ tendril = "0.4.3"
 #git = "https://github.com/rust-lang-nursery/rust-clippy.git"
 
 [lib]
+name = "scnr_engine"
 crate-type = ["cdylib"]

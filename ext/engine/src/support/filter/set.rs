@@ -1,9 +1,10 @@
 //! Corresponds to `Engine::Support::SetExt`.
 
 use std::collections::HashSet;
-use rutie::{Fixnum, AnyObject, Class, Object, Boolean, RString, Array};
+use magnus::{class, method, function, Error, RClass, RModule, Value, TypedData, typed_data, prelude::*};
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
+#[magnus::wrap(class = "SCNR::Engine::Rust::Support::Filter::Set", free_immediately, size)]
 pub struct Set {
     collection: HashSet<i64>
 }
@@ -21,14 +22,12 @@ impl Set {
         self
     }
 
-    fn includes( &mut self, entry: &i64 ) -> bool {
+    fn includes( &self, entry: &i64 ) -> bool {
         self.collection.contains( entry )
     }
 
     fn dup( &self ) -> Set {
-        Set {
-            collection: self.collection.clone()
-        }
+        self.clone()
     }
 
     fn is_empty( &self ) -> bool {
@@ -39,7 +38,7 @@ impl Set {
         self.collection.clear();
     }
 
-    fn size( &mut self ) -> i64 {
+    fn size( &self ) -> i64 {
         self.collection.len() as i64
     }
 
@@ -47,105 +46,74 @@ impl Set {
         format!( "Set {:?}", self.collection )
     }
 
+    fn collection_array( &self ) -> Vec<i64> {
+        self.collection.iter().cloned().collect()
+    }
 }
 
-fn _set_new_ext( ) -> AnyObject {
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Rust" ).get_nested_class( "Support" ).
-        get_nested_class( "Filter" ).get_nested_class( "Set" ).wrap_data(
-        Set::new(), &*SET_WRAPPER
-    )
+// Magnus method wrappers
+fn set_new() -> Set {
+    Set::new()
 }
 
-fn _set_push_ext( _itself: &mut SetExt, entry: Fixnum ) -> AnyObject {
-    _itself.get_data_mut( &*SET_WRAPPER ).push( entry.to_i64() );
-    _itself.to_any_object()
+fn set_clear(rb_self: typed_data::Obj<Set>) -> typed_data::Obj<Set> {
+    unsafe {
+        let ptr = &*rb_self as *const Set as *mut Set;
+        (*ptr).clear();
+    }
+    rb_self
 }
 
-fn _set_include_ext( _itself: &mut SetExt, entry: &Fixnum ) -> Boolean {
-    Boolean::new(
-        _itself.get_data_mut( &*SET_WRAPPER ).includes( &entry.to_i64() )
-    )
+fn set_size(rb_self: &Set) -> i64 {
+    rb_self.size()
 }
 
-wrappable_struct!( Set, SetWrapper, SET_WRAPPER );
+fn set_collection(rb_self: &Set) -> Vec<i64> {
+    rb_self.collection_array()
+}
 
-class!( SetExt );
-unsafe_methods!(
-    SetExt,
-    _itself,
+fn set_dup(rb_self: &Set) -> Set {
+    rb_self.dup()
+}
 
-    fn set_new_ext() -> AnyObject {
-        _set_new_ext( )
+fn set_push(rb_self: typed_data::Obj<Set>, entry: i64) -> typed_data::Obj<Set> {
+    unsafe {
+        let ptr = &*rb_self as *const Set as *mut Set;
+        (*ptr).push(entry);
     }
+    rb_self
+}
 
-    fn set_clear_ext() -> AnyObject {
-        _itself.get_data_mut( &*SET_WRAPPER ).clear();
-        _itself.to_any_object()
-    }
+fn set_include(rb_self: &Set, entry: i64) -> bool {
+    rb_self.includes(&entry)
+}
 
-    fn set_size_ext() -> Fixnum {
-        Fixnum::new( _itself.get_data_mut( &*SET_WRAPPER ).size() )
-    }
+fn set_is_empty(rb_self: &Set) -> bool {
+    rb_self.is_empty()
+}
 
-    fn set_collection_ext() -> Array {
-        let mut array = Array::new();
+fn set_inspect(rb_self: &Set) -> String {
+    rb_self.inspect()
+}
 
-        for entry in _itself.get_data( &*SET_WRAPPER ).collection.clone() {
-            array.push( Fixnum::new( i64::from( entry ) ) );
-        }
+pub fn initialize() -> Result<(), Error> {
+    let scnr_ns = class::object().const_get::<_, RModule>("SCNR")?;
+    let engine_ns = scnr_ns.const_get::<_, RModule>("Engine")?;
+    let rust_ns = engine_ns.define_module("Rust")?;
+    let support_ns = rust_ns.define_module("Support")?;
+    let filter_ns = support_ns.define_module("Filter")?;
+    let set_class = filter_ns.define_class("Set", class::object())?;
 
-        array
-    }
+    set_class.define_singleton_method("new", function!(set_new, 0))?;
 
-    fn set_dup_ext() -> AnyObject {
-        Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Rust" ).get_nested_class( "Support" ).
-            get_nested_class( "Filter" ).get_nested_class( "Set" ).wrap_data(
-                _itself.get_data( &*SET_WRAPPER ).dup(),
-                &*SET_WRAPPER
-            )
-    }
+    set_class.define_method("clear", method!(set_clear, 0))?;
+    set_class.define_method("size", method!(set_size, 0))?;
+    set_class.define_method("collection", method!(set_collection, 0))?;
+    set_class.define_method("empty?", method!(set_is_empty, 0))?;
+    set_class.define_method("dup", method!(set_dup, 0))?;
+    set_class.define_method("include?", method!(set_include, 1))?;
+    set_class.define_method("<<", method!(set_push, 1))?;
+    set_class.define_method("inspect", method!(set_inspect, 0))?;
 
-    fn set_push_ext( entry: Fixnum ) -> AnyObject {
-        _set_push_ext( &mut _itself, entry )
-    }
-
-    fn set_include_ext( entry: Fixnum ) -> Boolean {
-        _set_include_ext( &mut _itself, &entry )
-    }
-
-    fn set_is_empty_ext() -> Boolean {
-        Boolean::new(
-            _itself.get_data( &*SET_WRAPPER ).is_empty()
-        )
-    }
-
-    fn set_inspect_ext() -> RString {
-        RString::new_utf8( &_itself.get_data( &*SET_WRAPPER ).inspect() )
-    }
-);
-
-pub fn initialize() {
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        define_nested_class( "Rust", None ).
-        define_nested_class( "Support", None ).
-        define_nested_class( "Filter", None ).
-        define_nested_class(
-            "Set",
-            None
-        ).define( |_itself| {
-
-        _itself.def_self( "new", set_new_ext );
-
-        _itself.def( "clear", set_clear_ext );
-        _itself.def( "size", set_size_ext );
-        _itself.def( "collection", set_collection_ext );
-        _itself.def( "empty?", set_is_empty_ext );
-        _itself.def( "dup", set_dup_ext );
-        _itself.def( "include?", set_include_ext );
-        _itself.def( "<<", set_push_ext );
-        _itself.def( "inspect", set_inspect_ext );
-
-    });
+    Ok(())
 }

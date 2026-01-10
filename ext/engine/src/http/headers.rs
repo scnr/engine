@@ -1,6 +1,6 @@
 //! Corresponds to `Engine::HTTP::Headers`.
 
-use rutie::{Class, Object, RString};
+use magnus::{class, function, Error, RClass, RModule, prelude::*};
 
 const SKIP_SUBSTRING: &str = "--";
 
@@ -35,25 +35,21 @@ pub fn format_field_name( name: &str ) -> String {
     }
 }
 
-class!( Headers );
-unsafe_methods!(
-    Headers,
-    _itself,
-
-    fn format_field_name_ext( data: RString ) -> RString {
-        RString::new_utf8( &format_field_name( data.to_str() ) )
-    }
-);
+fn format_field_name_ext(data: String) -> String {
+    format_field_name(&data)
+}
 
 /// Adds Ruby hooks for:
 ///
 /// * `Engine::Support::Signature.format_field_name_ext`
-pub fn initialize() {
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        define_nested_class( "Rust", None ).define_nested_class( "HTTP", None ).
-        define_nested_class( "Headers", None ).define( |itself| {
+pub fn initialize() -> Result<(), Error> {
+    let scnr_ns = class::object().const_get::<_, RModule>("SCNR")?;
+    let engine_ns = scnr_ns.const_get::<_, RModule>("Engine")?;
+    let rust_ns = engine_ns.define_module("Rust")?;
+    let http_ns = rust_ns.define_module("HTTP")?;
+    let headers_class = http_ns.define_class("Headers", class::object())?;
 
-        itself.def_self( "format_field_name_ext", format_field_name_ext );
+    headers_class.define_singleton_method("format_field_name_ext", function!(format_field_name_ext, 1))?;
 
-    });
+    Ok(())
 }

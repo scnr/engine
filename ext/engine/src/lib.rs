@@ -3,9 +3,6 @@
 #![feature(pattern)]
 
 #[macro_use]
-extern crate rutie;
-
-#[macro_use]
 extern crate magnus;
 
 #[macro_use]
@@ -33,15 +30,18 @@ pub mod parser;
 pub mod element;
 pub mod browser;
 
+use magnus::{Error, prelude::*};
+
 /// Initializes all Rust modules and Ruby hooks.
-#[no_mangle]
-pub extern fn initialize() {
-    ruby::initialize();
-    utilities::initialize();
-    let _ = uri::initialize();
-    support::initialize();
-    http::initialize();
-    parser::initialize();
-    element::initialize();
-    browser::initialize();
+#[magnus::init]
+fn init() -> Result<(), Error> {
+    ruby::initialize()?;
+    utilities::initialize()?;
+    uri::initialize()?;
+    support::initialize()?;
+    http::initialize()?;
+    parser::initialize()?;
+    element::initialize()?;
+    browser::initialize()?;
+    Ok(())
 }

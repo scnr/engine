@@ -728,7 +728,6 @@ impl MutURI {
     }
 }
 
-#[magnus::init]
 pub fn initialize() -> Result<(), Error> {
     let scnr_ns = class::object().const_get::<_, RModule>("SCNR").unwrap();
     let engine_ns = scnr_ns.const_get::<_, RModule>( "Engine" ).unwrap();

@@ -3,7 +3,10 @@
 pub mod signature;
 pub mod filter;
 
-pub fn initialize() {
-    signature::initialize();
-    filter::set::initialize();
+use magnus::Error;
+
+pub fn initialize() -> Result<(), Error> {
+    signature::initialize()?;
+    filter::set::initialize()?;
+    Ok(())
 }

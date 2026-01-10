@@ -94,7 +94,7 @@ module Engine
 
             if linux? || mac?
                 ext_directory = File.dirname( File.dirname( __FILE__ ) ) + '/../ext'
-                library_path  = "#{ext_directory}/engine/target/release/libscnr_engine."
+                library_path  = "#{ext_directory}/engine/target/release/scnr_engine."
 
                 if linux?
                     library_path << 'so'
@@ -103,15 +103,21 @@ module Engine
                 end
 
                 if File.exist?( library_path )
-                    Fiddle::Function.new(
-                        Fiddle::dlopen( library_path )['initialize'],
-                        [],
-                        Fiddle::TYPE_VOIDP
-                    ).call
+                    # Magnus uses Ruby's standard require mechanism.
+                    # The Init_scnr_engine function is automatically called by Ruby.
+                    # Note: Cargo outputs libscnr_engine.so, but a symlink to scnr_engine.so
+                    # is created by the build process (see ext/Rakefile) to match the init function name.
+                    require library_path
 
                     @loaded_extension = true
                 else
-                    fail "Missing extension: #{library_path}"
+                    # Check if the source library exists but symlink wasn't created
+                    src_path = library_path.sub('scnr_engine.', 'libscnr_engine.')
+                    if File.exist?(src_path)
+                        fail "Extension needs rebuild: #{src_path} exists but symlink #{library_path} not found. Run 'cd ext && rake' to rebuild."
+                    else
+                        fail "Missing extension: #{library_path}"
+                    end
                 end
             end
 

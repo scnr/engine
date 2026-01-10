@@ -1,5 +1,6 @@
-use rutie::{Class, Object, RString, Boolean, AnyObject, Proc, Symbol, Hash};
+use magnus::{class, method, function, Error, RClass, RModule, Value, RHash, Symbol, TypedData, block::Proc, prelude::*};
 use parser::sax::*;
+use std::collections::HashMap;
 
 lazy_static! {
     static ref DOCUMENT: String = "document".to_string();
@@ -8,9 +9,14 @@ lazy_static! {
     static ref COMMENT:  String = "comment".to_string();
 }
 
+#[magnus::wrap(class = "SCNR::Engine::Rust::Parser::Node", free_immediately, size)]
 pub struct Node {
     pub native: Option<node::Handle>
 }
+
+// SAFETY: Node is only used from the Ruby main thread, which doesn't share data across threads
+// in the way that Rust's Send implies. The Ruby GVL ensures thread safety.
+unsafe impl Send for Node {}
 
 impl Node {
     fn new( native: Option<node::Handle> ) -> Self {
@@ -30,15 +36,15 @@ impl Node {
         panic!( "Use after free." );
     }
 
-    pub fn attributes( &self ) -> Hash {
-        let mut hash = Hash::new();
+    pub fn attributes( &self ) -> HashMap<String, String> {
+        let mut hash = HashMap::new();
 
         if let Some( ref handle ) = self.native {
             if let node::Enum::Element { ref attributes, .. } = handle.borrow().node {
                 for attribute in attributes {
-                    hash.store(
-                        RString::new_utf8( &attribute.name.local.to_lowercase() ),
-                        RString::new_utf8( &attribute.value )
+                    hash.insert(
+                        attribute.name.local.to_lowercase().to_string(),
+                        attribute.value.to_string()
                     );
                 }
             }
@@ -73,19 +79,19 @@ impl Node {
         panic!( "Use after free." );
     }
 
-    pub fn parent( &self ) -> AnyObject {
+    pub fn parent( &self ) -> Result<Node, String> {
         if let Some( ref handle ) = self.native {
             let cloned     = handle.clone();
             let parent_ref = &cloned.borrow().parent;
             let cloned_parent_ref = parent_ref.clone();
 
             if let Some( ref parent_handle ) = cloned_parent_ref {
-                return Node::handle_to_ruby( &node::Handle( parent_handle.upgrade().unwrap() ) );
+                return Ok(Node::new(Some(node::Handle(parent_handle.upgrade().unwrap()))));
             } else {
-                panic!( "Node has no parent, is it the root?" );
+                return Err("Node has no parent, is it the root?".to_string());
             }
         } else {
-            panic!( "Use after free." );
+            return Err("Use after free.".to_string());
         }
     }
 
@@ -97,45 +103,98 @@ impl Node {
         panic!( "Use after free." );
     }
 
-    pub fn nodes_by_name( &self, tag_name: &str, cb: &Proc ) {
+    pub fn nodes_by_name( &self, tag_name: &str, cb: Proc ) -> Result<(), Error> {
         if let Some( ref handle ) = self.native {
+            let mut error: Option<Error> = None;
             handle.nodes_by_name( tag_name, |h| {
-                cb.call( &vec![Node::handle_to_ruby( h ) ] );
+                if error.is_some() {
+                    return; // Skip remaining iterations if we hit an error
+                }
+                let node = Node::new(Some(h.clone()));
+                // If the block uses return/break, it will raise an exception
+                match cb.call::<(Node,), Value>((node,)) {
+                    Ok(_) => {},
+                    Err(e) => {
+                        error = Some(e);
+                    }
+                }
             });
-            return
+            if let Some(e) = error {
+                return Err(e);
+            }
+            return Ok(())
         }
 
         panic!( "Use after free." );
     }
 
-    pub fn nodes_by_attribute_name_and_value( &self, n: &str, v: &str, cb: &Proc ) {
+    pub fn nodes_by_attribute_name_and_value( &self, n: &str, v: &str, cb: Proc ) -> Result<(), Error> {
         if let Some( ref handle ) = self.native {
+            let mut error: Option<Error> = None;
             handle.nodes_by_attribute_name_and_value( n, v, |h| {
-                cb.call( &vec![Node::handle_to_ruby( h ) ] );
+                if error.is_some() {
+                    return;
+                }
+                let node = Node::new(Some(h.clone()));
+                match cb.call::<(Node,), Value>((node,)) {
+                    Ok(_) => {},
+                    Err(e) => {
+                        error = Some(e);
+                    }
+                }
             });
-            return
+            if let Some(e) = error {
+                return Err(e);
+            }
+            return Ok(())
         }
 
         panic!( "Use after free." );
     }
 
-    pub fn traverse_comments( &self, cb: &Proc ) {
+    pub fn traverse_comments( &self, cb: Proc ) -> Result<(), Error> {
         if let Some( ref handle ) = self.native {
+            let mut error: Option<Error> = None;
             handle.traverse_comments( |h| {
-                cb.call( &vec![Node::handle_to_ruby( h ) ] );
+                if error.is_some() {
+                    return;
+                }
+                let node = Node::new(Some(h.clone()));
+                match cb.call::<(Node,), Value>((node,)) {
+                    Ok(_) => {},
+                    Err(e) => {
+                        error = Some(e);
+                    }
+                }
             });
-            return
+            if let Some(e) = error {
+                return Err(e);
+            }
+            return Ok(())
         }
 
         panic!( "Use after free." );
     }
 
-    pub fn traverse( &self, cb: &Proc ) {
+    pub fn traverse( &self, cb: Proc ) -> Result<(), Error> {
         if let Some( ref handle ) = self.native {
+            let mut error: Option<Error> = None;
             handle.traverse( |h| {
-                cb.call( &vec![Node::handle_to_ruby( h ) ] );
+                if error.is_some() {
+                    return;
+                }
+                let node = Node::new(Some(h.clone()));
+                match cb.call::<(Node,), Value>((node,)) {
+                    Ok(_) => {},
+                    Err(e) => {
+                        error = Some(e);
+                    }
+                }
             });
-            return
+            if let Some(e) = error {
+                return Err(e);
+            }
+            return Ok(())
         }
 
         panic!( "Use after free." );
@@ -160,120 +219,98 @@ impl Node {
     pub fn free( &mut self ) {
         self.native = None;
     }
+}
 
-    fn handle_to_ruby( handle: &node::Handle ) -> AnyObject {
-        Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-            get_nested_class( "Rust" ).get_nested_class( "Parser" ).
-            get_nested_class( "Node" ).
-            wrap_data( Node::new( Some( handle.clone() ) ), &*NODE_WRAPPER )
+fn parse(html: String, filter: bool) -> Node {
+    Node::new(
+        Some(parser::parse(&html, filter))
+    )
+}
+
+fn node_traverse_comments(rb_self: &Node, cb: Proc) -> Result<bool, Error> {
+    rb_self.traverse_comments(cb)?;
+    Ok(true)
+}
+
+fn node_nodes_by_name(rb_self: &Node, name: String, cb: Proc) -> Result<bool, Error> {
+    rb_self.nodes_by_name(&name, cb)?;
+    Ok(true)
+}
+
+fn node_nodes_by_attribute_name_and_value(rb_self: &Node, name: String, value: String, cb: Proc) -> Result<bool, Error> {
+    rb_self.nodes_by_attribute_name_and_value(&name, &value, cb)?;
+    Ok(true)
+}
+
+fn node_traverse(rb_self: &Node, cb: Proc) -> Result<bool, Error> {
+    rb_self.traverse(cb)?;
+    Ok(true)
+}
+
+fn node_is_root(rb_self: &Node) -> bool {
+    rb_self.is_root()
+}
+
+fn node_text(rb_self: &Node) -> String {
+    rb_self.text()
+}
+
+fn node_name(rb_self: &Node) -> Symbol {
+    Symbol::new(&rb_self.name())
+}
+
+fn node_attributes(rb_self: &Node) -> HashMap<String, String> {
+    rb_self.attributes()
+}
+
+fn node_kind(rb_self: &Node) -> Symbol {
+    Symbol::new(rb_self.kind())
+}
+
+fn node_parent(rb_self: &Node) -> Result<Node, Error> {
+    match rb_self.parent() {
+        Ok(node) => Ok(node),
+        Err(msg) => Err(Error::new(magnus::exception::runtime_error(), msg))
     }
 }
 
-fn _parse( html: &RString, filter: &Boolean ) -> AnyObject {
-    let node    = Node::new(
-        Some( parser::parse( html.to_str(), filter.to_bool() ) )
-    );
-
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        get_nested_class( "Rust" ).get_nested_class( "Parser" ).
-        get_nested_class( "Node" ).
-        wrap_data( node, &*NODE_WRAPPER )
+fn node_free(rb_self: &Node) -> bool {
+    unsafe {
+        let ptr = rb_self as *const Node as *mut Node;
+        (*ptr).free();
+    }
+    true
 }
 
-wrappable_struct!( Node, NodeWrapper, NODE_WRAPPER );
-class!( NodeExt );
-unsafe_methods!(
-    NodeExt,
-    _itself,
-
-    fn parse( html: RString, filter: Boolean ) -> AnyObject {
-        _parse( &html, &filter )
+fn node_to_html(rb_self: &Node) -> String {
+    if let Some(ref handle) = rb_self.native {
+        handle.to_html(4, 0)
+    } else {
+        String::new()
     }
+}
 
-    fn traverse_comments( cb: Proc ) -> Boolean {
-        _itself.get_data( &*NODE_WRAPPER ).traverse_comments( &cb );
-        Boolean::new(true)
-    }
+pub fn initialize() -> Result<(), Error> {
+    let scnr_ns = class::object().const_get::<_, RModule>("SCNR")?;
+    let engine_ns = scnr_ns.const_get::<_, RModule>("Engine")?;
+    let rust_ns = engine_ns.define_module("Rust")?;
+    let parser_ns = rust_ns.define_module("Parser")?;
+    let node_class = parser_ns.define_class("Node", class::object())?;
 
-    fn nodes_by_name( name: RString, cb: Proc ) -> Boolean {
-        _itself.get_data( &*NODE_WRAPPER ).nodes_by_name( name.to_str(), &cb );
-        Boolean::new(true)
-    }
+    node_class.define_singleton_method("parse", function!(parse, 2))?;
 
-    fn nodes_by_attribute_name_and_value( name: RString, value: RString, cb: Proc ) -> Boolean {
-        _itself.get_data( &*NODE_WRAPPER ).
-            nodes_by_attribute_name_and_value(
-                name.to_str(),
-                value.to_str(),
-                &cb
-            );
+    node_class.define_method("nodes_by_name", method!(node_nodes_by_name, 2))?;
+    node_class.define_method("nodes_by_attribute_name_and_value", method!(node_nodes_by_attribute_name_and_value, 3))?;
+    node_class.define_method("traverse_comments", method!(node_traverse_comments, 1))?;
+    node_class.define_method("traverse", method!(node_traverse, 1))?;
+    node_class.define_method("parent", method!(node_parent, 0))?;
+    node_class.define_method("text", method!(node_text, 0))?;
+    node_class.define_method("type", method!(node_kind, 0))?;
+    node_class.define_method("attributes", method!(node_attributes, 0))?;
+    node_class.define_method("name", method!(node_name, 0))?;
+    node_class.define_method("root?", method!(node_is_root, 0))?;
+    node_class.define_method("free", method!(node_free, 0))?;
+    node_class.define_method("to_html", method!(node_to_html, 0))?;
 
-        Boolean::new(true)
-    }
-
-    fn traverse( cb: Proc ) -> Boolean {
-        _itself.get_data( &*NODE_WRAPPER ).traverse( &cb );
-        Boolean::new(true)
-    }
-
-    fn is_root() -> Boolean {
-        Boolean::new( _itself.get_data( &*NODE_WRAPPER ).is_root() )
-    }
-
-    fn text() -> RString {
-        RString::new_utf8( &_itself.get_data( &*NODE_WRAPPER ).text() )
-    }
-
-    fn name() -> Symbol {
-        Symbol::new( &_itself.get_data( &*NODE_WRAPPER ).name() )
-    }
-
-    fn attributes() -> Hash {
-        _itself.get_data( &*NODE_WRAPPER ).attributes()
-    }
-
-    fn kind() -> Symbol {
-        Symbol::new( _itself.get_data( &*NODE_WRAPPER ).kind() )
-    }
-
-    fn parent() -> AnyObject {
-        _itself.get_data( &*NODE_WRAPPER ).parent()
-    }
-
-    fn free() -> Boolean {
-        _itself.get_data_mut( &*NODE_WRAPPER ).free();
-        Boolean::new(true)
-    }
-
-    fn to_html() -> RString {
-        let parser   = &_itself.get_data( &*NODE_WRAPPER );
-        let document = &parser.native.clone().unwrap();
-
-        RString::new_utf8( &document.to_html( 4, 0 ) )
-    }
-);
-
-pub fn initialize() {
-
-    Class::from_existing( "SCNR" ).get_nested_class( "Engine" ).
-        define_nested_class( "Rust", None ).define_nested_class( "Parser", None ).
-        define_nested_class( "Node", None ).define( |_itself| {
-
-        _itself.def_self( "parse", parse );
-
-        _itself.def( "nodes_by_name", nodes_by_name );
-        _itself.def( "nodes_by_attribute_name_and_value", nodes_by_attribute_name_and_value );
-        _itself.def( "traverse_comments", traverse_comments );
-        _itself.def( "traverse", traverse );
-        _itself.def( "parent", parent );
-        _itself.def( "text", text );
-        _itself.def( "type", kind );
-        _itself.def( "attributes", attributes );
-        _itself.def( "name", name );
-        _itself.def( "root?", is_root );
-        _itself.def( "free", free );
-        _itself.def( "to_html", to_html );
-
-    });
-
+    Ok(())
 }
