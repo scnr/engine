@@ -20,14 +20,25 @@ class SignatureExt < Rust::Support::Signature
         super string.delete( "\0" )
     end
 
-    alias :old_refine! :refine!
     def refine!( data )
-        old_refine! normalize( data )
+        refine_bang_ext normalize( data )
     end
 
-    alias :old_refine :refine
     def refine( data )
-        old_refine normalize( data )
+        refine_ext normalize( data )
+    end
+    
+    def differences( other )
+        differences_ext normalize( other )
+    end
+    
+    def similar?( other, threshold )
+        is_similar_ext normalize( other ), threshold
+    end
+    
+    def ==( other )
+        return false unless other.is_a?( Rust::Support::Signature )
+        is_equal_ext other
     end
 
     def <<( data )
