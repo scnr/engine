@@ -11,7 +11,11 @@ require_relative 'signature_common'
 module SCNR::Engine
 module Support
 
-# Instance methods module that will be extended onto Rust::Support::Signature instances
+# Instance methods module that will be extended onto Rust::Support::Signature instances.
+# 
+# Due to Magnus typed_data limitations with Ruby subclassing, we use a module extension
+# pattern instead of traditional inheritance. This module provides the Ruby wrapper
+# methods that handle String-to-Signature coercion for the Rust extension methods.
 module SignatureExtInstanceMethods
     def refine!( data )
         refine_bang_ext normalize( data )
@@ -64,11 +68,29 @@ module SignatureExtInstanceMethods
     end
 end
 
-# Defined in Rust extension, we add some type conversion overrides here
-# because some things are easier to do in Ruby than Rust.
+# Ruby wrapper for Rust::Support::Signature that adds type conversion and coercion.
+#
+# @note Due to Magnus typed_data limitations, instances created by {.new} are technically
+#   {SCNR::Engine::Rust::Support::Signature} objects extended with {SignatureExtInstanceMethods}.
+#   This is necessary because Magnus doesn't support proper Ruby subclassing of typed data.
+#   The practical effect is that all public methods work as expected, but `instance.class`
+#   will return `SCNR::Engine::Rust::Support::Signature` instead of `SignatureExt`.
+#
+# @author Tasos "Zapotek" Laskos <tasos.laskos@gmail.com>
 class SignatureExt < Rust::Support::Signature
     include SignatureCommon
 
+    # Creates a new Signature instance with String coercion support.
+    #
+    # @param [String] string
+    #   The string to create a signature from. Null bytes will be removed.
+    #
+    # @return [Rust::Support::Signature]
+    #   An instance extended with {SignatureExtInstanceMethods} that provides
+    #   String coercion for refinement methods.
+    #
+    # @note The returned instance is technically a {Rust::Support::Signature},
+    #   not a {SignatureExt}, due to Magnus typed_data constraints.
     def self.new( string )
         # Create a Rust Signature - this will be a Rust::Support::Signature instance
         instance = Rust::Support::Signature.new(string.delete("\0"))
@@ -80,7 +102,8 @@ class SignatureExt < Rust::Support::Signature
         instance
     end
     
-    # Include instance methods for when instances are created via other means
+    # Include instance methods for cases where instances might be created via other means
+    # (though in practice, the primary path is through .new which uses extend instead)
     include SignatureExtInstanceMethods
 
 end
