@@ -24,8 +24,7 @@ module SignatureExtInstanceMethods
     def refine( data )
         # Create a new signature by duping and refining
         result = dup
-        result.extend(SignatureExtInstanceMethods)
-        result.instance_variable_set(:@signature_ext_class, signature_ext_class)
+        SignatureExt.extend_with_methods(result, signature_ext_class)
         result.refine! data
         result
     end
@@ -35,8 +34,7 @@ module SignatureExtInstanceMethods
         # Call the Rust dup method to copy the data
         rust_copy = super
         # Extend the copy with our methods
-        rust_copy.extend(SignatureExtInstanceMethods)
-        rust_copy.instance_variable_set(:@signature_ext_class, signature_ext_class)
+        SignatureExt.extend_with_methods(rust_copy, signature_ext_class)
         rust_copy
     end
     
@@ -80,6 +78,20 @@ end
 class SignatureExt < Rust::Support::Signature
     include SignatureCommon
 
+    # Extends a Signature instance with SignatureExtInstanceMethods
+    #
+    # @param [Rust::Support::Signature] instance
+    #   The instance to extend
+    # @param [Class] klass
+    #   The SignatureExt class to associate with the instance
+    #
+    # @return [void]
+    # @api private
+    def self.extend_with_methods(instance, klass = self)
+        instance.extend(SignatureExtInstanceMethods)
+        instance.instance_variable_set(:@signature_ext_class, klass)
+    end
+
     # Creates a new Signature instance with String coercion support.
     #
     # @param [String] string
@@ -96,15 +108,10 @@ class SignatureExt < Rust::Support::Signature
         instance = Rust::Support::Signature.new(string.delete("\0"))
         
         # Extend it with SignatureExt's instance methods
-        instance.extend(SignatureExtInstanceMethods)
-        instance.instance_variable_set(:@signature_ext_class, self)
+        extend_with_methods(instance, self)
         
         instance
     end
-    
-    # Include instance methods for cases where instances might be created via other means
-    # (though in practice, the primary path is through .new which uses extend instead)
-    include SignatureExtInstanceMethods
 
 end
 end
