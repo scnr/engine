@@ -25,10 +25,20 @@ class SignatureExt < Rust::Support::Signature
     end
 
     def refine( data )
-        # Clone self to preserve type, then refine in place
-        result = clone
+        # Use dup which should preserve SignatureExt type in Ruby
+        result = dup
         result.refine! data
         result
+    end
+    
+    # Override dup to ensure SignatureExt type is preserved
+    def dup
+        # Call the Rust dup method to copy the data
+        rust_copy = super
+        # Wrap it in SignatureExt
+        wrapped = self.class.allocate
+        wrapped.send(:initialize_copy, rust_copy)
+        wrapped
     end
     
     def differences( other )
