@@ -25,10 +25,10 @@ class SignatureExt < Rust::Support::Signature
     end
 
     def refine( data )
-        # Create a new instance of our class (SignatureExt) to preserve type
-        result = self.class.allocate
-        result.send(:initialize_copy, self)
+        # Clone self to preserve type, then refine in place
+        result = clone
         result.refine! data
+        result
     end
     
     def differences( other )
