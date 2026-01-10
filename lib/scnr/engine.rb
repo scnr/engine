@@ -103,11 +103,10 @@ module Engine
                 end
 
                 if File.exist?( library_path )
-                    Fiddle::Function.new(
-                        Fiddle::dlopen( library_path )['initialize'],
-                        [],
-                        Fiddle::TYPE_VOIDP
-                    ).call
+                    # Magnus uses Ruby's standard require mechanism.
+                    # The Init_scnr_engine function is automatically called by Ruby
+                    # when the library is loaded via require.
+                    require library_path
 
                     @loaded_extension = true
                 else
