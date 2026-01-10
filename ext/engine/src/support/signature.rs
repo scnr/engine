@@ -158,14 +158,14 @@ fn signature_dup(rb_self: &Signature) -> Signature {
     rb_self.dup()
 }
 
-fn signature_refine(rb_self: &Signature, other: &Signature) -> Signature {
-    rb_self.refine(other)
+fn signature_refine(rb_self: &Signature, other: typed_data::Obj<Signature>) -> Signature {
+    rb_self.refine(&*other)
 }
 
-fn signature_refine_bang(rb_self: typed_data::Obj<Signature>, other: &Signature) -> typed_data::Obj<Signature> {
+fn signature_refine_bang(rb_self: typed_data::Obj<Signature>, other: typed_data::Obj<Signature>) -> typed_data::Obj<Signature> {
     unsafe {
         let ptr = &*rb_self as *const Signature as *mut Signature;
-        (*ptr).refine_bang(other);
+        (*ptr).refine_bang(&*other);
     }
     rb_self
 }
@@ -178,16 +178,16 @@ fn signature_push(rb_self: typed_data::Obj<Signature>, data: String) -> typed_da
     rb_self
 }
 
-fn signature_differences(rb_self: &Signature, other: &Signature) -> f64 {
-    rb_self.differences(other)
+fn signature_differences(rb_self: &Signature, other: typed_data::Obj<Signature>) -> f64 {
+    rb_self.differences(&*other)
 }
 
-fn signature_is_similar(rb_self: &Signature, other: &Signature, threshold: f64) -> bool {
-    rb_self.is_similar(other, threshold)
+fn signature_is_similar(rb_self: &Signature, other: typed_data::Obj<Signature>, threshold: f64) -> bool {
+    rb_self.is_similar(&*other, threshold)
 }
 
-fn signature_is_equal(rb_self: &Signature, other: &Signature) -> bool {
-    rb_self == other
+fn signature_is_equal(rb_self: &Signature, other: typed_data::Obj<Signature>) -> bool {
+    rb_self == &*other
 }
 
 fn signature_hash(rb_self: &Signature) -> i64 {
