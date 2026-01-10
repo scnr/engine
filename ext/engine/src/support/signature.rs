@@ -159,16 +159,20 @@ fn signature_dup(rb_self: &Signature) -> Signature {
 }
 
 fn signature_refine(rb_self: &Signature, other: Value) -> Result<Signature, Error> {
-    // Use typed_data::Obj to extract the wrapped Signature
-    // This works for both Rust::Support::Signature and SignatureExt (which inherits from it)
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    // Force transmute Value to Obj<Signature> - bypasses type checking
+    // This is the Magnus equivalent of Rutie's get_data() which worked on subclasses
+    let other_obj: typed_data::Obj<Signature> = unsafe {
+        std::mem::transmute(other)
+    };
     let other_ref: &Signature = &*other_obj;
     Ok(rb_self.refine(other_ref))
 }
 
 fn signature_refine_bang(rb_self: typed_data::Obj<Signature>, other: Value) -> Result<typed_data::Obj<Signature>, Error> {
-    // Use typed_data::Obj to extract the wrapped Signature
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    // Force transmute Value to Obj<Signature>
+    let other_obj: typed_data::Obj<Signature> = unsafe {
+        std::mem::transmute(other)
+    };
     let other_ref: &Signature = &*other_obj;
     unsafe {
         let ptr = &*rb_self as *const Signature as *mut Signature;
@@ -186,19 +190,28 @@ fn signature_push(rb_self: typed_data::Obj<Signature>, data: String) -> typed_da
 }
 
 fn signature_differences(rb_self: &Signature, other: Value) -> Result<f64, Error> {
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    // Force transmute Value to Obj<Signature>
+    let other_obj: typed_data::Obj<Signature> = unsafe {
+        std::mem::transmute(other)
+    };
     let other_ref: &Signature = &*other_obj;
     Ok(rb_self.differences(other_ref))
 }
 
 fn signature_is_similar(rb_self: &Signature, other: Value, threshold: f64) -> Result<bool, Error> {
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    // Force transmute Value to Obj<Signature>
+    let other_obj: typed_data::Obj<Signature> = unsafe {
+        std::mem::transmute(other)
+    };
     let other_ref: &Signature = &*other_obj;
     Ok(rb_self.is_similar(other_ref, threshold))
 }
 
 fn signature_is_equal(rb_self: &Signature, other: Value) -> Result<bool, Error> {
-    let other_obj: typed_data::Obj<Signature> = other.try_convert()?;
+    // Force transmute Value to Obj<Signature>
+    let other_obj: typed_data::Obj<Signature> = unsafe {
+        std::mem::transmute(other)
+    };
     let other_ref: &Signature = &*other_obj;
     Ok(rb_self == other_ref)
 }
