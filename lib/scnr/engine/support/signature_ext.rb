@@ -25,9 +25,10 @@ class SignatureExt < Rust::Support::Signature
     end
 
     def refine( data )
-        # Call the parent class method with normalized data
-        # This ensures we get back a Signature that we can work with
-        dup.refine! normalize( data )
+        # Create a new instance of our class (SignatureExt) to preserve type
+        result = self.class.allocate
+        result.send(:initialize_copy, self)
+        result.refine! data
     end
     
     def differences( other )
