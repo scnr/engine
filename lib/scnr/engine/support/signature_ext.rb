@@ -37,7 +37,7 @@ class SignatureExt < Rust::Support::Signature
     private
 
     def normalize( data )
-        data.is_a?( Rust::Support::Signature ) ? data : self.class.for( data )
+        data.is_a?( ::SCNR::Engine::Rust::Support::Signature ) ? data : self.class.for( data )
     end
 
 end
