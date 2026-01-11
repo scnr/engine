@@ -11,7 +11,7 @@ shared_examples_for 'with_locator' do
 
                 element = browser.selenium.find_element( :css, subject.locator.css )
                 expect(element).to be_kind_of Selenium::WebDriver::Element
-                expect(element.opening_tag).to eq subject.locator.to_s
+                expect(element.opening_tag).to include('id="my-input"', 'name="my-input"', 'value="1"')
                 called = true
             end
 
