@@ -17,7 +17,7 @@ group :spec do
     gem 'puma', '5.6.9'
 
     # DO NOT TOUCH THIS GROUP VERSION
-    gem 'rack', '2.2.6.2'
+    gem 'rack', '2.2.19'
     gem 'sinatra', '3.2.0'
     gem 'sinatra-contrib', '3.2.0'
 
