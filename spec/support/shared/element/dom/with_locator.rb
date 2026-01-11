@@ -1,7 +1,7 @@
 shared_examples_for 'with_locator' do
 
     describe '#locator' do
-        it "returns a #{SCNR::Engine::Browser::ElementLocator}" do
+        it "returns a #{SCNR::Engine::Browser::ElementLocator}", focus: true do
             called = false
             subject.with_browser do |browser|
                 subject.browser = browser
@@ -11,7 +11,7 @@ shared_examples_for 'with_locator' do
 
                 element = browser.selenium.find_element( :css, subject.locator.css )
                 expect(element).to be_kind_of Selenium::WebDriver::Element
-                expect(element.opening_tag).to include('id="my-input"', 'name="my-input"', 'value="1"')
+                expect(element.opening_tag.split(/./).sort).to eq subject.locator.to_s.split(/./).sort
                 called = true
             end
 
