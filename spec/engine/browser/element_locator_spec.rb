@@ -223,7 +223,7 @@ describe SCNR::Engine::Browser::ElementLocator do
 
     describe '#to_s' do
         it 'converts it to an HTML opening tag' do
-            expect(subject.to_s).to eq('<a id="my-id" class="my-class">')
+            expect(subject.to_s).to eq('<a class="my-class" id="my-id">')
             expect(described_class.new( tag_name: tag_name ).to_s).to eq('<a>')
         end
     end
