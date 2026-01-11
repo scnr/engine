@@ -88,7 +88,8 @@ module SignatureCommon
             signatures.sort_by!(&:hash)
 
             # Strings may have gotten in there for refinement etc.
-            root_idx = signatures.each.with_index { |s, i| break i if s.is_a? self }
+            root_idx = signatures.each.
+              with_index { |s, i| break i if s.is_a? SCNR::Engine::Rust::Support::Signature }
 
             [signatures.delete_at( root_idx ), signatures]
         end
