@@ -1,7 +1,7 @@
 shared_examples_for 'with_locator' do
 
     describe '#locator' do
-        it "returns a #{SCNR::Engine::Browser::ElementLocator}", focus: true do
+        it "returns a #{SCNR::Engine::Browser::ElementLocator}" do
             called = false
             subject.with_browser do |browser|
                 subject.browser = browser
