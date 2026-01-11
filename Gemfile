@@ -14,7 +14,7 @@ group :spec do
     gem 'simplecov', require: false, group: :test
 
     gem 'rackup'
-    gem 'puma', '5.6.2'
+    gem 'puma', '5.6.9'
 
     # DO NOT TOUCH THIS GROUP VERSION
     gem 'rack', '2.2.4'
