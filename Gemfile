@@ -17,7 +17,7 @@ group :spec do
     gem 'puma', '5.6.9'
 
     # DO NOT TOUCH THIS GROUP VERSION
-    gem 'rack', '2.2.19'
+    gem 'rack', '2.2.20'
     gem 'sinatra', '3.2.0'
     gem 'sinatra-contrib', '3.2.0'
 
@@ -47,7 +47,7 @@ group :prof do
 end
 
 gem 'scnr', path: '../scnr'
-# gem 'cuboid', path: '../../qadron/cuboid'
+gem 'cuboid', path: '../../qadron/cuboid'
 # gem 'raktr', path: '../../qadron/raktr'
 # gem 'toq', path: '../../qadron/toq'
 
