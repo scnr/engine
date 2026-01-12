@@ -47,8 +47,17 @@ group :prof do
 end
 
 gem 'scnr', path: '../scnr'
-gem 'cuboid', path: '../../qadron/cuboid'
-# gem 'raktr', path: '../../qadron/raktr'
-# gem 'toq', path: '../../qadron/toq'
+
+if File.exist? '../../qadron/cuboid'
+    gem 'cuboid', path: '../../qadron/cuboid'
+end
+
+if File.exist? '../../qadron/raktr'
+    gem 'raktr', path: '../../qadron/raktr'
+end
+
+if File.exist? '../../qadron/toq'
+    gem 'toq', path: '../../qadron/toq'
+end
 
 gemspec
