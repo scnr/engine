@@ -46,7 +46,9 @@ group :prof do
     gem 'memory_profiler'
 end
 
-gem 'scnr', path: '../scnr'
+if File.exist? '../scnr'
+    gem 'scnr', path: '../scnr'
+end
 
 if File.exist? '../../qadron/cuboid'
     gem 'cuboid', path: '../../qadron/cuboid'
