@@ -24,10 +24,6 @@ group :spec do
     gem 'rspec', '3.11.0'
     gem 'faker'
 
-    if File.exist? '../scnr'
-        gem 'scnr', path: '../scnr'
-    end
-
     if File.exist? '../introspector'
         gem 'scnr-introspector', path: '../introspector'
     end
@@ -46,9 +42,20 @@ group :prof do
     gem 'memory_profiler'
 end
 
-gem 'scnr', path: '../scnr'
-gem 'cuboid', path: '../../qadron/cuboid'
-# gem 'raktr', path: '../../qadron/raktr'
-# gem 'toq', path: '../../qadron/toq'
+if File.exist? '../scnr'
+    gem 'scnr', path: '../scnr'
+end
+
+if File.exist? '../../qadron/cuboid'
+    gem 'cuboid', path: '../../qadron/cuboid'
+end
+
+if File.exist? '../../qadron/raktr'
+    gem 'raktr', path: '../../qadron/raktr'
+end
+
+if File.exist? '../../qadron/toq'
+    gem 'toq', path: '../../qadron/toq'
+end
 
 gemspec
